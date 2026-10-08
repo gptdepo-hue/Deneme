@@ -19,7 +19,9 @@
     font-family: "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     -webkit-font-smoothing: antialiased;
   }
-  #app { position: relative; height: 100%; display: -webkit-flex; display: flex; -webkit-flex-direction: column; flex-direction: column; padding: .7rem 1.4rem .6rem; }
+  /* Ekran doğrudan cihaz ekranına sabitlenir: Omma içeriği kendi kabına koysa da yükseklik 0 olmaz */
+  #app { position: fixed; left: 0; top: 0; width: 100vw; height: 100vh; z-index: 1; background: #0b1220; color: #f1f5f9;
+    font-family: "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; text-align: left; box-sizing: border-box; display: -webkit-flex; display: flex; -webkit-flex-direction: column; flex-direction: column; padding: .7rem 1.4rem .6rem; }
   .num { font-variant-numeric: tabular-nums; }
 
   /* ---------- Üst bar ---------- */
