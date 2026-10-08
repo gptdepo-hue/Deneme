@@ -298,6 +298,8 @@
   <div id="message" class="message"></div>
 </div>
 
+<!-- Omma veri kaynağı referansı: içerik 3887 numaralı veri kaynağına bağlansın diye (Omma bunu veriyle değiştirirse sayfa oradan da okur) -->
+<script type="application/json" id="omma-ds-ref">datasource://3887</script>
 <script>
 (function () {
   'use strict';
@@ -683,7 +685,15 @@
     for (var n = 0; n < all.length && CONFIG.datasourceId; n++) {
       if (all[n] && String(all[n].id) === String(CONFIG.datasourceId)) { ds = all[n]; break; }
     }
-    if (!ds && api && api.get) ds = api.get(CONFIG.datasourceName);
+    if (!ds && api && api.get) {
+      try { ds = api.get(CONFIG.datasourceId) || api.get(String(CONFIG.datasourceId)); } catch (e) { ds = null; }
+      if (!ds) ds = api.get(CONFIG.datasourceName);
+    }
+    if (!ds) {
+      // Omma "datasource://3887" referansının yerine veriyi yerleştirdiyse onu kullan
+      var inline = inlineData();
+      if (inline) { state.dsName = 'datasource://' + CONFIG.datasourceId; setData(inline, null); return; }
+    }
     if (!ds) {
       // Adı farklıysa yalnızca içinde rota grubu verisi olan bir kaynak kullanılır (yanlış kaynak okunmasın)
       for (var i = 0; i < all.length; i++) {
@@ -716,6 +726,13 @@
       });
     }
     setData(ds.data, ds.updatedAt);
+  }
+
+  function inlineData() {
+    var node = document.getElementById('omma-ds-ref');
+    var txt = node ? (node.textContent || '').replace(/^\s+|\s+$/g, '') : '';
+    if (!txt || txt.indexOf('datasource://') === 0) return null;
+    try { var v = JSON.parse(txt); return findGroups(normalize(v, 0), 0) ? v : null; } catch (e) { return null; }
   }
 
   function safeConnect() {
