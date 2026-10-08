@@ -705,12 +705,14 @@
     if (!ds) {
       // İçerik yeni yüklenirken veri kaynağı geç gelebilir: mesaj göster, kendiliğinden tekrar dene
       var names = [];
-      for (var j = 0; j < all.length; j++) names.push((all[j] && all[j].name ? '"' + all[j].name + '"' : '(adsız)') + (all[j] && all[j].id ? ' #' + all[j].id : ''));
+      for (var j = 0; j < all.length; j++) names.push(dsSummary(all[j]));
       log('error', 'Logiboard: veri kaynağı bulunamadı: ' + CONFIG.datasourceName);
       if (!state.groups.length) {
-        showMessage('"' + CONFIG.datasourceName + '" (#' + CONFIG.datasourceId + ') veri kaynağı bu içeriğe bağlı değil.\n' +
-          (names.length ? 'Bağlı veri kaynakları: ' + names.join(', ') + '\n' : 'İçeriğe bağlı veri kaynağı yok.\n') +
-          'Omma panelinde doğru veri kaynağını bu içeriğe bağlayın.');
+        var cv = '';
+        try { cv = OM.channel && OM.channel.contentVersionId ? ' · içerik sürümü ' + OM.channel.contentVersionId : ''; } catch (e) { cv = ''; }
+        showMessage('"' + CONFIG.datasourceName + '" (#' + CONFIG.datasourceId + ') bu cihazdaki içerikte görünmüyor.\n' +
+          (names.length ? 'Cihazın gördüğü veri kaynakları:\n' + names.join('\n') + '\n' : 'Cihaz hiç veri kaynağı görmüyor.\n') +
+          'Kontrol: veri kaynağı bu içeriğe ekli mi, içerik kaydedilip Update Test / yayın yapıldı mı?' + cv);
       }
       setTimeout(safeConnect, 10000);
       return;
@@ -741,6 +743,19 @@
       if (!state.groups.length) showMessage('Veri kaynağına bağlanılamadı, tekrar deneniyor…');
       setTimeout(safeConnect, 10000);
     }
+  }
+
+  // Tanı için: veri kaynağının adı, numarası ve verisindeki ilk alan adları
+  function dsSummary(d) {
+    if (!d) return '(boş)';
+    var keys = '';
+    try {
+      var v = parseMaybe(d.data);
+      if (isArray(v)) v = v[0];
+      if (v && typeof v === 'object') { var k = []; for (var x in v) { if (has(v, x)) k.push(x); if (k.length >= 3) break; } keys = ' → ' + k.join(', '); }
+      else keys = ' → veri: ' + (v === null || v === undefined ? 'yok' : typeof v);
+    } catch (e) { keys = ''; }
+    return '• "' + (d.name || 'adsız') + '"' + (d.id !== undefined ? ' #' + d.id : '') + keys;
   }
 
   function findOmma() {
