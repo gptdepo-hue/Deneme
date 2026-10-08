@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Turkuaz Logiboard</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  /* 1rem = ekran genişliğinin %1'i (16:9'dan geniş ekranlarda yüksekliğe göre).
+     Böylece 1080p, 4K veya dikey ekranda aynı oranlarla ölçeklenir. */
+  html { font-size: 1vw; }
+  @media (min-aspect-ratio: 16/9) { html { font-size: 1.7778vh; } }
+  @media (max-aspect-ratio: 1/1) { html { font-size: 1.35vw; } } /* dikey ekran */
+
+  html, body { height: 100%; overflow: hidden; background: #0a1020; }
+  body {
+    color: #e6ecf5;
+    font-family: "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  #app { position: relative; height: 100%; display: flex; flex-direction: column; padding: 1.2rem 1.6rem 1rem; }
+
+  /* ---------- Üst bar ---------- */
+  .topbar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding-bottom: .9rem; margin-bottom: 1rem; border-bottom: .12rem solid #1d2a44;
+  }
+  .brand { display: flex; align-items: center; font-size: 1.7rem; font-weight: 700; letter-spacing: .02em; }
+  .brand-mark { width: .5rem; height: 1.8rem; margin-right: .8rem; border-radius: .15rem; background: #14b8a6; }
+  .demo-badge {
+    display: none; margin-left: 1rem; padding: .2rem .6rem; border-radius: .3rem;
+    font-size: .8rem; font-weight: 700; letter-spacing: .08em; background: #f59e0b; color: #1a1200;
+  }
+  .is-demo .demo-badge { display: inline-block; }
+  .meta { display: flex; align-items: center; }
+  .updated { margin-right: 1.8rem; font-size: 1rem; color: #8b9bb8; }
+  .updated.stale { color: #fbbf24; font-weight: 600; }
+  .clock { text-align: right; }
+  #time { display: block; font-size: 2rem; font-weight: 700; line-height: 1; font-variant-numeric: tabular-nums; }
+  #date { display: block; margin-top: .25rem; font-size: .9rem; color: #8b9bb8; }
+
+  /* ---------- Ortak tablo ---------- */
+  .panel { background: #111a2e; border-radius: .6rem; }
+  table { width: 100%; border-collapse: separate; border-spacing: 0; table-layout: fixed; }
+  th, td { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  th { font-weight: 600; color: #8b9bb8; text-transform: uppercase; letter-spacing: .06em; }
+  .num { text-align: right; font-variant-numeric: tabular-nums; }
+  .name { text-align: left; }
+  .sep { border-left: .12rem solid #24324f; }
+  .zero { color: #4b5a78; }
+
+  th.p-picking  { border-bottom-color: #38bdf8; }
+  th.p-packing  { border-bottom-color: #a78bfa; }
+  th.p-shipping { border-bottom-color: #2dd4bf; }
+
+  /* ---------- Özet (rota grupları) ---------- */
+  .summary { padding: .4rem .8rem .6rem; margin-bottom: 1rem; }
+  .summary col.c-name { width: 21%; }
+  .summary th { padding: .5rem .7rem; font-size: .95rem; }
+  .summary tr.grp th { font-size: 1.15rem; color: #e6ecf5; text-align: center; border-bottom: .2rem solid transparent; }
+  .summary tr.grp th.name { color: #8b9bb8; font-size: .95rem; text-align: left; vertical-align: bottom; }
+  .summary tr.sub th { text-align: right; }
+  .summary td { padding: .45rem .7rem; font-size: 2.4rem; font-weight: 700; border-top: .08rem solid #1d2a44; }
+  .summary td.name { font-size: 1.6rem; }
+  .summary tr.active td { background: #16223b; }
+  .summary tr.active td.name { box-shadow: inset .35rem 0 0 #14b8a6; }
+  .summary tr.total td { border-top: .15rem solid #2a3a5c; color: #cbd5e6; }
+  .summary tr.total td.name { color: #8b9bb8; font-size: 1.2rem; letter-spacing: .08em; }
+  .summary .chip { display: inline-block; padding: 0 .5rem; border-radius: .4rem; background: #dc2626; color: #fff; }
+  /* Grup sayısı arttıkça satırlar küçülür */
+  .summary table.n-md td { font-size: 1.9rem; padding: .3rem .7rem; }
+  .summary table.n-md td.name { font-size: 1.3rem; }
+  .summary table.n-lg td { font-size: 1.35rem; padding: .2rem .7rem; }
+  .summary table.n-lg td.name { font-size: 1.05rem; }
+
+  /* ---------- Detay ---------- */
+  .details { flex: 1; min-height: 0; display: flex; flex-direction: column; padding: .6rem .8rem .5rem; }
+  .no-details .details { display: none; }
+  .details-head { display: flex; align-items: baseline; justify-content: space-between; padding: .2rem .4rem .6rem; }
+  .details-title { font-size: 1.5rem; font-weight: 700; }
+  .details-title small { margin-right: .6rem; font-size: 1rem; font-weight: 600; color: #8b9bb8; letter-spacing: .08em; }
+  .details-page { font-size: 1.1rem; color: #8b9bb8; font-variant-numeric: tabular-nums; }
+  .details-body { flex: 1; min-height: 0; overflow: hidden; }
+  .details th { padding: .35rem .6rem; font-size: .85rem; }
+  .details tr.grp th { text-align: center; color: #e6ecf5; font-size: .95rem; border-bottom: .15rem solid transparent; }
+  .details tr.grp th.name { text-align: left; vertical-align: bottom; }
+  .details tr.sub th, .details tr.grp th.num { text-align: right; vertical-align: bottom; }
+  .details td { padding: .32rem .6rem; font-size: 1.15rem; border-top: .06rem solid #1a2640; }
+  .details tbody tr:nth-child(even) td { background: #0e1628; }
+  .details td.late { color: #f87171; font-weight: 700; }
+  .progress { height: .3rem; margin-top: .5rem; border-radius: .2rem; overflow: hidden; background: #1a2640; }
+  .progress.off { visibility: hidden; }
+  #progress-bar { width: 0; height: 100%; background: #14b8a6; }
+
+  /* ---------- Mesaj (veri yok / hata) ---------- */
+  .message {
+    display: none; position: absolute; left: 0; top: 0; right: 0; bottom: 0;
+    align-items: center; justify-content: center; text-align: center;
+    padding: 4rem; font-size: 1.8rem; color: #8b9bb8; background: #0a1020;
+  }
+  .message.show { display: flex; }
+</style>
+</head>
+<body>
+<div id="app">
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark"></span>
+      <span id="title"></span>
+      <span class="demo-badge">DEMO VERİ</span>
+    </div>
+    <div class="meta">
+      <div id="updated" class="updated"></div>
+      <div class="clock"><span id="time"></span><span id="date"></span></div>
+    </div>
+  </header>
+
+  <section class="summary panel"><table id="summary"></table></section>
+
+  <section class="details panel">
+    <div class="details-head">
+      <div id="details-title" class="details-title"></div>
+      <div id="details-page" class="details-page"></div>
+    </div>
+    <div id="details-body" class="details-body"><table id="details"></table></div>
+    <div id="progress" class="progress"><div id="progress-bar"></div></div>
+  </section>
+
+  <div id="message" class="message"></div>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  // ============================== AYARLAR ==============================
+  var CONFIG = {
+    title: 'Turkuaz Logiboard',
+    datasourceName: 'Turkuaz_Logiboard',      // Omma'daki veri kaynağının adı
+    rootKey: 'Turkuaz_Logiboard',             // veri { "Turkuaz_Logiboard": [...] } şeklinde gelirse
+    groupTitleKey: 'DispatchRouteGroupTitle', // ana kayıttaki başlık alanı
+    detailsKey: 'Details',                    // ana kayıttaki alt detay listesi
+    dataUrl: '',          // Omma veri kaynağı yerine doğrudan ERP'nin JSON adresi (opsiyonel)
+    refreshSeconds: 60,   // dataUrl kullanılırsa kaç saniyede bir yeniden çekileceği
+    pageSeconds: 10,      // detay tablosunda her sayfanın ekranda kalma süresi
+    staleMinutes: 30,     // veri bu kadar dakikadan eskiyse güncelleme bilgisi sarı yanar (0 = kapalı)
+    hiddenDetailColumns: [] // detay tablosunda gösterilmeyecek alanlar, ör. ['Id']
+  };
+
+  // Detay alanları için Türkçe başlıklar. Burada olmayan alan adları
+  // otomatik olarak okunur hale getirilir (ör. "CustomerName" -> "Customer Name").
+  var LABELS = {
+    DispatchRouteGroupTitle: 'Rota Grubu',
+    DispatchRouteTitle: 'Rota'
+  };
+
+  var PROCESSES = [
+    { key: 'Picking', label: 'Toplama', cls: 'p-picking' },
+    { key: 'Packing', label: 'Paketleme', cls: 'p-packing' },
+    { key: 'Shipping', label: 'Sevkiyat', cls: 'p-shipping' }
+  ];
+  var PERIODS = [
+    { key: 'Past', label: 'Geçmiş' },
+    { key: 'Today', label: 'Bugün' },
+    { key: 'Planned', label: 'Planlanan' }
+  ];
+  // "TotalPickingPast", "PickingToday", "ShippingPlanned" gibi alanları yakalar
+  var METRIC_RE = /^(Total)?(Picking|Packing|Shipping)(Past|Today|Planned)$/;
+
+  var MONTHS = ['Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran', 'Temmuz',
+    'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık'];
+  var DAYS = ['Pazar', 'Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma', 'Cumartesi'];
+
+  // ============================== DURUM ==============================
+  var state = {
+    groups: [],
+    detailIdx: [],   // detayı olan grupların indeksleri
+    groupPos: 0,     // detailIdx içinde şu an gösterilen grup
+    page: 0,
+    rowsPerPage: 0,  // 0 = yeniden ölçülecek
+    updatedAt: null,
+    fetchError: false,
+    timer: null
+  };
+
+  var el = {};
+  ['app', 'title', 'updated', 'time', 'date', 'summary', 'details-title', 'details-page',
+    'details-body', 'details', 'progress', 'progress-bar', 'message'].forEach(function (id) {
+    el[id] = document.getElementById(id);
+  });
+
+  // ============================== YARDIMCILAR ==============================
+  function isArray(v) { return Object.prototype.toString.call(v) === '[object Array]'; }
+  function has(o, k) { return Object.prototype.hasOwnProperty.call(o, k); }
+
+  function esc(s) {
+    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
+
+  function pad2(n) { return n < 10 ? '0' + n : String(n); }
+  function hhmm(d) { return pad2(d.getHours()) + ':' + pad2(d.getMinutes()); }
+
+  function toNumber(v) {
+    if (typeof v === 'number') return isFinite(v) ? v : null;
+    if (typeof v === 'string' && v !== '' && !isNaN(v)) return Number(v);
+    return null;
+  }
+
+  // 2518 -> "2.518" (Intl desteği olmayan eski oynatıcılarda da çalışır)
+  function fmt(v) {
+    var n = toNumber(v);
+    if (n === null) return '–';
+    var neg = n < 0;
+    var parts = String(Math.abs(n)).split('.');
+    var s = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    return (neg ? '-' : '') + s + (parts[1] ? ',' + parts[1] : '');
+  }
+
+  function cellText(v) {
+    if (v === null || v === undefined) return '';
+    if (typeof v === 'boolean') return v ? 'Evet' : 'Hayır';
+    if (typeof v === 'number') return fmt(v);
+    return String(v);
+  }
+
+  function label(key) {
+    if (has(LABELS, key)) return LABELS[key];
+    return String(key).replace(/_/g, ' ').replace(/([a-zçğıöşü0-9])([A-ZÇĞİÖŞÜ])/g, '$1 $2');
+  }
+
+  function log(level, msg, payload) {
+    try {
+      if (window.omma && omma.logger && omma.logger[level]) omma.logger[level](msg, payload);
+      else if (window.console) console[level === 'error' ? 'error' : 'log'](msg, payload || '');
+    } catch (e) { /* loglama hatası ekranı durdurmamalı */ }
+  }
+
+  function showMessage(text) { el.message.textContent = text; el.message.className = 'message show'; }
+  function hideMessage() { el.message.className = 'message'; }
+
+  function parseDate(v) {
+    if (!v) return null;
+    var d = v instanceof Date ? v : new Date(v);
+    return isNaN(d.getTime()) ? null : d;
+  }
+
+  // Veri dizi olarak, { Turkuaz_Logiboard: [...] } olarak ya da JSON metni olarak gelebilir.
+  function extractGroups(data) {
+    if (typeof data === 'string') {
+      try { data = JSON.parse(data); } catch (e) { return null; }
+    }
+    if (isArray(data)) return data;
+    if (data && typeof data === 'object') {
+      if (isArray(data[CONFIG.rootKey])) return data[CONFIG.rootKey];
+      for (var k in data) {
+        if (has(data, k) && isArray(data[k])) return data[k];
+      }
+    }
+    return null;
+  }
+
+  function groupTitle(g) { return g ? cellText(g[CONFIG.groupTitleKey]) : ''; }
+  function groupDetails(g) { return g && isArray(g[CONFIG.detailsKey]) ? g[CONFIG.detailsKey] : []; }
+  function currentGroup() { return state.groups[state.detailIdx[state.groupPos]]; }
+
+  // ============================== VERİ ==============================
+  function setData(raw, updatedAt, isDemo) {
+    var groups = extractGroups(raw);
+    if (!groups) {
+      log('error', 'Logiboard: veride rota grubu listesi bulunamadı', raw);
+      if (!state.groups.length) showMessage('Veri okunamadı: beklenen liste bulunamadı.');
+      return;
+    }
+
+    var prevTitle = groupTitle(currentGroup());
+    state.groups = groups;
+    state.detailIdx = [];
+    for (var i = 0; i < groups.length; i++) {
+      if (groupDetails(groups[i]).length) state.detailIdx.push(i);
+    }
+
+    // Veri güncellendiğinde aynı grubu göstermeye devam et
+    var pos = 0;
+    for (var j = 0; j < state.detailIdx.length; j++) {
+      if (groupTitle(groups[state.detailIdx[j]]) === prevTitle) { pos = j; break; }
+    }
+    if (pos !== state.groupPos) state.page = 0;
+    state.groupPos = pos;
+    state.updatedAt = parseDate(updatedAt) || new Date();
+    state.fetchError = false;
+    state.rowsPerPage = 0;
+
+    el.app.className = (isDemo ? 'is-demo ' : '') + (state.detailIdx.length ? '' : 'no-details');
+
+    if (!groups.length) {
+      showMessage('Gösterilecek rota grubu yok.');
+    } else {
+      hideMessage();
+    }
+    renderSummary();
+    renderDetails();
+    renderUpdated();
+    restartTimer();
+  }
+
+  function connectDatasource() {
+    var ds = omma.datasource.get(CONFIG.datasourceName);
+    if (!ds) {
+      // Tek veri kaynağı varsa adı farklı olsa da onu kullan
+      var all = omma.datasource.getAll() || [];
+      if (all.length === 1) ds = all[0];
+    }
+    if (!ds) {
+      log('error', 'Logiboard: veri kaynağı bulunamadı: ' + CONFIG.datasourceName);
+      showMessage('"' + CONFIG.datasourceName + '" veri kaynağı bulunamadı.');
+      return;
+    }
+    setData(ds.data, ds.updatedAt);
+    ds.on('update', function (updated) {
+      var src = updated || ds;
+      setData(src.data, src.updatedAt);
+    });
+  }
+
+  function pollUrl() {
+    var xhr = new XMLHttpRequest();
+    var url = CONFIG.dataUrl + (CONFIG.dataUrl.indexOf('?') < 0 ? '?' : '&') + '_t=' + Date.now();
+    xhr.open('GET', url, true);
+    xhr.timeout = 30000;
+    xhr.onreadystatechange = function () {
+      if (xhr.readyState !== 4) return;
+      if (xhr.status >= 200 && xhr.status < 300) {
+        setData(xhr.responseText, new Date());
+      } else {
+        log('warn', 'Logiboard: veri çekilemedi (HTTP ' + xhr.status + ')');
+        state.fetchError = true;
+        renderUpdated();
+        if (!state.groups.length) showMessage('Veri alınamadı, tekrar deneniyor…');
+      }
+      setTimeout(pollUrl, CONFIG.refreshSeconds * 1000);
+    };
+    xhr.send();
+  }
+
+  // ============================== ÖZET TABLO ==============================
+  function metricCells(obj, prefix) {
+    var html = '';
+    PROCESSES.forEach(function (p) {
+      PERIODS.forEach(function (per, j) {
+        var v = toNumber(obj[prefix + p.key + per.key]);
+        var cls = 'num' + (j === 0 ? ' sep' : '') + (v === 0 ? ' zero' : '');
+        var txt = fmt(v);
+        if (per.key === 'Past' && v > 0) txt = '<span class="chip">' + txt + '</span>';
+        html += '<td class="' + cls + '">' + txt + '</td>';
+      });
+    });
+    return html;
+  }
+
+  function renderSummary() {
+    var groups = state.groups;
+    var activeIdx = state.detailIdx[state.groupPos];
+    var html = '<colgroup><col class="c-name">';
+    for (var c = 0; c < PROCESSES.length * PERIODS.length; c++) html += '<col>';
+    html += '</colgroup><thead><tr class="grp"><th rowspan="2" class="name">' + esc(label(CONFIG.groupTitleKey)) + '</th>';
+    PROCESSES.forEach(function (p) {
+      html += '<th colspan="' + PERIODS.length + '" class="sep ' + p.cls + '">' + p.label + '</th>';
+    });
+    html += '</tr><tr class="sub">';
+    PROCESSES.forEach(function () {
+      PERIODS.forEach(function (per, j) {
+        html += '<th' + (j === 0 ? ' class="sep"' : '') + '>' + per.label + '</th>';
+      });
+    });
+    html += '</tr></thead><tbody>';
+
+    var totals = {};
+    groups.forEach(function (g, i) {
+      html += '<tr id="sum-' + i + '"' + (i === activeIdx ? ' class="active"' : '') + '>' +
+        '<td class="name">' + esc(groupTitle(g)) + '</td>' + metricCells(g, 'Total') + '</tr>';
+      PROCESSES.forEach(function (p) {
+        PERIODS.forEach(function (per) {
+          var k = p.key + per.key;
+          var v = toNumber(g['Total' + k]);
+          if (v !== null) totals[k] = (totals[k] || 0) + v;
+        });
+      });
+    });
+    if (groups.length > 1) {
+      html += '<tr class="total"><td class="name">TOPLAM</td>' + metricCells(totals, '') + '</tr>';
+    }
+    html += '</tbody>';
+
+    el.summary.className = groups.length > 6 ? 'n-lg' : groups.length > 3 ? 'n-md' : '';
+    el.summary.innerHTML = html;
+    fitTable(el.summary, true);
+  }
+
+  // Hücre içeriği sütuna sığmazsa ("2.5…" gibi kesilmesin diye) o hücre grubunun yazı boyutunu küçültür
+  function fitCells(cells) {
+    var base = [], i, step;
+    for (i = 0; i < cells.length; i++) {
+      cells[i].style.fontSize = '';
+      base[i] = parseFloat(window.getComputedStyle(cells[i]).fontSize);
+    }
+    function overflowing() {
+      for (var j = 0; j < cells.length; j++) {
+        if (cells[j].scrollWidth > cells[j].clientWidth) return true;
+      }
+      return false;
+    }
+    for (step = 1; step <= 10 && overflowing(); step++) {
+      for (i = 0; i < cells.length; i++) cells[i].style.fontSize = (base[i] * Math.pow(0.92, step)) + 'px';
+    }
+  }
+
+  function fitTable(table, withNames) {
+    fitCells(table.querySelectorAll('thead th'));
+    fitCells(table.querySelectorAll('td.num'));
+    if (withNames) fitCells(table.querySelectorAll('td.name'));
+  }
+
+  function markActiveSummaryRow() {
+    var activeIdx = state.detailIdx[state.groupPos];
+    for (var i = 0; i < state.groups.length; i++) {
+      var row = document.getElementById('sum-' + i);
+      if (row) row.className = i === activeIdx ? 'active' : '';
+    }
+  }
+
+  // ============================== DETAY TABLO ==============================
+  function firstValue(rows, key) {
+    for (var i = 0; i < rows.length && i < 50; i++) {
+      var r = rows[i];
+      if (r && r[key] !== null && r[key] !== undefined) return r[key];
+    }
+    return null;
+  }
+
+  // Detay alanlarını otomatik çıkarır: metin alanları solda, Toplama/Paketleme/Sevkiyat
+  // metrikleri grup başlıklarıyla, diğer sayısal alanlar en sağda.
+  function buildColumns(rows) {
+    var seen = {}, keys = [];
+    for (var i = 0; i < rows.length && i < 50; i++) {
+      var r = rows[i];
+      if (!r || typeof r !== 'object') continue;
+      for (var k in r) {
+        if (has(r, k) && !seen[k]) { seen[k] = true; keys.push(k); }
+      }
+    }
+
+    var text = [], metrics = {}, other = [];
+    keys.forEach(function (key) {
+      if (CONFIG.hiddenDetailColumns.indexOf(key) >= 0) return;
+      var sample = firstValue(rows, key);
+      if (sample !== null && typeof sample === 'object') return; // iç içe liste/nesne gösterilmez
+      var m = METRIC_RE.exec(key);
+      if (m) metrics[m[2] + m[3]] = key;
+      else if (typeof sample === 'number') other.push({ key: key, label: label(key), num: true });
+      else text.push({ key: key, label: label(key), num: false });
+    });
+
+    var cols = text.slice();
+    PROCESSES.forEach(function (p) {
+      var first = true;
+      PERIODS.forEach(function (per) {
+        var key = metrics[p.key + per.key];
+        if (!key) return;
+        cols.push({ key: key, label: per.label, num: true, group: p, sep: first, past: per.key === 'Past' });
+        first = false;
+      });
+    });
+    return cols.concat(other);
+  }
+
+  function buildHead(cols) {
+    var grouped = cols.some(function (c) { return c.group; });
+    var weights = 0;
+    cols.forEach(function (c, i) { weights += c.num ? 1 : (i === 0 ? 4 : 3); });
+
+    var html = '<colgroup>';
+    cols.forEach(function (c, i) {
+      var w = c.num ? 1 : (i === 0 ? 4 : 3);
+      html += '<col style="width:' + (w * 100 / weights).toFixed(2) + '%">';
+    });
+    html += '</colgroup><thead><tr class="grp">';
+
+    for (var i = 0; i < cols.length; i++) {
+      var c = cols[i];
+      if (!c.group) {
+        html += '<th class="' + (c.num ? 'num' : 'name') + '"' + (grouped ? ' rowspan="2"' : '') + '>' + esc(c.label) + '</th>';
+        continue;
+      }
+      var span = 1;
+      while (i + span < cols.length && cols[i + span].group === c.group) span++;
+      html += '<th colspan="' + span + '" class="sep ' + c.group.cls + '">' + c.group.label + '</th>';
+      i += span - 1;
+    }
+    html += '</tr>';
+
+    if (grouped) {
+      html += '<tr class="sub">';
+      cols.forEach(function (c) {
+        if (c.group) html += '<th' + (c.sep ? ' class="sep"' : '') + '>' + esc(c.label) + '</th>';
+      });
+      html += '</tr>';
+    }
+    return html + '</thead>';
+  }
+
+  function rowHtml(row, cols) {
+    var html = '<tr>';
+    cols.forEach(function (c) {
+      var v = row ? row[c.key] : null;
+      var cls = c.num ? 'num' : 'name';
+      if (c.sep) cls += ' sep';
+      if (c.num) {
+        var n = toNumber(v);
+        if (n === 0) cls += ' zero';
+        if (c.past && n > 0) cls += ' late';
+      }
+      html += '<td class="' + cls + '">' + esc(cellText(v)) + '</td>';
+    });
+    return html + '</tr>';
+  }
+
+  // Ekrana kaç satır sığdığını gerçek satır yüksekliğini ölçerek hesaplar
+  function measureRowsPerPage(head, cols, sampleRow) {
+    el.details.innerHTML = head + '<tbody>' + rowHtml(sampleRow, cols) + '</tbody>';
+    var available = el['details-body'].clientHeight - 2;
+    var headH = el.details.tHead ? el.details.tHead.getBoundingClientRect().height : 0;
+    var row = el.details.tBodies[0].rows[0];
+    var rowH = row ? row.getBoundingClientRect().height : 0;
+    if (available <= 0 || !rowH) return 10;
+    return Math.max(1, Math.floor((available - headH) / rowH));
+  }
+
+  function pageCount(rows) {
+    return Math.max(1, Math.ceil(rows.length / (state.rowsPerPage || 1)));
+  }
+
+  function renderDetails() {
+    if (!state.detailIdx.length) return;
+    var g = currentGroup();
+    var rows = groupDetails(g);
+    var cols = buildColumns(rows);
+    var head = buildHead(cols);
+
+    // Başlık satırı ölçümden önce dolu olmalı, yoksa tablo alanı olduğundan yüksek ölçülür
+    el['details-title'].innerHTML = '<small>DETAY</small>' + esc(groupTitle(g));
+    if (!el['details-page'].textContent) el['details-page'].textContent = '…';
+    if (!state.rowsPerPage) state.rowsPerPage = measureRowsPerPage(head, cols, rows[0]);
+    var pages = pageCount(rows);
+    if (state.page >= pages) state.page = pages - 1;
+
+    var start = state.page * state.rowsPerPage;
+    var body = '';
+    rows.slice(start, start + state.rowsPerPage).forEach(function (r) { body += rowHtml(r, cols); });
+    el.details.innerHTML = head + '<tbody>' + body + '</tbody>';
+    fitTable(el.details, false);
+
+    el['details-page'].textContent = (pages > 1 ? 'Sayfa ' + (state.page + 1) + ' / ' + pages + '  ·  ' : '') +
+      fmt(rows.length) + ' kayıt';
+
+    markActiveSummaryRow();
+    startProgress(state.detailIdx.length > 1 || pages > 1);
+  }
+
+  function startProgress(on) {
+    var bar = el['progress-bar'];
+    el.progress.className = 'progress' + (on ? '' : ' off');
+    bar.style.transition = 'none';
+    bar.style.width = '0';
+    void bar.offsetWidth; // animasyonu sıfırlamak için yeniden çizdir
+    if (!on) return;
+    bar.style.transition = 'width ' + CONFIG.pageSeconds + 's linear';
+    bar.style.width = '100%';
+  }
+
+  function nextPage() {
+    if (!state.detailIdx.length) return;
+    state.page++;
+    if (state.page >= pageCount(groupDetails(currentGroup()))) {
+      state.page = 0;
+      state.groupPos = (state.groupPos + 1) % state.detailIdx.length;
+    }
+    renderDetails();
+  }
+
+  function restartTimer() {
+    if (state.timer) clearInterval(state.timer);
+    state.timer = setInterval(nextPage, CONFIG.pageSeconds * 1000);
+  }
+
+  // ============================== SAAT / GÜNCELLEME ==============================
+  function renderClock() {
+    var now = new Date();
+    el.time.textContent = hhmm(now);
+    el.date.textContent = now.getDate() + ' ' + MONTHS[now.getMonth()] + ' ' + now.getFullYear() + ' ' + DAYS[now.getDay()];
+  }
+
+  function renderUpdated() {
+    var t = state.updatedAt;
+    if (!t) { el.updated.textContent = ''; return; }
+    var now = new Date();
+    var mins = Math.floor((now.getTime() - t.getTime()) / 60000);
+    var sameDay = t.toDateString() === now.toDateString();
+    var text = 'Son güncelleme ' + (sameDay ? '' : pad2(t.getDate()) + '.' + pad2(t.getMonth() + 1) + ' ') + hhmm(t);
+    var stale = state.fetchError || (CONFIG.staleMinutes > 0 && mins >= CONFIG.staleMinutes);
+    if (state.fetchError) text = 'Bağlantı hatası  ·  ' + text;
+    else if (stale) text = 'Veri ' + (mins >= 120 ? Math.floor(mins / 60) + ' saat' : mins + ' dk') + ' önce güncellendi';
+    el.updated.textContent = text;
+    el.updated.className = 'updated' + (stale ? ' stale' : '');
+  }
+
+  // ============================== DEMO VERİ ==============================
+  // Sadece Omma dışında (normal tarayıcıda) açıldığında ve dataUrl boşsa kullanılır.
+  // Toplamlar ekran görüntüsündeki değerlerdir; detay satırları örnek olarak üretilir.
+  function buildDemoData() {
+    var seed = 7;
+    function rnd() { seed = (seed * 16807) % 2147483647; return seed / 2147483647; }
+    function spread(total, n) {
+      var w = [], sum = 0, parts = [], used = 0, i;
+      for (i = 0; i < n; i++) { w[i] = rnd() * rnd(); sum += w[i]; }
+      for (i = 0; i < n; i++) { parts[i] = Math.floor(total * w[i] / sum); used += parts[i]; }
+      while (used < total) { parts[Math.floor(rnd() * n)]++; used++; }
+      return parts;
+    }
+    var base = [
+      { title: 'ANADOLU', count: 126, totals: [0, 755, 2518, 0, 1032, 649, 1, 784, 840] },
+      { title: 'İSTANBUL 2.SEVKİYAT', count: 22, totals: [0, 37, 679, 0, 324, 230, 0, 150, 347] }
+    ];
+    var out = {};
+    out[CONFIG.rootKey] = base.map(function (b) {
+      var g = {}, split = [], idx = 0;
+      g[CONFIG.groupTitleKey] = b.title;
+      PROCESSES.forEach(function (p) {
+        PERIODS.forEach(function (per) {
+          var k = p.key + per.key;
+          g['Total' + k] = b.totals[idx];
+          split.push({ key: k, parts: spread(b.totals[idx], b.count) });
+          idx++;
+        });
+      });
+      var details = [];
+      for (var i = 0; i < b.count; i++) {
+        var d = { DispatchRouteTitle: 'Örnek Rota ' + (i < 9 ? '00' : i < 99 ? '0' : '') + (i + 1) };
+        split.forEach(function (s) { d[s.key] = s.parts[i]; });
+        details.push(d);
+      }
+      g[CONFIG.detailsKey] = details;
+      return g;
+    });
+    return out;
+  }
+
+  // ============================== BAŞLAT ==============================
+  function start() {
+    el.title.textContent = CONFIG.title;
+    renderClock();
+    setInterval(function () { renderClock(); renderUpdated(); }, 5000);
+
+    var resizeTimer;
+    window.addEventListener('resize', function () {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(function () {
+        state.rowsPerPage = 0;
+        renderSummary();
+        renderDetails();
+        restartTimer();
+      }, 300);
+    });
+
+    if (CONFIG.dataUrl) {
+      showMessage('Veri yükleniyor…');
+      pollUrl();
+    } else if (window.omma) {
+      showMessage('Veri yükleniyor…');
+      try { omma.setVersion('v1'); } catch (e) { log('warn', 'Logiboard: omma.setVersion hatası', e); }
+      omma.ready(function () {
+        try { connectDatasource(); } catch (e) {
+          log('error', 'Logiboard: veri kaynağına bağlanılamadı', String(e));
+          showMessage('Veri kaynağına bağlanılamadı.');
+        }
+      });
+    } else {
+      setData(buildDemoData(), new Date(), true);
+    }
+  }
+
+  start();
+})();
+</script>
+</body>
+</html>
