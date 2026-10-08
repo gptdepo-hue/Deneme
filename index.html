@@ -644,7 +644,8 @@
     var groups = extractGroups(raw);
     if (!groups) {
       log('error', 'Logiboard: veride rota grubu listesi bulunamadı', describe(raw));
-      if (!state.groups.length) showMessage('Veri biçimi tanınmadı (rota grubu listesi bulunamadı).\n' + describe(raw));
+      if (!state.groups.length) showMessage('Veri biçimi tanınmadı (rota grubu listesi bulunamadı).\n' +
+        (state.dsName ? 'Okunan veri kaynağı: "' + state.dsName + '"\n' : '') + describe(raw));
       return;
     }
     var prevGi = state.order[state.groupPos];
@@ -677,21 +678,29 @@
   function connectDatasource() {
     var api = OM.datasource;
     var ds = api && api.get ? api.get(CONFIG.datasourceName) : null;
-    if (!ds && api && api.getAll) {
-      // Tek veri kaynağı varsa adı farklı olsa da onu kullan
-      var all = api.getAll() || [];
-      if (all.length === 1) ds = all[0];
+    var all = api && api.getAll ? (api.getAll() || []) : [];
+    if (!ds) {
+      // Adı farklıysa yalnızca içinde rota grubu verisi olan bir kaynak kullanılır (yanlış kaynak okunmasın)
+      for (var i = 0; i < all.length; i++) {
+        var g = null;
+        try { g = findGroups(normalize(all[i].data, 0), 0); } catch (e) { g = null; }
+        if (g) { ds = all[i]; break; }
+      }
     }
     if (!ds) {
       // İçerik yeni yüklenirken veri kaynağı geç gelebilir: mesaj göster, kendiliğinden tekrar dene
+      var names = [];
+      for (var j = 0; j < all.length; j++) names.push(all[j] && all[j].name ? '"' + all[j].name + '"' : '(adsız)');
       log('error', 'Logiboard: veri kaynağı bulunamadı: ' + CONFIG.datasourceName);
       if (!state.groups.length) {
-        showMessage('"' + CONFIG.datasourceName + '" veri kaynağı bulunamadı.\n' +
-          'Omma panelinde veri kaynağının bu içeriğe bağlı olduğunu kontrol edin.');
+        showMessage('"' + CONFIG.datasourceName + '" veri kaynağı bu içeriğe bağlı değil.\n' +
+          (names.length ? 'Bağlı veri kaynakları: ' + names.join(', ') + '\n' : 'İçeriğe bağlı veri kaynağı yok.\n') +
+          'Omma panelinde doğru veri kaynağını bu içeriğe bağlayın.');
       }
       setTimeout(safeConnect, 10000);
       return;
     }
+    state.dsName = ds.name || CONFIG.datasourceName;
     if (ds.on && !state.subscribed) {
       state.subscribed = true;
       ds.on('update', function (arg) {
