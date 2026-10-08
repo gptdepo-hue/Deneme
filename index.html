@@ -305,6 +305,7 @@
   // ============================== AYARLAR ==============================
   var CONFIG = {
     title: 'Turkuaz Logiboard',
+    datasourceId: 3887,                       // Omma veri kaynağı numarası (force adresindeki /datasource/3887/); önce buna bakılır
     datasourceName: 'Turkuaz_Logiboard',      // Omma'daki veri kaynağının adı
     rootKey: 'Turkuaz_Logiboard',             // veri { "Turkuaz_Logiboard": [...] } şeklinde gelirse
     groupTitleKey: 'DispatchRouteGroupTitle', // ana kayıttaki başlık alanı
@@ -677,8 +678,12 @@
 
   function connectDatasource() {
     var api = OM.datasource;
-    var ds = api && api.get ? api.get(CONFIG.datasourceName) : null;
     var all = api && api.getAll ? (api.getAll() || []) : [];
+    var ds = null;
+    for (var n = 0; n < all.length && CONFIG.datasourceId; n++) {
+      if (all[n] && String(all[n].id) === String(CONFIG.datasourceId)) { ds = all[n]; break; }
+    }
+    if (!ds && api && api.get) ds = api.get(CONFIG.datasourceName);
     if (!ds) {
       // Adı farklıysa yalnızca içinde rota grubu verisi olan bir kaynak kullanılır (yanlış kaynak okunmasın)
       for (var i = 0; i < all.length; i++) {
@@ -690,17 +695,17 @@
     if (!ds) {
       // İçerik yeni yüklenirken veri kaynağı geç gelebilir: mesaj göster, kendiliğinden tekrar dene
       var names = [];
-      for (var j = 0; j < all.length; j++) names.push(all[j] && all[j].name ? '"' + all[j].name + '"' : '(adsız)');
+      for (var j = 0; j < all.length; j++) names.push((all[j] && all[j].name ? '"' + all[j].name + '"' : '(adsız)') + (all[j] && all[j].id ? ' #' + all[j].id : ''));
       log('error', 'Logiboard: veri kaynağı bulunamadı: ' + CONFIG.datasourceName);
       if (!state.groups.length) {
-        showMessage('"' + CONFIG.datasourceName + '" veri kaynağı bu içeriğe bağlı değil.\n' +
+        showMessage('"' + CONFIG.datasourceName + '" (#' + CONFIG.datasourceId + ') veri kaynağı bu içeriğe bağlı değil.\n' +
           (names.length ? 'Bağlı veri kaynakları: ' + names.join(', ') + '\n' : 'İçeriğe bağlı veri kaynağı yok.\n') +
           'Omma panelinde doğru veri kaynağını bu içeriğe bağlayın.');
       }
       setTimeout(safeConnect, 10000);
       return;
     }
-    state.dsName = ds.name || CONFIG.datasourceName;
+    state.dsName = (ds.name || CONFIG.datasourceName) + (ds.id ? ' #' + ds.id : '');
     if (ds.on && !state.subscribed) {
       state.subscribed = true;
       ds.on('update', function (arg) {

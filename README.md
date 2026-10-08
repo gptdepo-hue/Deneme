@@ -82,7 +82,8 @@ Detay tablosunun sütunları **veriden otomatik çıkarılır**. ERP'de alan ekl
 | Ayar | Varsayılan | Açıklama |
 |---|---|---|
 | `title` | `Turkuaz Logiboard` | Üst başlık |
-| `datasourceName` | `Turkuaz_Logiboard` | Omma veri kaynağı adı |
+| `datasourceId` | `3887` | Omma veri kaynağı numarası (force adresindeki `/datasource/3887/`); önce buna bakılır |
+| `datasourceName` | `Turkuaz_Logiboard` | Omma veri kaynağı adı (numara bulunamazsa) |
 | `rootKey` | `Turkuaz_Logiboard` | Veri nesne içinde geliyorsa listenin anahtarı |
 | `groupTitleKey` | `DispatchRouteGroupTitle` | Grup başlığı alanı |
 | `detailsKey` | `Details` | Alt detay listesi alanı |
