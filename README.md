@@ -8,7 +8,7 @@ Sahadaki personelin 3–10 metreden bakıp **2 saniyede ne yapacağını anlamas
 ## Ekranda ne var?
 
 1. **Öncelik bandı (en üstte, her zaman görünür)**
-   - Kırmızı **ÖNCELİK**: en çok geciken işi olan *rota grubu · süreç* ve geciken sayısı. Örnek: "İSTANBUL 2.SEVKİYAT · [SEVKİYAT] – 4 GECİKEN İŞ". Süreç beyaz etiketle ayrılır; böylece grup adındaki "SEVKİYAT" ile karışmaz. İkinci satırda "Önce bu gecikmeyi kapatın. Sırada: …" listesi ve toplam geciken sayısı yer alır.
+   - Kırmızı **ÖNCELİK**: en çok geciken işi olan *rota grubu · süreç* ve geciken sayısı. Örnek: "İSTANBUL 2.SEVKİYAT · [SEVKİYAT] – 4 GECİKEN İŞ". Süreç beyaz etiketle ayrılır; böylece grup adındaki "SEVKİYAT" ile karışmaz. İkinci satırda "Önce bu işi bitirin. Sırada: …" listesi ve toplam geciken sayısı yer alır.
    - Yeşil **GECİKEN İŞ YOK**: hiçbir yerde geciken iş yoksa görünür.
    - Sarı **VERİ ESKİ**: veri `staleMinutes` dakikadan eskiyse ya da bağlantı koptuysa bandın sol kutusu sarıya döner ve alt satırda "Veri güncel değil — gösterilen durum değişmiş olabilir." yazar.
 2. **Andon panosu**

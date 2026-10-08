@@ -808,7 +808,7 @@
     fitBannerTitle(el['b-l1']);
     if (state.stale) { setFitted(el['b-l2'], [staleLine]); return; }
     if (cells.length === 1) {
-      setFitted(el['b-l2'], ['Önce bu gecikmeyi kapatın. Başka geciken ' + unit + ' yok.']);
+      setFitted(el['b-l2'], ['Önce bu işi bitirin. Başka geciken ' + unit + ' yok.']);
       return;
     }
     // "Sırada" listesi: sığdığı kadar alan; sığmazsa daha kısa seçenek
@@ -822,8 +822,8 @@
       var rest = cells.length - 1 - shown;
       next.push('Sırada: ' + items.join(',&nbsp; ') + (rest > 0 ? ',&nbsp; +' + rest + ' alan daha' : ''));
     }
-    for (var v = 0; v < next.length; v++) variants.push('Önce bu gecikmeyi kapatın. ' + next[v] + total);
-    variants.push('Önce bu gecikmeyi kapatın. ' + next[next.length - 1]);
+    for (var v = 0; v < next.length; v++) variants.push('Önce bu işi bitirin. ' + next[v] + total);
+    variants.push('Önce bu işi bitirin. ' + next[next.length - 1]);
     variants.push(next[next.length - 1]); // en kısa: yalnızca sıradaki ilk alan
     setFitted(el['b-l2'], variants);
   }
