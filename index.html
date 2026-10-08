@@ -20,7 +20,7 @@
     -webkit-font-smoothing: antialiased;
   }
   /* Ekran doğrudan cihaz ekranına sabitlenir: Omma içeriği kendi kabına koysa da yükseklik 0 olmaz */
-  #app { position: fixed; left: 0; top: 0; width: 100vw; height: 100vh; z-index: 1; background: #0b1220; color: #f1f5f9;
+  #app { position: fixed; left: 0; top: 0; right: 0; bottom: 0; z-index: 1; background: #0b1220; color: #f1f5f9;
     font-family: "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; text-align: left; box-sizing: border-box; display: -webkit-flex; display: flex; -webkit-flex-direction: column; flex-direction: column; padding: .7rem 1.4rem .6rem; }
   .num { font-variant-numeric: tabular-nums; }
 
@@ -455,21 +455,77 @@
   }
 
   // Veri dizi olarak, { Turkuaz_Logiboard: [...] } olarak ya da JSON metni olarak gelebilir.
+  // Bilinen alan adları: farklı harf düzeniyle gelse de (dispatchRouteGroupTitle, totalpickingpast…) tanınır
+  var KNOWN_KEYS = (function () {
+    var m = {}, list = [CONFIG.groupTitleKey, CONFIG.detailsKey, CONFIG.rootKey, 'CustomerTitle', 'DispatchRouteTitle'];
+    PROCESSES.forEach(function (p) {
+      PERIODS.forEach(function (per) { list.push('Total' + p.key + per.key, p.key + per.key); });
+    });
+    for (var k in LABELS) if (has(LABELS, k)) list.push(k);
+    list.forEach(function (k) { m[String(k).toLowerCase()] = k; });
+    return m;
+  })();
+
+  function parseMaybe(v) {
+    if (typeof v !== 'string') return v;
+    var t = v.replace(/^\s+/, '');
+    if (t.charAt(0) !== '[' && t.charAt(0) !== '{') return v;
+    try { return JSON.parse(t); } catch (e) { return v; }
+  }
+
+  // Anahtarları bilinen adlara çevirir (iç içe Details dahil); JSON metni olarak gelen alanları da açar
+  function normalize(v, depth) {
+    v = parseMaybe(v);
+    if (depth > 6 || !v || typeof v !== 'object') return v;
+    if (isArray(v)) { var a = []; for (var i = 0; i < v.length; i++) a.push(normalize(v[i], depth + 1)); return a; }
+    var o = {};
+    for (var k in v) {
+      if (!has(v, k)) continue;
+      var canon = has(KNOWN_KEYS, String(k).toLowerCase()) ? KNOWN_KEYS[String(k).toLowerCase()] : k;
+      o[canon] = normalize(v[k], depth + 1);
+    }
+    return o;
+  }
+
+  function looksLikeGroups(a) {
+    if (!isArray(a) || !a.length) return false;
+    for (var i = 0; i < a.length && i < 5; i++) {
+      var g = a[i];
+      if (g && typeof g === 'object' && !isArray(g) &&
+          (has(g, CONFIG.groupTitleKey) || has(g, CONFIG.detailsKey) || has(g, 'TotalPickingPast'))) return true;
+    }
+    return false;
+  }
+
+  // Rota grubu listesini verinin içinde arar: düz liste, { Turkuaz_Logiboard: [...] }, [{ Turkuaz_Logiboard: [...] }],
+  // { data: { ... } } gibi sarmalanmış biçimler ve JSON metni olarak gelen veri desteklenir.
+  function findGroups(v, depth) {
+    if (depth > 5 || !v || typeof v !== 'object') return null;
+    if (looksLikeGroups(v)) return v;
+    var i, r;
+    if (isArray(v)) {
+      for (i = 0; i < v.length && i < 5; i++) { r = findGroups(v[i], depth + 1); if (r) return r; }
+      return null;
+    }
+    if (has(v, CONFIG.rootKey)) { r = findGroups(v[CONFIG.rootKey], depth + 1); if (r) return r; }
+    for (var k in v) { if (has(v, k)) { r = findGroups(v[k], depth + 1); if (r) return r; } }
+    return null;
+  }
+
   function extractGroups(data) {
-    if (typeof data === 'string') {
-      try { data = JSON.parse(data); } catch (e) { return null; }
-    }
-    if (isArray(data)) return objectsOnly(data);
-    if (data && typeof data === 'object') {
-      if (has(data, CONFIG.rootKey)) return isArray(data[CONFIG.rootKey]) ? objectsOnly(data[CONFIG.rootKey]) : null;
-      // Başka anahtar altında gelirse: yalnızca rota grubuna benzeyen bir liste kabul edilir (hata zarfı veri sanılmasın)
-      for (var k in data) {
-        var a = data[k];
-        if (has(data, k) && isArray(a) && a.length && a[0] && typeof a[0] === 'object' &&
-            (has(a[0], CONFIG.groupTitleKey) || has(a[0], CONFIG.detailsKey) || has(a[0], 'TotalPickingPast'))) return objectsOnly(a);
-      }
-    }
-    return null; // okunamadı: önceki veri ekranda kalır, eskilik saati işlemeye devam eder
+    data = normalize(data, 0);
+    if (isArray(data) && !data.length) return []; // boş liste: gösterilecek grup yok
+    if (data && typeof data === 'object' && has(data, CONFIG.rootKey) && isArray(data[CONFIG.rootKey]) && !data[CONFIG.rootKey].length) return [];
+    var g = findGroups(data, 0);
+    return g ? objectsOnly(g) : null; // okunamadı: önceki veri ekranda kalır, eskilik saati işlemeye devam eder
+  }
+
+  // Veri tanınmadığında ekrana yapısını yazar (sorunu uzaktan görebilmek için)
+  function describe(raw) {
+    var t;
+    try { t = typeof raw === 'string' ? raw : JSON.stringify(raw); } catch (e) { t = String(raw); }
+    t = String(t).replace(/\s+/g, ' ');
+    return 'Tür: ' + (isArray(raw) ? 'liste' : typeof raw) + '\n' + (t.length > 300 ? t.slice(0, 300) + '…' : t);
   }
 
   function objectsOnly(a) {
@@ -587,8 +643,8 @@
     }
     var groups = extractGroups(raw);
     if (!groups) {
-      log('error', 'Logiboard: veride rota grubu listesi bulunamadı', raw);
-      if (!state.groups.length) showMessage('Veri okunamadı: beklenen liste bulunamadı.');
+      log('error', 'Logiboard: veride rota grubu listesi bulunamadı', describe(raw));
+      if (!state.groups.length) showMessage('Veri biçimi tanınmadı (rota grubu listesi bulunamadı).\n' + describe(raw));
       return;
     }
     var prevGi = state.order[state.groupPos];
