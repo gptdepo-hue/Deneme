@@ -8,24 +8,24 @@ Sahadaki personelin 3–10 metreden bakıp **2 saniyede ne yapacağını anlamas
 ## Ekranda ne var?
 
 1. **Öncelik bandı (en üstte, her zaman görünür)**
-   - Kırmızı **ÖNCELİK**: en çok geciken işi olan *rota grubu · süreç* ve geciken sayısı. Örnek: "ANADOLU · SEVKİYAT – 1 GECİKEN İŞ". İkinci satırda "Önce bunu bitirin. Sırada: …" listesi ve toplam geciken sayısı yer alır.
+   - Kırmızı **ÖNCELİK**: en çok geciken işi olan *rota grubu · süreç* ve geciken sayısı. Örnek: "İSTANBUL 2.SEVKİYAT · [SEVKİYAT] – 4 GECİKEN İŞ". Süreç beyaz etiketle ayrılır; böylece grup adındaki "SEVKİYAT" ile karışmaz. İkinci satırda "Önce bu gecikmeyi kapatın. Sırada: …" listesi ve toplam geciken sayısı yer alır.
    - Yeşil **GECİKEN İŞ YOK**: hiçbir yerde geciken iş yoksa görünür.
-   - Sarı **VERİ ESKİ**: veri `staleMinutes` dakikadan eskiyse ya da bağlantı koptuysa bandın sol kutusu sarıya döner. Bu durumda ekrandaki bilgi güncel olmayabilir.
+   - Sarı **VERİ ESKİ**: veri `staleMinutes` dakikadan eskiyse ya da bağlantı koptuysa bandın sol kutusu sarıya döner ve alt satırda "Veri güncel değil — gösterilen durum değişmiş olabilir." yazar.
 2. **Andon panosu**
-   - Her rota grubu için süreçler TOPLAMA → PAKETLEME → SEVKİYAT sırasıyla, GECİKEN / BUGÜN / PLANLI değerleriyle gösterilir.
+   - Her rota grubu için süreçler TOPLAMA → PAKETLEME → SEVKİYAT sırasıyla, GECİKEN / ZAMANINDA / PLANLI değerleriyle gösterilir.
    - Geciken işi olan kutu **kırmızı** yanar ve beyaz kutu içinde geciken sayısını gösterir. Geciken yoksa yeşil onay işareti görünür.
    - Grup adının solundaki şerit de aynı durumu renkle gösterir.
    - Süreç başlıklarında o süreçteki toplam geciken sayısı rozet olarak görünür, örneğin "24 GECİKEN".
 3. **Detay tablosu**
-   - Seçili grubun `Details` listesi gösterilir.
+   - Seçili grubun `Details` listesi (müşteriler) gösterilir. Panoda o grubun satırında "· detayda" yazar.
    - **Geciken kayıtlar en üstte**, kırmızı zemin üzerinde gösterilir. Kaydın hangi süreçte geciktiği koyu kırmızıyla işaretlenir.
-   - Tüm değerleri 0 olan kayıtlar gizlenir.
+   - Tüm değerleri 0 olan müşteriler gizlenir.
    - Sayfalar `pageSeconds` aralıkla döner. Bir grubun sayfaları bitince sıradaki gruba geçilir (geciken işi olan gruplar önce gelir).
    - Çok grup olduğunda (yaklaşık 5 ve üzeri) pano ve detay sırayla tam ekran gösterilir. Öncelik bandı bu sırada da görünür kalır.
 
 Ekran 1080p, 4K, ultra geniş ve dikey ekranlarda ölçeklenir. Sayılar asla kesilmez; sığmazsa yazı küçülür. Uzun grup adları iki satıra iner.
 
-> **BUGÜN** sütunu bilerek tarafsız bırakıldı. ERP'deki "Today" değerinin *bugün yapılacak* mı yoksa *bugün yapılan* mı olduğu kesin olmadığı için ekranda "kalan", "tamamlandı" ya da yüzde gibi ifadeler kullanılmaz.
+Alan eşleşmesi: `…Past` → **GECİKEN**, `…Today` → **ZAMANINDA**, `…Planned` → **PLANLI**. Başlıkları değiştirmek isterseniz `index.html` içindeki `PERIODS` listesini düzenleyin.
 
 ## Omma'ya kurulum
 
@@ -39,6 +39,11 @@ Sayfa Omma'nın [content helper](https://github.com/signalive/content-api-docs/b
 
 **Güvenlik:** Sayfa Omma yardımcısını bulamazsa **örnek veri göstermez**. 15 saniye bekler, ardından ekrana açıklayıcı bir mesaj yazar ve aramaya devam eder. Veri kaynağı bulunamazsa 10 saniyede bir yeniden dener. Sahada hiçbir koşulda uydurma rakam görünmez.
 
+### Veri kaynağı ve ERP bağlantısı
+
+- Ekran veriyi yalnızca Omma'nın veri kaynağından okur. ERP'nin veriyi Omma'ya nasıl ilettiği (veri kaynağının "force" adresi ve token'ı, ya da Omma'nın periyodik çektiği bir adres veya betik) ekranı etkilemez.
+- **Token'ı ve force adresini bu HTML'e yazmayın.** HTML her ekrana dağıtılır; içindeki bilgi her cihazda okunabilir. Token yalnızca ERP tarafındaki entegrasyonda dursun.
+
 ## Beklenen veri yapısı
 
 Veri doğrudan dizi olarak ya da `Turkuaz_Logiboard` anahtarı altında gelebilir (JSON metni olarak gelmesi de sorun değil):
@@ -51,7 +56,12 @@ Veri doğrudan dizi olarak ya da `Turkuaz_Logiboard` anahtarı altında gelebili
       "TotalPickingPast": 0,  "TotalPickingToday": 755,  "TotalPickingPlanned": 2518,
       "TotalPackingPast": 0,  "TotalPackingToday": 1032, "TotalPackingPlanned": 649,
       "TotalShippingPast": 1, "TotalShippingToday": 784, "TotalShippingPlanned": 840,
-      "Details": [ { "...": "..." } ]
+      "Details": [
+        { "CustomerTitle": "OTOMOL İZMİR",
+          "PickingPast": 0, "PickingToday": 0, "PickingPlanned": 4,
+          "PackingPast": 0, "PackingToday": 16, "PackingPlanned": 11,
+          "ShippingPast": 1, "ShippingToday": 9, "ShippingPlanned": 10 }
+      ]
     }
   ]
 }
@@ -61,10 +71,10 @@ Veri doğrudan dizi olarak ya da `Turkuaz_Logiboard` anahtarı altında gelebili
 
 Detay tablosunun sütunları **veriden otomatik çıkarılır**. ERP'de alan eklenip çıkarılınca kodu değiştirmek gerekmez:
 
-- Metin alanları (müşteri, rota, sipariş no vb.) solda gösterilir.
+- Metin alanları solda gösterilir (`CustomerTitle` → **MÜŞTERİ**).
 - `PickingPast`, `PackingToday`, `ShippingPlanned` gibi adlandırılmış alanlar (başında `Total` olsun ya da olmasın) **Toplama / Paketleme / Sevkiyat** başlıkları altında gruplanır. Geciken kayıtları bulmak ve sıralamak için bu alanlar kullanılır.
 - Diğer sayısal alanlar en sağda gösterilir.
-- Sütun başlıklarını Türkçeleştirmek için `index.html` içindeki `LABELS` nesnesine alan adı ekleyin, örneğin `CustomerName: 'Müşteri'`.
+- Yeni metin alanlarının başlıklarını Türkçeleştirmek için `index.html` içindeki `LABELS` nesnesine alan adı ekleyin, örneğin `OrderNo: 'Sipariş No'`.
 - Gösterilmesini istemediğiniz alanları `CONFIG.hiddenDetailColumns` içine yazın, örneğin `['Id']`.
 
 ## Ayarlar (`index.html` → `CONFIG`)
@@ -95,4 +105,4 @@ Detay tablosunun sütunları **veriden otomatik çıkarılır**. ERP'de alan ekl
 
 ## Tarayıcıda önizleme
 
-`index.html` dosyasını tarayıcıda açıp adresin sonuna `?demo=1` ekleyin. Sayfa **DEMO VERİ** etiketiyle örnek veri gösterir. Toplamlar gerçek ekran görüntüsündeki değerlerdir; detay satırları ("Örnek Rota 001" …) uydurmadır. `?demo=1` olmadan Omma dışında açıldığında sayfa yalnızca "Omma bağlantısı bulunamadı" mesajını gösterir.
+`index.html` dosyasını tarayıcıda açıp adresin sonuna `?demo=1` ekleyin. Sayfa **ÖRNEK VERİ** etiketiyle örnek veri gösterir. Detay satırları ("Örnek Müşteri 001" …) uydurmadır. `?demo=1` olmadan Omma dışında açıldığında sayfa yalnızca "Omma bağlantısı bulunamadı" mesajını gösterir.

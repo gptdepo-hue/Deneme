@@ -43,9 +43,11 @@
   .banner.ok { display: -webkit-flex; display: flex; background: #15803d; }
 
   .b-tag {
-    -webkit-flex: none; flex: none; width: 10rem; display: -webkit-flex; display: flex; -webkit-flex-direction: column; flex-direction: column; -webkit-align-items: center; align-items: center; -webkit-justify-content: center; justify-content: center;
+    position: relative; -webkit-flex: none; flex: none; width: 10rem; display: -webkit-flex; display: flex; -webkit-flex-direction: column; flex-direction: column; -webkit-align-items: center; align-items: center; -webkit-justify-content: center; justify-content: center;
     background: rgba(0, 0, 0, .28); font-size: 1.45rem; font-weight: 800; letter-spacing: .06em;
   }
+  .b-tag > span { position: relative; }
+  .b-tag:before { content: ''; position: absolute; left: 0; top: 0; right: 0; bottom: 0; background: #000; opacity: 0; }
   .b-icon { position: relative; display: block; width: 2.7rem; height: 2.7rem; margin-bottom: .3rem; border-radius: 50%; background: #fff; }
   .alert .b-icon:after {
     content: '!'; position: absolute; left: 0; right: 0; top: 0; text-align: center;
@@ -67,6 +69,7 @@
   .b-l1 { -webkit-flex: none; flex: none; font-size: 3.3rem; font-weight: 800; line-height: 1.12; white-space: nowrap; overflow: hidden; }
   .b-l1.wrap { white-space: normal; max-height: 2.3em; }
   .b-l1 .dot { padding: 0 .25em; opacity: .7; }
+  .b-proc { padding: 0 .2em; border-radius: .12em; background: #fff; color: #b91c1c; }
   .b-l2 { -webkit-flex: none; flex: none; margin-top: .15rem; font-size: 1.5rem; font-weight: 600; line-height: 1.25; white-space: nowrap; overflow: hidden; color: #ffe1e1; }
   .b-l2 b { color: #fff; font-weight: 800; }
   .ok .b-l2 { color: #dcfce7; }
@@ -77,9 +80,11 @@
   .ok .b-count { display: none; }
   .b-count-n { font-size: 3.4rem; font-weight: 900; line-height: 1; font-variant-numeric: tabular-nums; }
   .b-count-l { margin-top: .15rem; font-size: 1.25rem; font-weight: 800; letter-spacing: .04em; }
-  @-webkit-keyframes pulse { 0%, 100% { background-color: rgba(0, 0, 0, .32); } 50% { background-color: rgba(0, 0, 0, 0); } }
-  @keyframes pulse { 0%, 100% { background-color: rgba(0, 0, 0, .32); } 50% { background-color: rgba(0, 0, 0, 0); } }
-  .blink .alert:not(.stale) .b-tag { -webkit-animation: pulse 1.6s ease-in-out infinite; animation: pulse 1.6s ease-in-out infinite; }
+  /* Yanıp sönme yalnızca opaklıkla (eski/zayıf oynatıcılarda işlemciyi yormaz) */
+  @-webkit-keyframes pulse { 0%, 100% { opacity: .32; } 50% { opacity: 0; } }
+  @keyframes pulse { 0%, 100% { opacity: .32; } 50% { opacity: 0; } }
+  .blink .alert:not(.stale) .b-tag { background: none; }
+  .blink .alert:not(.stale) .b-tag:before { -webkit-animation: pulse 1.6s ease-in-out infinite; animation: pulse 1.6s ease-in-out infinite; }
 
   /* ---------- Andon panosu: rota grubu x süreç ---------- */
   .board { -webkit-flex: none; flex: none; display: -webkit-flex; display: flex; margin-top: .7rem; }
@@ -92,7 +97,7 @@
     padding: .3rem .8rem .3rem 1.4rem; border-radius: .5rem; background: #16233a; overflow: hidden;
   }
   .bhead .bname { -webkit-justify-content: flex-end; justify-content: flex-end; padding: 0 .6rem .4rem 1.4rem; background: none; font-size: 1.25rem; font-weight: 700; color: #a8b5cc; letter-spacing: .04em; white-space: nowrap; }
-  .bn-text { -webkit-flex: none; flex: none; max-height: 2.3em; overflow: hidden; font-weight: 800; line-height: 1.15; word-wrap: break-word; }
+  .bn-text { -webkit-flex: none; flex: none; max-height: 3.45em; overflow: hidden; font-weight: 800; line-height: 1.15; word-wrap: break-word; }
   .bname.no-status .bn-status { display: none; }
   .bn-status { -webkit-flex: none; flex: none; margin-top: .2rem; font-size: 1.3rem; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .g-late .bname { box-shadow: inset .6rem 0 0 #ef4444; }
@@ -101,8 +106,7 @@
   .g-ok .bn-status { color: #86efac; }
   .g-none .bname { box-shadow: inset .6rem 0 0 #475569; }
   .brow.active .bname { background: #22344f; }
-  .brow.active.g-late .bname { box-shadow: inset .6rem 0 0 #ef4444, inset 0 0 0 .2rem #e2e8f0; }
-  .brow.active.g-ok .bname { box-shadow: inset .6rem 0 0 #22c55e, inset 0 0 0 .2rem #e2e8f0; }
+  .brow.active .bn-status:after { content: ' · detayda'; color: #a8b5cc; }
 
   .tile { -webkit-flex: 1; flex: 1; min-width: 0; display: -webkit-flex; display: flex; -webkit-align-items: center; align-items: center; margin-left: .45rem; border-radius: .5rem; background: #16233a; }
   .tile.late { background: #c81e1e; }
@@ -115,7 +119,8 @@
     -webkit-flex: none; flex: none; display: inline-block; width: 1.9rem; height: 1.9rem; margin-right: .6rem; border-radius: 50%;
     background: #334155; color: #e2e8f0; text-align: center; font-size: 1.25rem; line-height: 1.9rem; font-weight: 800;
   }
-  .arrow { margin-left: auto; padding-left: .6rem; color: #64748b; font-weight: 400; }
+  .arrow { -webkit-flex: none; flex: none; margin-left: auto; padding-left: .6rem; color: #64748b; font-weight: 400; }
+  .th-proc .pl { -webkit-flex: none; flex: none; }
   .ppill { -webkit-flex: none; flex: none; margin-left: .6rem; padding: 0 .45rem; border-radius: .3rem; background: #dc2626; color: #fff; font-size: 1.25rem; font-weight: 800; line-height: 1.6; letter-spacing: .02em; }
   .th-sub { display: -webkit-flex; display: flex; padding-top: .3rem; }
   .th-sub .slot { padding: 0 .35rem; font-size: 1.25rem; font-weight: 700; color: #a8b5cc; letter-spacing: .02em; }
@@ -135,7 +140,8 @@
   .tile.late .s-plan { color: #fecaca; }
   .brow .s-plan { border-left: .12rem solid rgba(148, 163, 184, .22); }
   .tile.late .s-plan { border-left-color: rgba(255, 255, 255, .35); }
-  .zero { color: #4b5a78; }
+  .zero { color: #64748b; }
+  .tile.late .zero { color: #fecaca; }
   .lamp { display: inline-block; min-width: 1.3em; padding: 0 .22em; border-radius: .16em; background: #fff; color: #b91c1c; line-height: 1.12; }
   .ok-mark { position: relative; display: inline-block; vertical-align: middle; width: .78em; height: .78em; border-radius: 50%; background: #16a34a; }
   .ok-mark:after {
@@ -227,12 +233,13 @@
   .details td { padding: .28rem .55rem; font-size: 1.7rem; font-weight: 700; text-align: right; border-top: .08rem solid #1c2943; font-variant-numeric: tabular-nums; }
   .details td.name { text-align: left; font-size: 1.6rem; font-weight: 600; }
   .details td.plan { color: #a8b5cc; }
-  .details td.zero { color: #3f4d68; font-weight: 600; }
+  .details td.zero { color: #64748b; font-weight: 600; }
   .details tbody.rec:nth-of-type(even) td { background: #0f1829; }
   .details tbody.rec.late td, .details tbody.rec.late:nth-of-type(even) td { background: #43161b; }
   .details tbody.rec.late td.hot, .details tbody.rec.late:nth-of-type(even) td.hot { background: #6b1f27; }
   .details tbody.late td:first-child { box-shadow: inset .5rem 0 0 #ef4444; }
   .details tbody.late td.name { font-weight: 800; }
+  .details tbody.rec.late td.zero { color: rgba(255, 255, 255, .45); }
   /* Dar ekran (dikey): her kayıt iki satır — üstte metin alanları, altta sayılar */
   .details .stacked th { padding-left: .35rem; padding-right: .35rem; }
   .details .stacked td { padding-left: .4rem; padding-right: .45rem; }
@@ -243,11 +250,11 @@
 
   .progress { -webkit-flex: none; flex: none; height: .35rem; margin-top: .4rem; border-radius: .2rem; overflow: hidden; background: #1a2640; }
   .progress.off { visibility: hidden; }
-  #progress-bar { width: 0; height: 100%; background: #5eead4; }
+  #progress-bar { width: 100%; height: 100%; background: #5eead4; -webkit-transform-origin: 0 0; transform-origin: 0 0; -webkit-transform: scaleX(0); transform: scaleX(0); }
 
   /* ---------- Mesaj (veri yok / hata) ---------- */
   .message {
-    display: none; position: absolute; left: 0; top: 0; right: 0; bottom: 0;
+    display: none; position: absolute; left: 0; top: 4rem; right: 0; bottom: 0;
     -webkit-align-items: center; align-items: center; -webkit-justify-content: center; justify-content: center; text-align: center;
     padding: 4rem; font-size: 2.2rem; font-weight: 700; line-height: 1.5; color: #a8b5cc; background: #0b1220; white-space: pre-line;
   }
@@ -260,7 +267,7 @@
     <div class="brand">
       <span class="brand-mark"></span>
       <span id="title"></span>
-      <span class="demo-badge">DEMO VERİ</span>
+      <span class="demo-badge">ÖRNEK VERİ</span>
     </div>
     <div class="meta">
       <div id="updated" class="updated"></div>
@@ -322,7 +329,8 @@
   // otomatik olarak okunur hale getirilir (ör. "CustomerName" -> "Customer Name").
   var LABELS = {
     DispatchRouteGroupTitle: 'Rota Grubu',
-    DispatchRouteTitle: 'Rota'
+    DispatchRouteTitle: 'Rota',
+    CustomerTitle: 'Müşteri'
   };
 
   // Fiziksel akış sırası: toplama -> paketleme -> sevkiyat
@@ -333,7 +341,7 @@
   ];
   var PERIODS = [
     { key: 'Past', label: 'GECİKEN', cls: 'past' },
-    { key: 'Today', label: 'BUGÜN', cls: 'today' },
+    { key: 'Today', label: 'ZAMANINDA', cls: 'today' },
     { key: 'Planned', label: 'PLANLI', cls: 'plan' }
   ];
   // "TotalPickingPast", "PickingToday", "ShippingPlanned" gibi alanları yakalar
@@ -362,6 +370,7 @@
     fetchError: false,
     stale: false,
     bannerKind: '',    // '', 'alert', 'ok'
+    subscribed: false, // veri kaynağı 'update' dinleyicisi bir kez bağlanır
     timer: null
   };
   var OM = null; // Omma içerik yardımcısı (window.omma)
@@ -432,10 +441,15 @@
   function showMessage(text) { el.message.textContent = text; el.message.className = 'message show'; }
   function hideMessage() { el.message.className = 'message'; }
 
+  // ISO metin, Date, epoch (sn/ms) ve "08.10.2026 11:00" biçimlerini okur; okunamazsa null
   function parseDate(v) {
-    if (!v) return null;
-    var d = v instanceof Date ? v : new Date(v);
-    return isNaN(d.getTime()) ? null : d;
+    if (v === null || v === undefined || v === '') return null;
+    if (typeof v === 'string' && /^\d{10,13}$/.test(v)) v = Number(v);
+    if (typeof v === 'number' && v < 1e12) v *= 1000; // epoch saniye
+    var m = typeof v === 'string' && /^(\d{1,2})\.(\d{1,2})\.(\d{4})(?:[ T](\d{1,2}):(\d{2})(?::(\d{2}))?)?$/.exec(v);
+    var d = m ? new Date(+m[3], m[2] - 1, +m[1], +(m[4] || 0), +(m[5] || 0), +(m[6] || 0)) :
+      v instanceof Date ? v : new Date(v);
+    return isNaN(d.getTime()) || d.getFullYear() < 2000 ? null : d;
   }
 
   // Veri dizi olarak, { Turkuaz_Logiboard: [...] } olarak ya da JSON metni olarak gelebilir.
@@ -443,14 +457,23 @@
     if (typeof data === 'string') {
       try { data = JSON.parse(data); } catch (e) { return null; }
     }
-    if (isArray(data)) return data;
+    if (isArray(data)) return objectsOnly(data);
     if (data && typeof data === 'object') {
-      if (isArray(data[CONFIG.rootKey])) return data[CONFIG.rootKey];
+      if (has(data, CONFIG.rootKey)) return isArray(data[CONFIG.rootKey]) ? objectsOnly(data[CONFIG.rootKey]) : null;
+      // Başka anahtar altında gelirse: yalnızca rota grubuna benzeyen bir liste kabul edilir (hata zarfı veri sanılmasın)
       for (var k in data) {
-        if (has(data, k) && isArray(data[k])) return data[k];
+        var a = data[k];
+        if (has(data, k) && isArray(a) && a.length && a[0] && typeof a[0] === 'object' &&
+            (has(a[0], CONFIG.groupTitleKey) || has(a[0], CONFIG.detailsKey) || has(a[0], 'TotalPickingPast'))) return objectsOnly(a);
       }
     }
-    return null;
+    return null; // okunamadı: önceki veri ekranda kalır, eskilik saati işlemeye devam eder
+  }
+
+  function objectsOnly(a) {
+    var out = [];
+    for (var i = 0; i < a.length; i++) if (a[i] && typeof a[i] === 'object' && !isArray(a[i])) out.push(a[i]);
+    return out;
   }
 
   function groupTitle(g) { return g ? cellText(g[CONFIG.groupTitleKey]) : ''; }
@@ -555,6 +578,11 @@
 
   // ============================== VERİ ==============================
   function setData(raw, updatedAt, isDemo) {
+    if (raw === null || raw === undefined || raw === '') {
+      // Veri kaynağı bağlı ama henüz veri gelmedi
+      if (!state.groups.length) showMessage('Veri bekleniyor…');
+      return;
+    }
     var groups = extractGroups(raw);
     if (!groups) {
       log('error', 'Logiboard: veride rota grubu listesi bulunamadı', raw);
@@ -576,14 +604,15 @@
     var keep = pos >= 0 && state.timer !== null;
     if (pos < 0) { pos = 0; state.page = 0; }
     state.groupPos = pos;
-    state.updatedAt = parseDate(updatedAt);
-    state.receivedAt = new Date();
-    state.fetchError = false;
 
     if (!groups.length) showMessage('Gösterilecek rota grubu yok.');
     else hideMessage();
 
     renderAll(keep);
+    // Zaman damgaları ancak çizim başarılıysa güncellenir (hata olursa veri "taze" görünmesin)
+    state.updatedAt = parseDate(updatedAt);
+    state.receivedAt = new Date();
+    state.fetchError = false;
     renderUpdated();
   }
 
@@ -605,13 +634,16 @@
       setTimeout(safeConnect, 10000);
       return;
     }
-    setData(ds.data, ds.updatedAt);
-    if (ds.on) {
+    if (ds.on && !state.subscribed) {
+      state.subscribed = true;
       ds.on('update', function (arg) {
-        var src = arg && arg.data !== undefined ? arg : ds;
-        setData(src.data, src.updatedAt);
+        try {
+          var src = arg && arg.data !== undefined ? arg : ds;
+          setData(src.data, src.updatedAt);
+        } catch (e) { log('error', 'Logiboard: güncelleme işlenemedi', String(e)); }
       });
     }
+    setData(ds.data, ds.updatedAt);
   }
 
   function safeConnect() {
@@ -635,7 +667,13 @@
     if (OM) {
       showMessage('Veri yükleniyor…');
       try { OM.setVersion('v1'); } catch (e) { log('warn', 'Logiboard: omma.setVersion hatası', String(e)); }
-      if (typeof OM.ready === 'function') OM.ready(safeConnect); else safeConnect();
+      // ready hiç tetiklenmezse ya da hata verirse 10 sn sonra yine de bağlanılır
+      var started = false;
+      var connectOnce = function () { if (started) return; started = true; safeConnect(); };
+      try { if (typeof OM.ready === 'function') OM.ready(connectOnce); else connectOnce(); }
+      catch (e) { log('warn', 'Logiboard: omma.ready hatası', String(e)); }
+      if (OM.isReady === true) connectOnce();
+      setTimeout(connectOnce, 10000);
       return;
     }
     if (tries > 0) { setTimeout(function () { waitForOmma(tries - 1); }, 250); return; }
@@ -657,15 +695,18 @@
     xhr.timeout = 30000;
     xhr.onreadystatechange = function () {
       if (xhr.readyState !== 4) return;
-      if (xhr.status >= 200 && xhr.status < 300) {
-        setData(xhr.responseText, new Date());
-      } else {
-        log('warn', 'Logiboard: veri çekilemedi (HTTP ' + xhr.status + ')');
-        state.fetchError = true;
-        renderUpdated();
-        if (!state.groups.length) showMessage('Veri alınamadı, tekrar deneniyor…');
-      }
-      setTimeout(pollUrl, CONFIG.refreshSeconds * 1000);
+      setTimeout(pollUrl, CONFIG.refreshSeconds * 1000); // önce bir sonraki çekim planlanır (hata olsa da durmasın)
+      try {
+        if (xhr.status >= 200 && xhr.status < 300) {
+          // Güncelleme zamanı uydurulmaz: sunucu Last-Modified vermiyorsa "Veri alındı" gösterilir
+          setData(xhr.responseText, xhr.getResponseHeader('Last-Modified') || null);
+        } else {
+          log('warn', 'Logiboard: veri çekilemedi (HTTP ' + xhr.status + ')');
+          state.fetchError = true;
+          renderUpdated();
+          if (!state.groups.length) showMessage('Veri alınamadı, tekrar deneniyor…');
+        }
+      } catch (e) { log('error', 'Logiboard: veri işlenemedi', String(e)); }
     };
     xhr.send();
   }
@@ -711,6 +752,7 @@
     renderBoard();
 
     if (state.order.length) {
+      fillDetailsHead();
       var rpp = measureRowsPerPage(currentPrep());
       if (rpp < CONFIG.minDetailRows) {
         state.scenes = true;
@@ -746,29 +788,31 @@
     if (!state.groups.length || !anyPast) { state.bannerKind = ''; applyBannerState(); return; }
 
     var unit = esc(CONFIG.pastUnit);
+    var staleLine = 'Veri güncel değil — gösterilen durum değişmiş olabilir.';
     if (!cells.length) {
       state.bannerKind = 'ok';
       applyBannerState();
       el['b-l1'].innerHTML = 'GECİKEN ' + esc(trUpper(CONFIG.pastUnit)) + ' YOK';
-      el['b-l2'].innerHTML = 'Tüm alanlar yeşil — bugünkü plana devam edin.';
       fitBannerTitle(el['b-l1']);
-      setFitted(el['b-l2'], [el['b-l2'].innerHTML]);
+      setFitted(el['b-l2'], [state.stale ? staleLine : 'Hiçbir rota grubunda geciken ' + unit + ' yok — akışa devam edin.']);
       return;
     }
 
     var top = cells[0];
     state.bannerKind = 'alert';
     applyBannerState();
-    el['b-l1'].innerHTML = esc(top.g) + '<span class="dot">·</span>' + top.p;
+    // Süreç beyaz etiketle ayrılır: "İSTANBUL 2.SEVKİYAT · [SEVKİYAT]" karışmasın
+    el['b-l1'].innerHTML = esc(top.g) + '<span class="dot">·</span><span class="b-proc">' + top.p + '</span>';
     el['b-count-n'].textContent = fmt(top.past);
     el['b-count-l'].textContent = 'GECİKEN ' + trUpper(CONFIG.pastUnit);
     fitBannerTitle(el['b-l1']);
+    if (state.stale) { setFitted(el['b-l2'], [staleLine]); return; }
     if (cells.length === 1) {
-      setFitted(el['b-l2'], ['Önce bu işi bitirin. Başka geciken ' + unit + ' yok.']);
+      setFitted(el['b-l2'], ['Önce bu gecikmeyi kapatın. Başka geciken ' + unit + ' yok.']);
       return;
     }
     // "Sırada" listesi: sığdığı kadar alan; sığmazsa daha kısa seçenek
-    var total = '&nbsp;&nbsp;|&nbsp;&nbsp;Toplam ' + fmt(totalPast) + ' geciken ' + unit + ', ' + cells.length + ' alanda';
+    var total = '&nbsp;&nbsp;|&nbsp;&nbsp;' + cells.length + ' alanda toplam ' + fmt(totalPast) + ' geciken ' + unit;
     var variants = [], next = [];
     for (var shown = Math.min(3, cells.length - 1); shown >= 1; shown--) {
       var items = [];
@@ -778,8 +822,8 @@
       var rest = cells.length - 1 - shown;
       next.push('Sırada: ' + items.join(',&nbsp; ') + (rest > 0 ? ',&nbsp; +' + rest + ' alan daha' : ''));
     }
-    for (var v = 0; v < next.length; v++) variants.push('Önce bunu bitirin. ' + next[v] + total);
-    variants.push('Önce bunu bitirin. ' + next[next.length - 1]);
+    for (var v = 0; v < next.length; v++) variants.push('Önce bu gecikmeyi kapatın. ' + next[v] + total);
+    variants.push('Önce bu gecikmeyi kapatın. ' + next[next.length - 1]);
     variants.push(next[next.length - 1]); // en kısa: yalnızca sıradaki ilk alan
     setFitted(el['b-l2'], variants);
   }
@@ -801,7 +845,7 @@
       state.groups.forEach(function (g) { var v = metric(g, p.key, 'Past'); if (v > 0) late += v; });
       var pill = CONFIG.showProcessOverdue && late > 0 ?
         '<span class="ppill" data-n="' + fmt(late) + '">' + fmt(late) + ' GECİKEN</span>' : '';
-      h += '<div class="tile"><div class="th-proc"><span class="step">' + (i + 1) + '</span>' + p.label + pill +
+      h += '<div class="tile"><div class="th-proc"><span class="step">' + (i + 1) + '</span><span class="pl">' + p.label + '</span>' + pill +
         (i < PROCESSES.length - 1 ? '<span class="arrow">&rarr;</span>' : '') + '</div><div class="th-sub">';
       PERIODS.forEach(function (per) { h += '<span class="slot s-' + per.cls + '">' + per.label + '</span>'; });
       h += '</div></div>';
@@ -827,8 +871,8 @@
         past === null ? '<span class="zero">–</span>' : '<span class="ok-mark"></span>';
       h += '<div class="tile' + (past > 0 ? ' late' : '') + '">' +
         '<div class="slot s-past">' + lamp + '</div>' +
-        '<div class="slot s-today">' + numHtml(g['Total' + p.key + 'Today']) + '</div>' +
-        '<div class="slot s-plan">' + numHtml(g['Total' + p.key + 'Planned']) + '</div></div>';
+        '<div class="slot s-today">' + numHtml(metric(g, p.key, 'Today')) + '</div>' +
+        '<div class="slot s-plan">' + numHtml(metric(g, p.key, 'Planned')) + '</div></div>';
     });
     return h + '</div></div>';
   }
@@ -850,10 +894,16 @@
     if (!el.board.offsetWidth) return; // gizliyken ölçülemez; görünür olunca tekrar çağrılır
     var heads = el.board.querySelectorAll('.th-proc');
     fitCells(heads, 3);
-    // Başlık hâlâ sığmıyorsa rozet yalnızca sayıyı gösterir ("3 GECİKEN" -> "3")
-    for (var h = 0; h < heads.length; h++) {
-      var pill = heads[h].querySelector('.ppill');
-      if (pill && heads[h].scrollWidth > heads[h].clientWidth) pill.textContent = pill.getAttribute('data-n');
+    // Bir başlık hâlâ sığmıyorsa tüm rozetler yalnızca sayıyı gösterir ("3 GECİKEN" -> "3"), biçim karışmasın
+    var shorten = false, h, pill;
+    for (h = 0; h < heads.length; h++) {
+      if (heads[h].querySelector('.ppill') && heads[h].scrollWidth > heads[h].clientWidth) shorten = true;
+    }
+    if (shorten) {
+      for (h = 0; h < heads.length; h++) {
+        pill = heads[h].querySelector('.ppill');
+        if (pill) pill.textContent = pill.getAttribute('data-n');
+      }
     }
     fitCells(heads);
     fitCells(el.board.querySelectorAll('.th-sub .slot'));
@@ -928,16 +978,21 @@
     var rem = parseFloat(window.getComputedStyle(document.documentElement).fontSize) || 16;
     var text = [], nums = [];
     prep.cols.forEach(function (c) { (c.num ? nums : text).push(c); });
-    var numPx = rem * 7.2;
+    // Sayı sütunu ~7rem; "ZAMANINDA" başlığı uzun olduğu için o sütunlar biraz daha geniş (başlık küçülmesin)
+    function numW(c) { return rem * (c.period && c.period.key === 'Today' ? 9.4 : 7.2); }
+    var numTotal = 0;
+    nums.forEach(function (c) { numTotal += numW(c); });
     var stacked = text.length > 0 && nums.length > 0 &&
-      (W - nums.length * numPx) < Math.max(W * 0.25, text.length * rem * 8);
+      (W - numTotal) < Math.max(W * 0.25, text.length * rem * 8);
     var cols = stacked ? nums : prep.cols;
     var html = '<colgroup>';
     if (stacked || !text.length) {
-      cols.forEach(function () { html += '<col style="width:' + (100 / cols.length).toFixed(3) + '%">'; });
+      var tot = 0;
+      cols.forEach(function (c) { tot += c.num ? numW(c) : rem * 7.2; });
+      cols.forEach(function (c) { html += '<col style="width:' + ((c.num ? numW(c) : rem * 7.2) * 100 / tot).toFixed(3) + '%">'; });
     } else {
       // Metin sütunları içeriklerinin uzunluğuna göre pay alır (en az 6, en çok 40 karakter)
-      var tw = 0, numPct = nums.length ? numPx * 100 / W : 0;
+      var tw = 0, numPct = numTotal * 100 / W;
       text.forEach(function (c) {
         var len = Math.max(6, String(c.label).length);
         for (var r = 0; r < prep.rows.length && r < 60; r++) len = Math.max(len, cellText(prep.rows[r].r[c.key]).length);
@@ -945,7 +1000,7 @@
         tw += c.w;
       });
       cols.forEach(function (c) {
-        var pct = c.num ? numPct : (100 - numPct * nums.length) * c.w / tw;
+        var pct = c.num ? numW(c) * 100 / W : (100 - numPct) * c.w / tw;
         html += '<col style="width:' + pct.toFixed(3) + '%">';
       });
     }
@@ -1099,19 +1154,21 @@
     return pages;
   }
 
+  // Başlık ölçümden önce dolu olmalı, yoksa tablo alanı olduğundan yüksek ölçülür
+  function fillDetailsHead() {
+    var gi = state.order[state.groupPos], prep = state.prep[gi];
+    el['details-title'].textContent = groupTitle(state.groups[gi]);
+    el['details-hint'].className = 'dh-hint ' + (prep.lateRows ? 'late' : 'ok');
+    el['details-hint'].textContent = prep.lateRows ? fmt(prep.lateRows) + ' GECİKEN KAYIT EN ÜSTTE' : 'GECİKEN KAYIT YOK';
+    if (!el['details-page'].innerHTML) el['details-page'].textContent = '…';
+  }
+
   function renderDetails() {
     if (!state.order.length) return;
     var gi = state.order[state.groupPos];
-    var g = state.groups[gi];
     var prep = state.prep[gi];
 
-    // Başlık ölçümden önce dolu olmalı, yoksa tablo alanı olduğundan yüksek ölçülür
-    el['details-title'].textContent = groupTitle(g);
-    el['details-hint'].className = 'dh-hint ' + (prep.lateRows ? 'late' : 'ok');
-    el['details-hint'].textContent = prep.lateRows ?
-      fmt(prep.lateRows) + ' GECİKEN KAYIT EN ÜSTTE' : 'GECİKEN KAYIT YOK';
-    if (!el['details-page'].innerHTML) el['details-page'].textContent = '…';
-
+    fillDetailsHead();
     if (!state.rowsPerPage) state.rowsPerPage = measureRowsPerPage(prep);
     var lay = tableLayout(prep);
     var pages = pageCount(prep);
@@ -1133,8 +1190,18 @@
 
     var cut = prep.rows.length - pages * state.rowsPerPage;
     el['details-page'].innerHTML = (pages > 1 ? 'Sayfa ' + (state.page + 1) + ' / ' + pages : '') +
-      '<small>' + fmt(prep.rows.length) + ' kayıt' + (prep.hidden ? ' · ' + fmt(prep.hidden) + ' sıfır kayıt gizli' : '') +
+      '<small>' + fmt(prep.rows.length) + ' kayıt' + (prep.hidden ? ' · tümü 0 olan ' + fmt(prep.hidden) + ' kayıt gizli' : '') +
       (cut > 0 ? ' · +' + fmt(cut) + ' kayıt gösterilmiyor' : '') + '</small>';
+
+    // Kırmızı ipucu yalnızca geciken kayıtların göründüğü sayfalarda; diğer sayfalarda nerede olduklarını söyler
+    if (prep.lateRows) {
+      var latePages = Math.ceil(prep.lateRows / state.rowsPerPage);
+      var lateHere = CONFIG.sortDetailRows && state.page < latePages;
+      el['details-hint'].className = 'dh-hint ' + (lateHere || !CONFIG.sortDetailRows ? 'late' : 'ok');
+      el['details-hint'].textContent = !CONFIG.sortDetailRows ? fmt(prep.lateRows) + ' GECİKEN KAYIT' :
+        lateHere ? fmt(prep.lateRows) + ' GECİKEN KAYIT EN ÜSTTE' :
+        fmt(prep.lateRows) + ' GECİKEN KAYIT ' + (latePages > 1 ? 'İLK SAYFALARDA' : 'İLK SAYFADA');
+    }
 
     markActiveRow();
   }
@@ -1142,15 +1209,17 @@
   // ============================== DÖNGÜ ==============================
   function startProgress(seconds) {
     var bar = el['progress-bar'];
+    function sx(v) { bar.style.webkitTransform = 'scaleX(' + v + ')'; bar.style.transform = 'scaleX(' + v + ')'; }
     el.progress.className = 'progress' + (seconds ? '' : ' off');
     bar.style.transition = 'none';
     bar.style.webkitTransition = 'none';
-    bar.style.width = '0';
+    sx(0);
     void bar.offsetWidth; // animasyonu sıfırlamak için yeniden çizdir
     if (!seconds) return;
-    bar.style.transition = 'width ' + seconds + 's linear';
-    bar.style.webkitTransition = 'width ' + seconds + 's linear';
-    bar.style.width = '100%';
+    // Genişlik yerine transform: ekran kartında çizilir, ana iş parçacığını yormaz
+    bar.style.transition = 'transform ' + seconds + 's linear';
+    bar.style.webkitTransition = '-webkit-transform ' + seconds + 's linear';
+    sx(1);
   }
 
   function restartCycle() {
@@ -1207,19 +1276,22 @@
 
   // Veri kaynağı güncelleme zamanını vermiyorsa ekrana ulaşma zamanı "Veri alındı" diye gösterilir
   function renderUpdated() {
-    var t = state.updatedAt || state.receivedAt;
-    if (!t) { el.updated.textContent = ''; return; }
-    var now = new Date();
-    var mins = Math.max(0, Math.floor((now.getTime() - t.getTime()) / 60000));
+    if (!state.receivedAt) { el.updated.textContent = ''; return; }
+    var now = new Date(), nowMs = now.getTime();
+    // Gelecekteki bir güncelleme zamanı (saat farkı) yok sayılır; yaş, alınma zamanından da hesaplanır
+    var u = state.updatedAt && state.updatedAt.getTime() <= nowMs + 120000 ? state.updatedAt : null;
+    var t = u || state.receivedAt;
+    var age = Math.max(nowMs - state.receivedAt.getTime(), u ? nowMs - u.getTime() : 0);
+    var mins = Math.max(0, Math.floor(age / 60000));
     var sameDay = t.toDateString() === now.toDateString();
-    var text = (state.updatedAt ? 'Son güncelleme ' : 'Veri alındı ') +
+    var text = (u ? 'Son güncelleme ' : 'Veri alındı ') +
       (sameDay ? '' : pad2(t.getDate()) + '.' + pad2(t.getMonth() + 1) + ' ') + hhmm(t);
     var stale = state.fetchError || (CONFIG.staleMinutes > 0 && mins >= CONFIG.staleMinutes);
     if (state.fetchError) text = 'Bağlantı hatası  ·  ' + text;
-    else if (stale) text = 'Veri ' + (mins >= 120 ? Math.floor(mins / 60) + ' saat' : mins + ' dk') + ' önce güncellendi';
+    else if (stale) text = 'Veri ' + (mins >= 120 ? Math.floor(mins / 60) + ' saat' : mins + ' dk') + ' önce ' + (u ? 'güncellendi' : 'alındı');
     el.updated.textContent = text;
     el.updated.className = 'updated' + (stale ? ' stale' : '');
-    if (stale !== state.stale) { state.stale = stale; applyBannerState(); }
+    if (stale !== state.stale) { state.stale = stale; if (state.groups.length) renderBanner(); }
   }
 
   // ============================== DEMO VERİ ==============================
@@ -1253,7 +1325,7 @@
       });
       var details = [];
       for (var i = 0; i < b.count; i++) {
-        var d = { DispatchRouteTitle: 'Örnek Rota ' + (i < 9 ? '00' : i < 99 ? '0' : '') + (i + 1) };
+        var d = { CustomerTitle: 'Örnek Müşteri ' + (i < 9 ? '00' : i < 99 ? '0' : '') + (i + 1) };
         split.forEach(function (s) { d[s.key] = s.parts[i]; });
         details.push(d);
       }
@@ -1269,10 +1341,15 @@
     renderClock();
     setInterval(function () { renderClock(); renderUpdated(); }, 5000);
 
-    var resizeTimer;
+    // Boyut gerçekten değişmediyse (bazı oynatıcılar boşuna resize gönderir) döngü sıfırlanmaz
+    var resizeTimer, lastW = window.innerWidth, lastH = window.innerHeight;
     window.addEventListener('resize', function () {
       clearTimeout(resizeTimer);
-      resizeTimer = setTimeout(function () { if (state.groups.length) renderAll(); }, 300);
+      resizeTimer = setTimeout(function () {
+        if (window.innerWidth === lastW && window.innerHeight === lastH) return;
+        lastW = window.innerWidth; lastH = window.innerHeight;
+        if (state.groups.length) renderAll();
+      }, 300);
     });
 
     if (demoRequested()) {
