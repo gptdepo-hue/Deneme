@@ -7,100 +7,251 @@
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
-  /* 1rem = ekran genişliğinin %1'i (16:9'dan geniş ekranlarda yüksekliğe göre).
-     Böylece 1080p, 4K veya dikey ekranda aynı oranlarla ölçeklenir. */
+  /* 1rem = ekran genişliğinin %1'i (1920x1080'de 19,2px). 16:9'dan geniş ekranda yüksekliğe,
+     dikey ekranda genişliğe göre ölçeklenir. Tüm ölçüler rem cinsindendir. */
   html { font-size: 1vw; }
   @media (min-aspect-ratio: 16/9) { html { font-size: 1.7778vh; } }
-  @media (max-aspect-ratio: 1/1) { html { font-size: 1.35vw; } } /* dikey ekran */
+  @media (max-aspect-ratio: 1/1) { html { font-size: 1.5vw; } }
 
-  html, body { height: 100%; overflow: hidden; background: #0a1020; }
+  html, body { height: 100%; overflow: hidden; background: #0b1220; }
   body {
-    color: #e6ecf5;
+    color: #f1f5f9;
     font-family: "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     -webkit-font-smoothing: antialiased;
   }
-
-  #app { position: relative; height: 100%; display: flex; flex-direction: column; padding: 1.2rem 1.6rem 1rem; }
+  #app { position: relative; height: 100%; display: -webkit-flex; display: flex; -webkit-flex-direction: column; flex-direction: column; padding: .7rem 1.4rem .6rem; }
+  .num { font-variant-numeric: tabular-nums; }
 
   /* ---------- Üst bar ---------- */
-  .topbar {
-    display: flex; align-items: center; justify-content: space-between;
-    padding-bottom: .9rem; margin-bottom: 1rem; border-bottom: .12rem solid #1d2a44;
-  }
-  .brand { display: flex; align-items: center; font-size: 1.7rem; font-weight: 700; letter-spacing: .02em; }
-  .brand-mark { width: .5rem; height: 1.8rem; margin-right: .8rem; border-radius: .15rem; background: #14b8a6; }
+  .topbar { -webkit-flex: none; flex: none; display: -webkit-flex; display: flex; -webkit-align-items: center; align-items: center; -webkit-justify-content: space-between; justify-content: space-between; height: 3.3rem; white-space: nowrap; }
+  .brand { display: -webkit-flex; display: flex; -webkit-align-items: center; align-items: center; font-size: 1.5rem; font-weight: 700; color: #cbd5e1; }
+  .brand-mark { width: .45rem; height: 1.6rem; margin-right: .7rem; border-radius: .12rem; background: #14b8a6; }
   .demo-badge {
-    display: none; margin-left: 1rem; padding: .2rem .6rem; border-radius: .3rem;
-    font-size: .8rem; font-weight: 700; letter-spacing: .08em; background: #f59e0b; color: #1a1200;
+    display: none; margin-left: 1rem; padding: .15rem .6rem; border-radius: .3rem;
+    font-size: 1.1rem; font-weight: 800; letter-spacing: .06em; background: #f59e0b; color: #1a1200;
   }
   .is-demo .demo-badge { display: inline-block; }
-  .meta { display: flex; align-items: center; }
-  .updated { margin-right: 1.8rem; font-size: 1rem; color: #8b9bb8; }
-  .updated.stale { color: #fbbf24; font-weight: 600; }
-  .clock { text-align: right; }
-  #time { display: block; font-size: 2rem; font-weight: 700; line-height: 1; font-variant-numeric: tabular-nums; }
-  #date { display: block; margin-top: .25rem; font-size: .9rem; color: #8b9bb8; }
+  .meta { display: -webkit-flex; display: flex; -webkit-align-items: center; align-items: center; }
+  .updated { margin-right: 1.6rem; font-size: 1.25rem; color: #a8b5cc; }
+  .updated.stale { padding: .2rem .8rem; border-radius: .35rem; background: #f59e0b; color: #1a1200; font-weight: 800; }
+  #date { margin-right: 1rem; font-size: 1.3rem; color: #a8b5cc; }
+  #time { font-size: 2.4rem; font-weight: 800; line-height: 1; font-variant-numeric: tabular-nums; }
 
-  /* ---------- Ortak tablo ---------- */
-  .panel { background: #111a2e; border-radius: .6rem; }
-  table { width: 100%; border-collapse: separate; border-spacing: 0; table-layout: fixed; }
-  th, td { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  th { font-weight: 600; color: #8b9bb8; text-transform: uppercase; letter-spacing: .06em; }
-  .num { text-align: right; font-variant-numeric: tabular-nums; }
-  .name { text-align: left; }
-  .sep { border-left: .12rem solid #24324f; }
+  /* ---------- Öncelik bandı ---------- */
+  .banner { -webkit-flex: none; flex: none; display: none; -webkit-align-items: stretch; align-items: stretch; margin-top: .5rem; min-height: 6.2rem; border-radius: .6rem; overflow: hidden; }
+  .banner.alert { display: -webkit-flex; display: flex; background: #b91c1c; }
+  .banner.ok { display: -webkit-flex; display: flex; background: #15803d; }
+
+  .b-tag {
+    -webkit-flex: none; flex: none; width: 10rem; display: -webkit-flex; display: flex; -webkit-flex-direction: column; flex-direction: column; -webkit-align-items: center; align-items: center; -webkit-justify-content: center; justify-content: center;
+    background: rgba(0, 0, 0, .28); font-size: 1.45rem; font-weight: 800; letter-spacing: .06em;
+  }
+  .b-icon { position: relative; display: block; width: 2.7rem; height: 2.7rem; margin-bottom: .3rem; border-radius: 50%; background: #fff; }
+  .alert .b-icon:after {
+    content: '!'; position: absolute; left: 0; right: 0; top: 0; text-align: center;
+    font-size: 2.1rem; line-height: 2.7rem; font-weight: 900; color: #b91c1c;
+  }
+  .ok .b-icon:after {
+    content: ''; position: absolute; left: .98rem; top: .45rem; width: .7rem; height: 1.3rem;
+    border: solid #15803d; border-width: 0 .32rem .32rem 0;
+    -webkit-transform: rotate(45deg); transform: rotate(45deg);
+  }
+  /* Veri eski: sol kutu sarı "VERİ ESKİ" (yeşil/kırmızı mesaj güncel olmayabilir) */
+  .banner.stale .b-tag { background: #f59e0b; color: #1a1200; }
+  .banner.stale .b-icon { background: #1a1200; }
+  .banner.stale .b-icon:after {
+    content: '!'; position: absolute; left: 0; right: 0; top: 0; width: auto; height: auto; border: 0;
+    -webkit-transform: none; transform: none; text-align: center; font-size: 2.1rem; line-height: 2.7rem; font-weight: 900; color: #f59e0b;
+  }
+  .b-main { -webkit-flex: 1; flex: 1; min-width: 0; display: -webkit-flex; display: flex; -webkit-flex-direction: column; flex-direction: column; -webkit-justify-content: center; justify-content: center; padding: .4rem 1.4rem; }
+  .b-l1 { -webkit-flex: none; flex: none; font-size: 3.3rem; font-weight: 800; line-height: 1.12; white-space: nowrap; overflow: hidden; }
+  .b-l1.wrap { white-space: normal; max-height: 2.3em; }
+  .b-l1 .dot { padding: 0 .25em; opacity: .7; }
+  .b-l2 { -webkit-flex: none; flex: none; margin-top: .15rem; font-size: 1.5rem; font-weight: 600; line-height: 1.25; white-space: nowrap; overflow: hidden; color: #ffe1e1; }
+  .b-l2 b { color: #fff; font-weight: 800; }
+  .ok .b-l2 { color: #dcfce7; }
+  .b-count {
+    -webkit-flex: none; flex: none; display: -webkit-flex; display: flex; -webkit-flex-direction: column; flex-direction: column; -webkit-align-items: center; align-items: center; -webkit-justify-content: center; justify-content: center;
+    min-width: 9rem; margin: .7rem .8rem .7rem 0; padding: 0 1.2rem; border-radius: .45rem; background: #fff; color: #b91c1c;
+  }
+  .ok .b-count { display: none; }
+  .b-count-n { font-size: 3.4rem; font-weight: 900; line-height: 1; font-variant-numeric: tabular-nums; }
+  .b-count-l { margin-top: .15rem; font-size: 1.25rem; font-weight: 800; letter-spacing: .04em; }
+  @-webkit-keyframes pulse { 0%, 100% { background-color: rgba(0, 0, 0, .32); } 50% { background-color: rgba(0, 0, 0, 0); } }
+  @keyframes pulse { 0%, 100% { background-color: rgba(0, 0, 0, .32); } 50% { background-color: rgba(0, 0, 0, 0); } }
+  .blink .alert:not(.stale) .b-tag { -webkit-animation: pulse 1.6s ease-in-out infinite; animation: pulse 1.6s ease-in-out infinite; }
+
+  /* ---------- Andon panosu: rota grubu x süreç ---------- */
+  .board { -webkit-flex: none; flex: none; display: -webkit-flex; display: flex; margin-top: .7rem; }
+  .bcol { -webkit-flex: 1; flex: 1; min-width: 0; display: -webkit-flex; display: flex; -webkit-flex-direction: column; flex-direction: column; }
+  .bhead, .brow { -webkit-flex: none; flex: none; display: -webkit-flex; display: flex; }
+  .brow { margin-top: .45rem; }
+  .btiles { -webkit-flex: 1; flex: 1; min-width: 0; display: -webkit-flex; display: flex; }
+  .bname {
+    -webkit-flex: none; flex: none; width: 21%; display: -webkit-flex; display: flex; -webkit-flex-direction: column; flex-direction: column; -webkit-justify-content: center; justify-content: center;
+    padding: .3rem .8rem .3rem 1.4rem; border-radius: .5rem; background: #16233a; overflow: hidden;
+  }
+  .bhead .bname { -webkit-justify-content: flex-end; justify-content: flex-end; padding: 0 .6rem .4rem 1.4rem; background: none; font-size: 1.25rem; font-weight: 700; color: #a8b5cc; letter-spacing: .04em; white-space: nowrap; }
+  .bn-text { -webkit-flex: none; flex: none; max-height: 2.3em; overflow: hidden; font-weight: 800; line-height: 1.15; word-wrap: break-word; }
+  .bname.no-status .bn-status { display: none; }
+  .bn-status { -webkit-flex: none; flex: none; margin-top: .2rem; font-size: 1.3rem; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .g-late .bname { box-shadow: inset .6rem 0 0 #ef4444; }
+  .g-ok .bname { box-shadow: inset .6rem 0 0 #22c55e; }
+  .g-late .bn-status { color: #fca5a5; }
+  .g-ok .bn-status { color: #86efac; }
+  .g-none .bname { box-shadow: inset .6rem 0 0 #475569; }
+  .brow.active .bname { background: #22344f; }
+  .brow.active.g-late .bname { box-shadow: inset .6rem 0 0 #ef4444, inset 0 0 0 .2rem #e2e8f0; }
+  .brow.active.g-ok .bname { box-shadow: inset .6rem 0 0 #22c55e, inset 0 0 0 .2rem #e2e8f0; }
+
+  .tile { -webkit-flex: 1; flex: 1; min-width: 0; display: -webkit-flex; display: flex; -webkit-align-items: center; align-items: center; margin-left: .45rem; border-radius: .5rem; background: #16233a; }
+  .tile.late { background: #c81e1e; }
+  .bhead .tile { display: block; background: none; }
+  .th-proc {
+    display: -webkit-flex; display: flex; -webkit-align-items: center; align-items: center; padding: 0 .5rem .3rem; border-bottom: .15rem solid #2b3b58;
+    font-size: 1.6rem; font-weight: 800; white-space: nowrap; overflow: hidden;
+  }
+  .step {
+    -webkit-flex: none; flex: none; display: inline-block; width: 1.9rem; height: 1.9rem; margin-right: .6rem; border-radius: 50%;
+    background: #334155; color: #e2e8f0; text-align: center; font-size: 1.25rem; line-height: 1.9rem; font-weight: 800;
+  }
+  .arrow { margin-left: auto; padding-left: .6rem; color: #64748b; font-weight: 400; }
+  .ppill { -webkit-flex: none; flex: none; margin-left: .6rem; padding: 0 .45rem; border-radius: .3rem; background: #dc2626; color: #fff; font-size: 1.25rem; font-weight: 800; line-height: 1.6; letter-spacing: .02em; }
+  .th-sub { display: -webkit-flex; display: flex; padding-top: .3rem; }
+  .th-sub .slot { padding: 0 .35rem; font-size: 1.25rem; font-weight: 700; color: #a8b5cc; letter-spacing: .02em; }
+  .th-sub .s-past { color: #fca5a5; }
+
+  .slot { overflow: hidden; white-space: nowrap; padding: 0 .5rem; text-align: right; line-height: 1.15; }
+  .s-past { width: 27%; text-align: center; }
+  .s-today { width: 42%; }
+  .s-plan { width: 31%; }
+  .wide-past .s-past { width: 36%; }
+  .wide-past .s-today { width: 36%; }
+  .wide-past .s-plan { width: 28%; }
+  .brow .slot { font-variant-numeric: tabular-nums; }
+  .brow .s-past { font-weight: 900; }
+  .brow .s-today { font-weight: 800; color: #f8fafc; }
+  .brow .s-plan { font-weight: 700; color: #a8b5cc; }
+  .tile.late .s-plan { color: #fecaca; }
+  .brow .s-plan { border-left: .12rem solid rgba(148, 163, 184, .22); }
+  .tile.late .s-plan { border-left-color: rgba(255, 255, 255, .35); }
   .zero { color: #4b5a78; }
+  .lamp { display: inline-block; min-width: 1.3em; padding: 0 .22em; border-radius: .16em; background: #fff; color: #b91c1c; line-height: 1.12; }
+  .ok-mark { position: relative; display: inline-block; vertical-align: middle; width: .78em; height: .78em; border-radius: 50%; background: #16a34a; }
+  .ok-mark:after {
+    content: ''; position: absolute; left: .275em; top: .13em; width: .19em; height: .38em;
+    border: solid #fff; border-width: 0 .085em .085em 0;
+    -webkit-transform: rotate(45deg); transform: rotate(45deg);
+  }
 
-  th.p-picking  { border-bottom-color: #38bdf8; }
-  th.p-packing  { border-bottom-color: #a78bfa; }
-  th.p-shipping { border-bottom-color: #2dd4bf; }
+  /* Grup sayısına göre boyut */
+  .sz-xl .brow { height: 6.4rem; }
+  .sz-xl .bn-text { font-size: 2.2rem; }
+  .sz-xl .brow .s-past, .sz-xl .brow .s-today { font-size: 3.7rem; }
+  .sz-xl .brow .s-plan { font-size: 2.7rem; }
+  .sz-l .brow { height: 5.4rem; }
+  .sz-l .bn-text { font-size: 2rem; }
+  .sz-l .brow .s-past, .sz-l .brow .s-today { font-size: 3.2rem; }
+  .sz-l .brow .s-plan { font-size: 2.4rem; }
+  .sz-m .brow { height: 4.5rem; }
+  .sz-m .bn-text { font-size: 1.75rem; }
+  .sz-m .bn-status { font-size: 1.25rem; margin-top: .1rem; }
+  .sz-m .brow .s-past, .sz-m .brow .s-today { font-size: 2.8rem; }
+  .sz-m .brow .s-plan { font-size: 2.1rem; }
 
-  /* ---------- Özet (rota grupları) ---------- */
-  .summary { padding: .4rem .8rem .6rem; margin-bottom: 1rem; }
-  .summary col.c-name { width: 21%; }
-  .summary th { padding: .5rem .7rem; font-size: .95rem; }
-  .summary tr.grp th { font-size: 1.15rem; color: #e6ecf5; text-align: center; border-bottom: .2rem solid transparent; }
-  .summary tr.grp th.name { color: #8b9bb8; font-size: .95rem; text-align: left; vertical-align: bottom; }
-  .summary tr.sub th { text-align: right; }
-  .summary td { padding: .45rem .7rem; font-size: 2.4rem; font-weight: 700; border-top: .08rem solid #1d2a44; }
-  .summary td.name { font-size: 1.6rem; }
-  .summary tr.active td { background: #16223b; }
-  .summary tr.active td.name { box-shadow: inset .35rem 0 0 #14b8a6; }
-  .summary tr.total td { border-top: .15rem solid #2a3a5c; color: #cbd5e6; }
-  .summary tr.total td.name { color: #8b9bb8; font-size: 1.2rem; letter-spacing: .08em; }
-  .summary .chip { display: inline-block; padding: 0 .5rem; border-radius: .4rem; background: #dc2626; color: #fff; }
-  /* Grup sayısı arttıkça satırlar küçülür */
-  .summary table.n-md td { font-size: 1.9rem; padding: .3rem .7rem; }
-  .summary table.n-md td.name { font-size: 1.3rem; }
-  .summary table.n-lg td { font-size: 1.35rem; padding: .2rem .7rem; }
-  .summary table.n-lg td.name { font-size: 1.05rem; }
+  /* Az grup + detay yok: pano büyük yazılarla ekranı doldurur */
+  .sz-xxl .brow { height: 9rem; }
+  .sz-xxl .bn-text { font-size: 3.2rem; }
+  .sz-xxl .bn-status { font-size: 1.6rem; }
+  .sz-xxl .brow .s-past, .sz-xxl .brow .s-today { font-size: 6.5rem; }
+  .sz-xxl .brow .s-plan { font-size: 4.4rem; }
+
+  /* Dikey ekran: grup adı satırın üstünde, kutular tam genişlikte */
+  .brow.pr { -webkit-flex-direction: column; flex-direction: column; height: auto; margin-top: .6rem; }
+  .brow.pr .bname { width: auto; -webkit-flex-direction: row; flex-direction: row; -webkit-justify-content: flex-start; justify-content: flex-start; -webkit-align-items: baseline; align-items: baseline; padding: .15rem .6rem .25rem 1.3rem; background: none; }
+  .brow.pr .bn-text { -webkit-flex: 0 1 auto; flex: 0 1 auto; min-width: 0; max-height: 1.2em; white-space: nowrap; }
+  .brow.pr .bn-status { -webkit-flex: none; flex: none; }
+  .pr .s-past { width: 31%; }
+  .pr .s-today { width: 37%; }
+  .pr .s-plan { width: 32%; }
+  .wide-past .pr .s-past { width: 36%; }
+  .wide-past .pr .s-today { width: 35%; }
+  .wide-past .pr .s-plan { width: 29%; }
+  .pr .slot { padding: 0 .35rem; }
+  .brow.pr .bn-status { margin: 0 0 0 1rem; }
+  .brow.pr .bname, .brow.active.pr .bname { box-shadow: none; border-left: .5rem solid #475569; border-radius: 0; }
+  .brow.pr.g-late .bname { border-left-color: #ef4444; }
+  .brow.pr.g-ok .bname { border-left-color: #22c55e; }
+  .brow.pr.active .bname { background: #22344f; }
+  .pr .tile:first-child, .bhead.pr .tile:first-child { margin-left: 0; }
+  .bhead.pr .bname { display: none; }
+  .sz-xl .brow.pr .btiles { height: 6rem; }
+  .sz-l .brow.pr .btiles { height: 5.2rem; }
+  .sz-m .brow.pr .btiles { height: 4.4rem; }
+
+  /* Pano ekranı doldurur (detay yoksa ya da pano/detay sırayla gösteriliyorsa) */
+  .fill .board { -webkit-flex: 1; flex: 1; min-height: 0; }
+  .fill .bcol { -webkit-justify-content: center; justify-content: center; }
+  .fill .bcol .brow { -webkit-flex: 1 1 0; flex: 1 1 0; height: auto; min-height: 0; max-height: 9rem; }
+  .fill .bcol .brow.pr { max-height: 12rem; }
+  .fill .sz-xxl .bcol .brow { max-height: 18rem; }
+  .fill .bcol .pr .btiles { -webkit-flex: 1 1 0; flex: 1 1 0; height: auto; min-height: 0; }
 
   /* ---------- Detay ---------- */
-  .details { flex: 1; min-height: 0; display: flex; flex-direction: column; padding: .6rem .8rem .5rem; }
-  .no-details .details { display: none; }
-  .details-head { display: flex; align-items: baseline; justify-content: space-between; padding: .2rem .4rem .6rem; }
-  .details-title { font-size: 1.5rem; font-weight: 700; }
-  .details-title small { margin-right: .6rem; font-size: 1rem; font-weight: 600; color: #8b9bb8; letter-spacing: .08em; }
-  .details-page { font-size: 1.1rem; color: #8b9bb8; font-variant-numeric: tabular-nums; }
-  .details-body { flex: 1; min-height: 0; overflow: hidden; }
-  .details th { padding: .35rem .6rem; font-size: .85rem; }
-  .details tr.grp th { text-align: center; color: #e6ecf5; font-size: .95rem; border-bottom: .15rem solid transparent; }
-  .details tr.grp th.name { text-align: left; vertical-align: bottom; }
-  .details tr.sub th, .details tr.grp th.num { text-align: right; vertical-align: bottom; }
-  .details td { padding: .32rem .6rem; font-size: 1.15rem; border-top: .06rem solid #1a2640; }
-  .details tbody tr:nth-child(even) td { background: #0e1628; }
-  .details td.late { color: #f87171; font-weight: 700; }
-  .progress { height: .3rem; margin-top: .5rem; border-radius: .2rem; overflow: hidden; background: #1a2640; }
+  .details { -webkit-flex: 1; flex: 1; min-height: 0; display: -webkit-flex; display: flex; -webkit-flex-direction: column; flex-direction: column; margin-top: .7rem; padding: .45rem .8rem .3rem; border-radius: .6rem; background: #111a2e; }
+  .no-details .details, .scenes.scene-board .details, .scenes.scene-detail .board { display: none; }
+  .details-head { -webkit-flex: none; flex: none; display: -webkit-flex; display: flex; -webkit-align-items: center; align-items: center; -webkit-justify-content: space-between; justify-content: space-between; padding: 0 .3rem .4rem; white-space: nowrap; }
+  .dh-left { -webkit-flex: 0 1 auto; flex: 0 1 auto; min-width: 0; display: -webkit-flex; display: flex; -webkit-align-items: center; align-items: center; overflow: hidden; }
+  .dh-label { -webkit-flex: none; flex: none; margin-right: .8rem; font-size: 1.25rem; font-weight: 700; color: #a8b5cc; letter-spacing: .06em; }
+  .dh-title { min-width: 0; overflow: hidden; text-overflow: ellipsis; font-size: 2rem; font-weight: 800; }
+  .dh-hint { -webkit-flex: none; flex: none; margin-left: 1rem; padding: .15rem .7rem; border-radius: .35rem; font-size: 1.25rem; font-weight: 800; letter-spacing: .02em; }
+  .dh-hint.late { background: #dc2626; color: #fff; }
+  .dh-hint.ok { background: #14532d; color: #bbf7d0; }
+  .dh-page { -webkit-flex: none; flex: none; margin-left: auto; padding-left: 1.2rem; font-size: 1.5rem; font-weight: 800; color: #e2e8f0; font-variant-numeric: tabular-nums; }
+  .dh-page small { margin-left: .6rem; font-size: 1.25rem; font-weight: 600; color: #a8b5cc; }
+  .details-body { -webkit-flex: 1; flex: 1; min-height: 0; overflow: hidden; }
+  @media (max-aspect-ratio: 1/1) {
+    .details-head { -webkit-flex-wrap: wrap; flex-wrap: wrap; }
+    .dh-left { -webkit-flex: 1 1 100%; flex: 1 1 100%; }
+    .dh-hint { margin: .3rem 0 0 0; }
+    .dh-page { margin-top: .3rem; }
+  }
+
+  table { width: 100%; border-collapse: separate; border-spacing: 0; table-layout: fixed; }
+  th, td { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .details th { padding: .2rem .55rem; font-size: 1.25rem; font-weight: 700; color: #a8b5cc; letter-spacing: .03em; text-align: right; }
+  .details tr.grp th { padding-bottom: .25rem; font-size: 1.4rem; font-weight: 800; color: #f1f5f9; text-align: center; border-bottom: .15rem solid #2b3b58; }
+  .details th.name, .details tr.grp th.name { text-align: left; vertical-align: bottom; color: #a8b5cc; font-size: 1.25rem; font-weight: 700; border-bottom: 0; }
+  .details th.past { color: #fca5a5; }
+  .details .sep { border-left: .15rem solid #24324f; }
+  .details td { padding: .28rem .55rem; font-size: 1.7rem; font-weight: 700; text-align: right; border-top: .08rem solid #1c2943; font-variant-numeric: tabular-nums; }
+  .details td.name { text-align: left; font-size: 1.6rem; font-weight: 600; }
+  .details td.plan { color: #a8b5cc; }
+  .details td.zero { color: #3f4d68; font-weight: 600; }
+  .details tbody.rec:nth-of-type(even) td { background: #0f1829; }
+  .details tbody.rec.late td, .details tbody.rec.late:nth-of-type(even) td { background: #43161b; }
+  .details tbody.rec.late td.hot, .details tbody.rec.late:nth-of-type(even) td.hot { background: #6b1f27; }
+  .details tbody.late td:first-child { box-shadow: inset .5rem 0 0 #ef4444; }
+  .details tbody.late td.name { font-weight: 800; }
+  /* Dar ekran (dikey): her kayıt iki satır — üstte metin alanları, altta sayılar */
+  .details .stacked th { padding-left: .35rem; padding-right: .35rem; }
+  .details .stacked td { padding-left: .4rem; padding-right: .45rem; }
+  .details .stacked tr.r-name td { padding: .3rem .6rem 0 .8rem; border-top: .08rem solid #1c2943; text-align: left; font-size: 1.6rem; font-weight: 700; color: #e2e8f0; }
+  .details .stacked tr.r-vals td { border-top: 0; padding-top: 0; }
+  .details .stacked .sepdot { color: #64748b; padding: 0 .3em; }
+  .chip { display: inline-block; min-width: 1.3em; padding: 0 .25em; border-radius: .18em; background: #ef4444; color: #fff; text-align: center; line-height: 1.15; }
+
+  .progress { -webkit-flex: none; flex: none; height: .35rem; margin-top: .4rem; border-radius: .2rem; overflow: hidden; background: #1a2640; }
   .progress.off { visibility: hidden; }
-  #progress-bar { width: 0; height: 100%; background: #14b8a6; }
+  #progress-bar { width: 0; height: 100%; background: #5eead4; }
 
   /* ---------- Mesaj (veri yok / hata) ---------- */
   .message {
     display: none; position: absolute; left: 0; top: 0; right: 0; bottom: 0;
-    align-items: center; justify-content: center; text-align: center;
-    padding: 4rem; font-size: 1.8rem; color: #8b9bb8; background: #0a1020;
+    -webkit-align-items: center; align-items: center; -webkit-justify-content: center; justify-content: center; text-align: center;
+    padding: 4rem; font-size: 2.2rem; font-weight: 700; line-height: 1.5; color: #a8b5cc; background: #0b1220; white-space: pre-line;
   }
-  .message.show { display: flex; }
+  .message.show { display: -webkit-flex; display: flex; }
 </style>
 </head>
 <body>
@@ -113,21 +264,28 @@
     </div>
     <div class="meta">
       <div id="updated" class="updated"></div>
-      <div class="clock"><span id="time"></span><span id="date"></span></div>
+      <span id="date"></span><span id="time"></span>
     </div>
   </header>
 
-  <section class="summary panel"><table id="summary"></table></section>
-
-  <section class="details panel">
-    <div class="details-head">
-      <div id="details-title" class="details-title"></div>
-      <div id="details-page" class="details-page"></div>
-    </div>
-    <div id="details-body" class="details-body"><table id="details"></table></div>
-    <div id="progress" class="progress"><div id="progress-bar"></div></div>
+  <section id="banner" class="banner">
+    <div class="b-tag"><span class="b-icon"></span><span id="b-tag"></span></div>
+    <div class="b-main"><div id="b-l1" class="b-l1"></div><div id="b-l2" class="b-l2"></div></div>
+    <div class="b-count"><span id="b-count-n" class="b-count-n"></span><span id="b-count-l" class="b-count-l"></span></div>
   </section>
 
+  <section id="board" class="board"></section>
+
+  <section class="details">
+    <div class="details-head">
+      <div class="dh-left"><span class="dh-label">DETAY</span><span id="details-title" class="dh-title"></span></div>
+      <span id="details-hint"></span>
+      <div id="details-page" class="dh-page"></div>
+    </div>
+    <div id="details-body" class="details-body"><table id="details"></table></div>
+  </section>
+
+  <div id="progress" class="progress"><div id="progress-bar"></div></div>
   <div id="message" class="message"></div>
 </div>
 
@@ -145,8 +303,19 @@
     dataUrl: '',          // Omma veri kaynağı yerine doğrudan ERP'nin JSON adresi (opsiyonel)
     refreshSeconds: 60,   // dataUrl kullanılırsa kaç saniyede bir yeniden çekileceği
     pageSeconds: 10,      // detay tablosunda her sayfanın ekranda kalma süresi
-    staleMinutes: 30,     // veri bu kadar dakikadan eskiyse güncelleme bilgisi sarı yanar (0 = kapalı)
-    hiddenDetailColumns: [] // detay tablosunda gösterilmeyecek alanlar, ör. ['Id']
+    boardSeconds: 20,     // pano ve detay sırayla gösterilirken (çok grup) panonun ekranda kalma süresi
+    detailPagesPerTurn: 2,// sırayla gösterimde panoya dönmeden önce gösterilecek en fazla detay sayfası
+    minDetailRows: 4,     // panonun altına bundan az detay satırı sığarsa pano ve detay sırayla gösterilir
+    hideZeroDetailRows: true, // tüm sayıları 0 olan detay satırlarını gizle
+    sortDetailRows: true, // detayda önce geciken satırlar, sonra BUGÜN toplamı büyükten küçüğe
+    detailShowPlanned: true,  // detay tablosunda PLANLI sütunlarını göster
+    detailMaxPages: 0,    // >0 ise bir grubun detayından tur başına en fazla bu kadar sayfa gösterilir (geciken satırlar hep gösterilir)
+    showProcessOverdue: true, // pano başlığında süreç başına toplam geciken rozeti ("3 GECİKEN")
+    pastUnit: 'iş',       // geciken sayısının birimi: "1 geciken iş"
+    blinkPriority: true,  // geciken iş varsa öncelik bandının sol kutusu yavaşça yanıp söner
+    staleMinutes: 30,     // veri bu kadar dakikadan eskiyse uyarı verilir (0 = kapalı)
+    hiddenDetailColumns: [], // detay tablosunda gösterilmeyecek alanlar, ör. ['Id']
+    demo: false           // true ya da adres sonuna ?demo=1 eklenirse örnek veri gösterilir (sahada kapalı kalmalı)
   };
 
   // Detay alanları için Türkçe başlıklar. Burada olmayan alan adları
@@ -156,15 +325,16 @@
     DispatchRouteTitle: 'Rota'
   };
 
+  // Fiziksel akış sırası: toplama -> paketleme -> sevkiyat
   var PROCESSES = [
-    { key: 'Picking', label: 'Toplama', cls: 'p-picking' },
-    { key: 'Packing', label: 'Paketleme', cls: 'p-packing' },
-    { key: 'Shipping', label: 'Sevkiyat', cls: 'p-shipping' }
+    { key: 'Picking', label: 'TOPLAMA' },
+    { key: 'Packing', label: 'PAKETLEME' },
+    { key: 'Shipping', label: 'SEVKİYAT' }
   ];
   var PERIODS = [
-    { key: 'Past', label: 'Geçmiş' },
-    { key: 'Today', label: 'Bugün' },
-    { key: 'Planned', label: 'Planlanan' }
+    { key: 'Past', label: 'GECİKEN', cls: 'past' },
+    { key: 'Today', label: 'BUGÜN', cls: 'today' },
+    { key: 'Planned', label: 'PLANLI', cls: 'plan' }
   ];
   // "TotalPickingPast", "PickingToday", "ShippingPlanned" gibi alanları yakalar
   var METRIC_RE = /^(Total)?(Picking|Packing|Shipping)(Past|Today|Planned)$/;
@@ -176,18 +346,30 @@
   // ============================== DURUM ==============================
   var state = {
     groups: [],
-    detailIdx: [],   // detayı olan grupların indeksleri
-    groupPos: 0,     // detailIdx içinde şu an gösterilen grup
+    prep: [],        // grup başına hazırlanmış detay (sütunlar, süzülmüş/sıralı satırlar)
+    order: [],       // detayı dönecek grupların indeksleri (geciken önce)
+    groupPos: 0,     // order içinde şu an gösterilen grup
     page: 0,
     rowsPerPage: 0,  // 0 = yeniden ölçülecek
-    updatedAt: null,
+    scenes: false,   // true: pano ve detay sırayla tam ekran gösterilir
+    scene: 'board',
+    turnPages: 0,
+    portrait: false,
+    size: 'sz-xl',
+    isDemo: false,
+    updatedAt: null,   // veri kaynağının bildirdiği güncelleme zamanı (bilinmiyorsa null)
+    receivedAt: null,  // verinin bu ekrana ulaştığı zaman
     fetchError: false,
+    stale: false,
+    bannerKind: '',    // '', 'alert', 'ok'
     timer: null
   };
+  var OM = null; // Omma içerik yardımcısı (window.omma)
 
   var el = {};
-  ['app', 'title', 'updated', 'time', 'date', 'summary', 'details-title', 'details-page',
-    'details-body', 'details', 'progress', 'progress-bar', 'message'].forEach(function (id) {
+  ['app', 'title', 'updated', 'time', 'date', 'banner', 'b-tag', 'b-l1', 'b-l2', 'b-count-n', 'b-count-l', 'board',
+    'details-title', 'details-hint', 'details-page', 'details-body', 'details',
+    'progress', 'progress-bar', 'message'].forEach(function (id) {
     el[id] = document.getElementById(id);
   });
 
@@ -199,6 +381,9 @@
     return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
       .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
   }
+
+  // Türkçe büyük harf (eski WebView'larda CSS text-transform "i"yi "I" yapabilir)
+  function trUpper(s) { return String(s).replace(/i/g, 'İ').replace(/ı/g, 'I').toUpperCase(); }
 
   function pad2(n) { return n < 10 ? '0' + n : String(n); }
   function hhmm(d) { return pad2(d.getHours()) + ':' + pad2(d.getMinutes()); }
@@ -231,9 +416,15 @@
     return String(key).replace(/_/g, ' ').replace(/([a-zçğıöşü0-9])([A-ZÇĞİÖŞÜ])/g, '$1 $2');
   }
 
+  // Sütun başlığı: Türkçe adlar Türkçe kurala göre, İngilizce alan adları düz büyük harf ("WEIGHT", "WEİGHT" değil)
+  function headLabel(key) {
+    var t = label(key);
+    return has(LABELS, key) || /[çğıöşüÇĞİÖŞÜ]/.test(key) ? trUpper(t) : t.toUpperCase();
+  }
+
   function log(level, msg, payload) {
     try {
-      if (window.omma && omma.logger && omma.logger[level]) omma.logger[level](msg, payload);
+      if (OM && OM.logger && OM.logger[level]) OM.logger[level](msg, payload);
       else if (window.console) console[level === 'error' ? 'error' : 'log'](msg, payload || '');
     } catch (e) { /* loglama hatası ekranı durdurmamalı */ }
   }
@@ -264,7 +455,103 @@
 
   function groupTitle(g) { return g ? cellText(g[CONFIG.groupTitleKey]) : ''; }
   function groupDetails(g) { return g && isArray(g[CONFIG.detailsKey]) ? g[CONFIG.detailsKey] : []; }
-  function currentGroup() { return state.groups[state.detailIdx[state.groupPos]]; }
+  function metric(g, p, per) { return g ? toNumber(g['Total' + p + per]) : null; }
+
+  // Bir grubun geciken toplamı (null = hiç GECİKEN alanı yok)
+  function groupPast(g) {
+    var sum = null;
+    PROCESSES.forEach(function (p) {
+      var v = metric(g, p.key, 'Past');
+      if (v !== null) sum = (sum || 0) + (v > 0 ? v : 0);
+    });
+    return sum;
+  }
+
+  // ============================== SIĞDIRMA ==============================
+  // Sığmayan hücre grubunun yazısını birlikte küçültür (sayılar asla "2.5…" diye kesilmez)
+  function fitCells(cells, maxSteps) {
+    var base = [], i, step, max = maxSteps || 12;
+    for (i = 0; i < cells.length; i++) {
+      cells[i].style.fontSize = '';
+      base[i] = parseFloat(window.getComputedStyle(cells[i]).fontSize);
+    }
+    function overflowing() {
+      for (var j = 0; j < cells.length; j++) {
+        if (cells[j].scrollWidth > cells[j].clientWidth) return true;
+      }
+      return false;
+    }
+    for (step = 1; step <= max && overflowing(); step++) {
+      for (i = 0; i < cells.length; i++) cells[i].style.fontSize = (base[i] * Math.pow(0.92, step)) + 'px';
+    }
+  }
+
+  // Ortalanmış flex kutuda taşma scrollHeight'e yansımayabilir; içeriği tek tek toplar
+  function contentHeight(box) {
+    var cs = window.getComputedStyle(box);
+    var h = parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom);
+    for (var c = box.firstChild; c; c = c.nextSibling) {
+      if (c.nodeType !== 1) continue;
+      var ccs = window.getComputedStyle(c);
+      if (ccs.display === 'none') continue;
+      h += c.getBoundingClientRect().height + parseFloat(ccs.marginTop) + parseFloat(ccs.marginBottom);
+    }
+    return h;
+  }
+
+  // Grup adı en fazla 2 satıra (dikeyde 1 satıra) sığana kadar küçülür. %85'e inince hâlâ
+  // sığmıyorsa alttaki durum yazısı gizlenir (durum sol şeridin renginden de okunur) ve ad büyük kalır.
+  function fitName(box) {
+    var t = box.firstChild;
+    var portrait = /\bpr\b/.test(box.parentNode.className);
+    box.className = box.className.replace(/\s*no-status/g, '');
+    t.style.fontSize = '';
+    var base = parseFloat(window.getComputedStyle(t).fontSize);
+    var fs = base;
+    function over() {
+      return t.scrollHeight > t.clientHeight + fs * 0.12 || t.scrollWidth > t.clientWidth + 1 ||
+        (!portrait && contentHeight(box) > box.clientHeight + 1);
+    }
+    function shrink(maxSteps) {
+      for (var s = 1; s <= maxSteps && over(); s++) {
+        fs = base * Math.pow(0.92, s);
+        t.style.fontSize = fs + 'px';
+      }
+    }
+    shrink(portrait ? 14 : 2);
+    if (!over() || portrait) return;
+    box.className += ' no-status';
+    t.style.fontSize = '';
+    fs = base;
+    shrink(14);
+  }
+
+  // Öncelik satırı: tek satırda %78'e kadar küçülür; yine sığmazsa 2 satıra kırılır
+  function fitBannerTitle(node) {
+    var s, fs, base;
+    node.className = 'b-l1';
+    node.style.fontSize = '';
+    base = parseFloat(window.getComputedStyle(node).fontSize);
+    for (s = 1; s <= 3 && node.scrollWidth > node.clientWidth; s++) node.style.fontSize = (base * Math.pow(0.92, s)) + 'px';
+    if (node.scrollWidth <= node.clientWidth) return;
+    node.className = 'b-l1 wrap';
+    node.style.fontSize = '';
+    fs = base;
+    for (s = 1; s <= 14 && (node.scrollWidth > node.clientWidth || node.scrollHeight > node.clientHeight + fs * 0.12); s++) {
+      fs = base * Math.pow(0.92, s);
+      node.style.fontSize = fs + 'px';
+    }
+  }
+
+  // Metni sırayla daha kısa seçeneklerle dener; hiçbiri sığmazsa sonuncusunu küçültür
+  function setFitted(node, variants) {
+    node.style.fontSize = '';
+    for (var i = 0; i < variants.length; i++) {
+      node.innerHTML = variants[i];
+      if (node.scrollWidth <= node.clientWidth + 1) return;
+    }
+    fitCells([node]);
+  }
 
   // ============================== VERİ ==============================
   function setData(raw, updatedAt, isDemo) {
@@ -274,55 +561,93 @@
       if (!state.groups.length) showMessage('Veri okunamadı: beklenen liste bulunamadı.');
       return;
     }
+    var prevGi = state.order[state.groupPos];
+    var prevTitle = prevGi === undefined ? null : groupTitle(state.groups[prevGi]);
 
-    var prevTitle = groupTitle(currentGroup());
     state.groups = groups;
-    state.detailIdx = [];
-    for (var i = 0; i < groups.length; i++) {
-      if (groupDetails(groups[i]).length) state.detailIdx.push(i);
-    }
+    state.isDemo = !!isDemo;
+    prepareAll();
 
-    // Veri güncellendiğinde aynı grubu göstermeye devam et
-    var pos = 0;
-    for (var j = 0; j < state.detailIdx.length; j++) {
-      if (groupTitle(groups[state.detailIdx[j]]) === prevTitle) { pos = j; break; }
+    // Veri güncellendiğinde aynı grubu ve sayfayı göstermeye devam et; zamanlayıcı sıfırlanmaz
+    var pos = -1;
+    for (var j = 0; j < state.order.length; j++) {
+      if (groupTitle(groups[state.order[j]]) === prevTitle) { pos = j; break; }
     }
-    if (pos !== state.groupPos) state.page = 0;
+    var keep = pos >= 0 && state.timer !== null;
+    if (pos < 0) { pos = 0; state.page = 0; }
     state.groupPos = pos;
-    state.updatedAt = parseDate(updatedAt) || new Date();
+    state.updatedAt = parseDate(updatedAt);
+    state.receivedAt = new Date();
     state.fetchError = false;
-    state.rowsPerPage = 0;
 
-    el.app.className = (isDemo ? 'is-demo ' : '') + (state.detailIdx.length ? '' : 'no-details');
+    if (!groups.length) showMessage('Gösterilecek rota grubu yok.');
+    else hideMessage();
 
-    if (!groups.length) {
-      showMessage('Gösterilecek rota grubu yok.');
-    } else {
-      hideMessage();
-    }
-    renderSummary();
-    renderDetails();
+    renderAll(keep);
     renderUpdated();
-    restartTimer();
   }
 
   function connectDatasource() {
-    var ds = omma.datasource.get(CONFIG.datasourceName);
-    if (!ds) {
+    var api = OM.datasource;
+    var ds = api && api.get ? api.get(CONFIG.datasourceName) : null;
+    if (!ds && api && api.getAll) {
       // Tek veri kaynağı varsa adı farklı olsa da onu kullan
-      var all = omma.datasource.getAll() || [];
+      var all = api.getAll() || [];
       if (all.length === 1) ds = all[0];
     }
     if (!ds) {
+      // İçerik yeni yüklenirken veri kaynağı geç gelebilir: mesaj göster, kendiliğinden tekrar dene
       log('error', 'Logiboard: veri kaynağı bulunamadı: ' + CONFIG.datasourceName);
-      showMessage('"' + CONFIG.datasourceName + '" veri kaynağı bulunamadı.');
+      if (!state.groups.length) {
+        showMessage('"' + CONFIG.datasourceName + '" veri kaynağı bulunamadı.\n' +
+          'Omma panelinde veri kaynağının bu içeriğe bağlı olduğunu kontrol edin.');
+      }
+      setTimeout(safeConnect, 10000);
       return;
     }
     setData(ds.data, ds.updatedAt);
-    ds.on('update', function (updated) {
-      var src = updated || ds;
-      setData(src.data, src.updatedAt);
-    });
+    if (ds.on) {
+      ds.on('update', function (arg) {
+        var src = arg && arg.data !== undefined ? arg : ds;
+        setData(src.data, src.updatedAt);
+      });
+    }
+  }
+
+  function safeConnect() {
+    try { connectDatasource(); } catch (e) {
+      log('error', 'Logiboard: veri kaynağına bağlanılamadı', String(e));
+      if (!state.groups.length) showMessage('Veri kaynağına bağlanılamadı, tekrar deneniyor…');
+      setTimeout(safeConnect, 10000);
+    }
+  }
+
+  function findOmma() {
+    try { if (window.omma) return window.omma; } catch (e) { /* yok */ }
+    try { if (window.parent && window.parent !== window && window.parent.omma) return window.parent.omma; } catch (e) { /* farklı kaynak */ }
+    return null;
+  }
+
+  // Omma yardımcısı sayfa açılırken hazır olmayabilir: 15 sn boyunca bekler, sonra uyarı gösterip aramaya devam eder.
+  // Omma bulunamadığında ASLA örnek veri gösterilmez (sahada yanlış rakam görünmesin).
+  function waitForOmma(tries) {
+    OM = findOmma();
+    if (OM) {
+      showMessage('Veri yükleniyor…');
+      try { OM.setVersion('v1'); } catch (e) { log('warn', 'Logiboard: omma.setVersion hatası', String(e)); }
+      if (typeof OM.ready === 'function') OM.ready(safeConnect); else safeConnect();
+      return;
+    }
+    if (tries > 0) { setTimeout(function () { waitForOmma(tries - 1); }, 250); return; }
+    showMessage('Omma bağlantısı bulunamadı.\n' +
+      'Bu sayfa Omma\'da içerik (Code Editor) olarak çalıştırılmalıdır.\n' +
+      'Tarayıcıda önizleme için adresin sonuna ?demo=1 ekleyin.');
+    setTimeout(function () { waitForOmma(0); }, 5000);
+  }
+
+  function demoRequested() {
+    if (CONFIG.demo) return true;
+    try { return /[?&#]demo=1(\b|$)/.test(window.location.search + window.location.hash); } catch (e) { return false; }
   }
 
   function pollUrl() {
@@ -345,93 +670,212 @@
     xhr.send();
   }
 
-  // ============================== ÖZET TABLO ==============================
-  function metricCells(obj, prefix) {
-    var html = '';
-    PROCESSES.forEach(function (p) {
-      PERIODS.forEach(function (per, j) {
-        var v = toNumber(obj[prefix + p.key + per.key]);
-        var cls = 'num' + (j === 0 ? ' sep' : '') + (v === 0 ? ' zero' : '');
-        var txt = fmt(v);
-        if (per.key === 'Past' && v > 0) txt = '<span class="chip">' + txt + '</span>';
-        html += '<td class="' + cls + '">' + txt + '</td>';
-      });
-    });
-    return html;
+  // ============================== ANA ÇİZİM ==============================
+  // keepTimer: veri güncellemesinde dönen sayfa/zamanlayıcı korunur (güncellemeler sık gelse de sayfalar ilerler)
+  function renderAll(keepTimer) {
+    var wasScenes = state.scenes;
+    state.portrait = window.innerHeight > window.innerWidth;
+    renderBanner();
+    decideLayout();
+    if (!state.scenes || state.scene === 'detail') renderDetails();
+    if (!keepTimer || state.scenes !== wasScenes || !state.order.length) restartCycle();
   }
 
-  function renderSummary() {
-    var groups = state.groups;
-    var activeIdx = state.detailIdx[state.groupPos];
-    var html = '<colgroup><col class="c-name">';
-    for (var c = 0; c < PROCESSES.length * PERIODS.length; c++) html += '<col>';
-    html += '</colgroup><thead><tr class="grp"><th rowspan="2" class="name">' + esc(label(CONFIG.groupTitleKey)) + '</th>';
-    PROCESSES.forEach(function (p) {
-      html += '<th colspan="' + PERIODS.length + '" class="sep ' + p.cls + '">' + p.label + '</th>';
-    });
-    html += '</tr><tr class="sub">';
-    PROCESSES.forEach(function () {
-      PERIODS.forEach(function (per, j) {
-        html += '<th' + (j === 0 ? ' class="sep"' : '') + '>' + per.label + '</th>';
-      });
-    });
-    html += '</tr></thead><tbody>';
-
-    var totals = {};
-    groups.forEach(function (g, i) {
-      html += '<tr id="sum-' + i + '"' + (i === activeIdx ? ' class="active"' : '') + '>' +
-        '<td class="name">' + esc(groupTitle(g)) + '</td>' + metricCells(g, 'Total') + '</tr>';
-      PROCESSES.forEach(function (p) {
-        PERIODS.forEach(function (per) {
-          var k = p.key + per.key;
-          var v = toNumber(g['Total' + k]);
-          if (v !== null) totals[k] = (totals[k] || 0) + v;
-        });
-      });
-    });
-    if (groups.length > 1) {
-      html += '<tr class="total"><td class="name">TOPLAM</td>' + metricCells(totals, '') + '</tr>';
+  function setAppClass() {
+    var c = [];
+    if (state.isDemo) c.push('is-demo');
+    if (CONFIG.blinkPriority) c.push('blink');
+    if (!state.order.length) c.push('no-details', 'fill');
+    else if (state.scenes) {
+      c.push('scenes', 'scene-' + state.scene);
+      if (state.scene === 'board') c.push('fill');
     }
-    html += '</tbody>';
-
-    el.summary.className = groups.length > 6 ? 'n-lg' : groups.length > 3 ? 'n-md' : '';
-    el.summary.innerHTML = html;
-    fitTable(el.summary, true);
+    el.app.className = c.join(' ');
   }
 
-  // Hücre içeriği sütuna sığmazsa ("2.5…" gibi kesilmesin diye) o hücre grubunun yazı boyutunu küçültür
-  function fitCells(cells) {
-    var base = [], i, step;
-    for (i = 0; i < cells.length; i++) {
-      cells[i].style.fontSize = '';
-      base[i] = parseFloat(window.getComputedStyle(cells[i]).fontSize);
-    }
-    function overflowing() {
-      for (var j = 0; j < cells.length; j++) {
-        if (cells[j].scrollWidth > cells[j].clientWidth) return true;
+  function boardSize(n, fill) {
+    if (state.portrait) return n <= 3 ? 'sz-xl' : n <= 5 ? 'sz-l' : 'sz-m';
+    if (fill && !state.order.length && n <= 2) return 'sz-xxl';
+    if (fill) return n <= 5 ? 'sz-xl' : n <= 7 ? 'sz-l' : 'sz-m';
+    return n <= 2 ? 'sz-xl' : n === 3 ? 'sz-l' : 'sz-m';
+  }
+
+  // Pano + detay alt alta sığıyorsa öyle, sığmıyorsa sırayla (sahne) gösterilir
+  function decideLayout() {
+    var n = state.groups.length;
+    var wasScenes = state.scenes;
+    state.scenes = false;
+    state.rowsPerPage = 0;
+    setAppClass();
+    state.size = boardSize(n, !state.order.length);
+    renderBoard();
+
+    if (state.order.length) {
+      var rpp = measureRowsPerPage(currentPrep());
+      if (rpp < CONFIG.minDetailRows) {
+        state.scenes = true;
+        if (!wasScenes) { state.scene = 'board'; state.turnPages = 0; }
+        state.size = boardSize(n, true);
+        state.rowsPerPage = 0;
+      } else {
+        state.rowsPerPage = rpp;
       }
-      return false;
     }
-    for (step = 1; step <= 10 && overflowing(); step++) {
-      for (i = 0; i < cells.length; i++) cells[i].style.fontSize = (base[i] * Math.pow(0.92, step)) + 'px';
-    }
+    setAppClass();
+    if (state.scenes) renderBoard(); // boyut sınıfı değişti, aktif satır işareti kalkar
   }
 
-  function fitTable(table, withNames) {
-    fitCells(table.querySelectorAll('thead th'));
-    fitCells(table.querySelectorAll('td.num'));
-    if (withNames) fitCells(table.querySelectorAll('td.name'));
+  // ============================== ÖNCELİK BANDI ==============================
+  function renderBanner() {
+    var cells = [], anyPast = false, totalPast = 0;
+    state.groups.forEach(function (g, gi) {
+      PROCESSES.forEach(function (p, pi) {
+        var past = metric(g, p.key, 'Past');
+        if (past !== null) anyPast = true;
+        if (past > 0) {
+          totalPast += past;
+          cells.push({ g: groupTitle(g), p: p.label, past: past, today: metric(g, p.key, 'Today') || 0, gi: gi, pi: pi });
+        }
+      });
+    });
+    // En çok geciken önce; eşitse BUGÜN hacmi büyük olan; sonra ERP sırası
+    cells.sort(function (a, b) {
+      return (b.past - a.past) || (b.today - a.today) || (a.gi - b.gi) || (a.pi - b.pi);
+    });
+
+    if (!state.groups.length || !anyPast) { state.bannerKind = ''; applyBannerState(); return; }
+
+    var unit = esc(CONFIG.pastUnit);
+    if (!cells.length) {
+      state.bannerKind = 'ok';
+      applyBannerState();
+      el['b-l1'].innerHTML = 'GECİKEN ' + esc(trUpper(CONFIG.pastUnit)) + ' YOK';
+      el['b-l2'].innerHTML = 'Tüm alanlar yeşil — bugünkü plana devam edin.';
+      fitBannerTitle(el['b-l1']);
+      setFitted(el['b-l2'], [el['b-l2'].innerHTML]);
+      return;
+    }
+
+    var top = cells[0];
+    state.bannerKind = 'alert';
+    applyBannerState();
+    el['b-l1'].innerHTML = esc(top.g) + '<span class="dot">·</span>' + top.p;
+    el['b-count-n'].textContent = fmt(top.past);
+    el['b-count-l'].textContent = 'GECİKEN ' + trUpper(CONFIG.pastUnit);
+    fitBannerTitle(el['b-l1']);
+    if (cells.length === 1) {
+      setFitted(el['b-l2'], ['Önce bu işi bitirin. Başka geciken ' + unit + ' yok.']);
+      return;
+    }
+    // "Sırada" listesi: sığdığı kadar alan; sığmazsa daha kısa seçenek
+    var total = '&nbsp;&nbsp;|&nbsp;&nbsp;Toplam ' + fmt(totalPast) + ' geciken ' + unit + ', ' + cells.length + ' alanda';
+    var variants = [], next = [];
+    for (var shown = Math.min(3, cells.length - 1); shown >= 1; shown--) {
+      var items = [];
+      for (var i = 1; i <= shown; i++) {
+        items.push('<b>' + esc(cells[i].g) + ' · ' + cells[i].p + '</b> (' + fmt(cells[i].past) + ')');
+      }
+      var rest = cells.length - 1 - shown;
+      next.push('Sırada: ' + items.join(',&nbsp; ') + (rest > 0 ? ',&nbsp; +' + rest + ' alan daha' : ''));
+    }
+    for (var v = 0; v < next.length; v++) variants.push('Önce bunu bitirin. ' + next[v] + total);
+    variants.push('Önce bunu bitirin. ' + next[next.length - 1]);
+    variants.push(next[next.length - 1]); // en kısa: yalnızca sıradaki ilk alan
+    setFitted(el['b-l2'], variants);
   }
 
-  function markActiveSummaryRow() {
-    var activeIdx = state.detailIdx[state.groupPos];
+  // Bant türü + veri eskiliği: veri eskiyse sol kutu sarı "VERİ ESKİ" olur, yanıp sönme durur
+  function applyBannerState() {
+    var k = state.bannerKind;
+    el.banner.className = 'banner' + (k ? ' ' + k : '') + (k && state.stale ? ' stale' : '');
+    if (!k) return;
+    el['b-tag'].textContent = state.stale ? 'VERİ ESKİ' : k === 'alert' ? 'ÖNCELİK' : 'DURUM';
+  }
+
+  // ============================== ANDON PANOSU ==============================
+  function boardHead() {
+    var pr = state.portrait ? ' pr' : '';
+    var h = '<div class="bhead' + pr + '"><div class="bname">' + esc(headLabel(CONFIG.groupTitleKey)) + '</div><div class="btiles">';
+    PROCESSES.forEach(function (p, i) {
+      var late = 0;
+      state.groups.forEach(function (g) { var v = metric(g, p.key, 'Past'); if (v > 0) late += v; });
+      var pill = CONFIG.showProcessOverdue && late > 0 ?
+        '<span class="ppill" data-n="' + fmt(late) + '">' + fmt(late) + ' GECİKEN</span>' : '';
+      h += '<div class="tile"><div class="th-proc"><span class="step">' + (i + 1) + '</span>' + p.label + pill +
+        (i < PROCESSES.length - 1 ? '<span class="arrow">&rarr;</span>' : '') + '</div><div class="th-sub">';
+      PERIODS.forEach(function (per) { h += '<span class="slot s-' + per.cls + '">' + per.label + '</span>'; });
+      h += '</div></div>';
+    });
+    return h + '</div></div>';
+  }
+
+  function numHtml(v) {
+    var n = toNumber(v);
+    return n === 0 ? '<span class="zero">0</span>' : fmt(v);
+  }
+
+  function boardRow(g, i, active) {
+    var late = groupPast(g);
+    var cls = 'brow' + (late === null ? ' g-none' : late > 0 ? ' g-late' : ' g-ok') +
+      (state.portrait ? ' pr' : '') + (active ? ' active' : '');
+    var status = late === null ? '' : late > 0 ? fmt(late) + ' geciken ' + esc(CONFIG.pastUnit) : 'Geciken yok';
+    var h = '<div class="' + cls + '" id="brow-' + i + '"><div class="bname"><div class="bn-text">' + esc(groupTitle(g)) +
+      '</div><div class="bn-status">' + status + '</div></div><div class="btiles">';
+    PROCESSES.forEach(function (p) {
+      var past = metric(g, p.key, 'Past');
+      var lamp = past > 0 ? '<span class="lamp">' + fmt(past) + '</span>' :
+        past === null ? '<span class="zero">–</span>' : '<span class="ok-mark"></span>';
+      h += '<div class="tile' + (past > 0 ? ' late' : '') + '">' +
+        '<div class="slot s-past">' + lamp + '</div>' +
+        '<div class="slot s-today">' + numHtml(g['Total' + p.key + 'Today']) + '</div>' +
+        '<div class="slot s-plan">' + numHtml(g['Total' + p.key + 'Planned']) + '</div></div>';
+    });
+    return h + '</div></div>';
+  }
+
+  function renderBoard() {
+    var activeGi = !state.scenes && state.order.length ? state.order[state.groupPos] : -1;
+    var html = '<div class="bcol">' + boardHead();
+    var widePast = false;
+    state.groups.forEach(function (g, i) {
+      html += boardRow(g, i, i === activeGi);
+      PROCESSES.forEach(function (p) { var v = metric(g, p.key, 'Past'); if (v > 0 && fmt(v).length >= 4) widePast = true; });
+    });
+    el.board.className = 'board ' + state.size + (widePast ? ' wide-past' : '');
+    el.board.innerHTML = html + '</div>';
+    fitBoard();
+  }
+
+  function fitBoard() {
+    if (!el.board.offsetWidth) return; // gizliyken ölçülemez; görünür olunca tekrar çağrılır
+    var heads = el.board.querySelectorAll('.th-proc');
+    fitCells(heads, 3);
+    // Başlık hâlâ sığmıyorsa rozet yalnızca sayıyı gösterir ("3 GECİKEN" -> "3")
+    for (var h = 0; h < heads.length; h++) {
+      var pill = heads[h].querySelector('.ppill');
+      if (pill && heads[h].scrollWidth > heads[h].clientWidth) pill.textContent = pill.getAttribute('data-n');
+    }
+    fitCells(heads);
+    fitCells(el.board.querySelectorAll('.th-sub .slot'));
+    var lamps = el.board.querySelectorAll('.brow .s-past'); // GECİKEN kutuları tek tek: biri büyükse diğerleri küçülmesin
+    for (var j = 0; j < lamps.length; j++) fitCells([lamps[j]]);
+    fitCells(el.board.querySelectorAll('.brow .s-today'));
+    fitCells(el.board.querySelectorAll('.brow .s-plan'));
+    var names = el.board.querySelectorAll('.brow .bname');
+    for (var i = 0; i < names.length; i++) fitName(names[i]);
+  }
+
+  function markActiveRow() {
+    var activeGi = !state.scenes && state.order.length ? state.order[state.groupPos] : -1;
     for (var i = 0; i < state.groups.length; i++) {
-      var row = document.getElementById('sum-' + i);
-      if (row) row.className = i === activeIdx ? 'active' : '';
+      var row = document.getElementById('brow-' + i);
+      if (!row) continue;
+      var c = row.className.replace(/\s*active/g, '');
+      row.className = i === activeGi ? c + ' active' : c;
     }
   }
 
-  // ============================== DETAY TABLO ==============================
+  // ============================== DETAY ==============================
   function firstValue(rows, key) {
     for (var i = 0; i < rows.length && i < 50; i++) {
       var r = rows[i];
@@ -458,9 +902,9 @@
       var sample = firstValue(rows, key);
       if (sample !== null && typeof sample === 'object') return; // iç içe liste/nesne gösterilmez
       var m = METRIC_RE.exec(key);
-      if (m) metrics[m[2] + m[3]] = key;
-      else if (typeof sample === 'number') other.push({ key: key, label: label(key), num: true });
-      else text.push({ key: key, label: label(key), num: false });
+      if (m) { if (m[3] !== 'Planned' || CONFIG.detailShowPlanned) metrics[m[2] + m[3]] = key; }
+      else if (typeof sample === 'number') other.push({ key: key, label: headLabel(key), num: true });
+      else text.push({ key: key, label: headLabel(key), num: false });
     });
 
     var cols = text.slice();
@@ -469,25 +913,49 @@
       PERIODS.forEach(function (per) {
         var key = metrics[p.key + per.key];
         if (!key) return;
-        cols.push({ key: key, label: per.label, num: true, group: p, sep: first, past: per.key === 'Past' });
+        cols.push({ key: key, label: per.label, num: true, group: p, sep: first, period: per });
         first = false;
       });
     });
     return cols.concat(other);
   }
 
+  // Sayı sütunları sabit ~7rem genişlik alır (GECİKEN başlığı küçülmeden sığsın), kalan
+  // genişlik metin sütunlarına 4:3:3… oranında dağıtılır. Metne yer kalmıyorsa (dikey ekran)
+  // her kayıt iki satır çizilir: üstte metin alanları, altta sayılar.
+  function tableLayout(prep) {
+    var W = el['details-body'].clientWidth || 1;
+    var rem = parseFloat(window.getComputedStyle(document.documentElement).fontSize) || 16;
+    var text = [], nums = [];
+    prep.cols.forEach(function (c) { (c.num ? nums : text).push(c); });
+    var numPx = rem * 7.2;
+    var stacked = text.length > 0 && nums.length > 0 &&
+      (W - nums.length * numPx) < Math.max(W * 0.25, text.length * rem * 8);
+    var cols = stacked ? nums : prep.cols;
+    var html = '<colgroup>';
+    if (stacked || !text.length) {
+      cols.forEach(function () { html += '<col style="width:' + (100 / cols.length).toFixed(3) + '%">'; });
+    } else {
+      // Metin sütunları içeriklerinin uzunluğuna göre pay alır (en az 6, en çok 40 karakter)
+      var tw = 0, numPct = nums.length ? numPx * 100 / W : 0;
+      text.forEach(function (c) {
+        var len = Math.max(6, String(c.label).length);
+        for (var r = 0; r < prep.rows.length && r < 60; r++) len = Math.max(len, cellText(prep.rows[r].r[c.key]).length);
+        c.w = Math.min(40, len);
+        tw += c.w;
+      });
+      cols.forEach(function (c) {
+        var pct = c.num ? numPct : (100 - numPct * nums.length) * c.w / tw;
+        html += '<col style="width:' + pct.toFixed(3) + '%">';
+      });
+    }
+    html += '</colgroup>';
+    return { stacked: stacked, cols: cols, text: text, head: html + buildHead(cols) };
+  }
+
   function buildHead(cols) {
     var grouped = cols.some(function (c) { return c.group; });
-    var weights = 0;
-    cols.forEach(function (c, i) { weights += c.num ? 1 : (i === 0 ? 4 : 3); });
-
-    var html = '<colgroup>';
-    cols.forEach(function (c, i) {
-      var w = c.num ? 1 : (i === 0 ? 4 : 3);
-      html += '<col style="width:' + (w * 100 / weights).toFixed(2) + '%">';
-    });
-    html += '</colgroup><thead><tr class="grp">';
-
+    var html = '<thead><tr class="grp">';
     for (var i = 0; i < cols.length; i++) {
       var c = cols[i];
       if (!c.group) {
@@ -496,7 +964,7 @@
       }
       var span = 1;
       while (i + span < cols.length && cols[i + span].group === c.group) span++;
-      html += '<th colspan="' + span + '" class="sep ' + c.group.cls + '">' + c.group.label + '</th>';
+      html += '<th colspan="' + span + '" class="sep">' + c.group.label + '</th>';
       i += span - 1;
     }
     html += '</tr>';
@@ -504,120 +972,258 @@
     if (grouped) {
       html += '<tr class="sub">';
       cols.forEach(function (c) {
-        if (c.group) html += '<th' + (c.sep ? ' class="sep"' : '') + '>' + esc(c.label) + '</th>';
+        if (c.group) html += '<th class="' + c.period.cls + (c.sep ? ' sep' : '') + '">' + esc(c.label) + '</th>';
       });
       html += '</tr>';
     }
     return html + '</thead>';
   }
 
-  function rowHtml(row, cols) {
-    var html = '<tr>';
-    cols.forEach(function (c) {
-      var v = row ? row[c.key] : null;
-      var cls = c.num ? 'num' : 'name';
-      if (c.sep) cls += ' sep';
-      if (c.num) {
-        var n = toNumber(v);
-        if (n === 0) cls += ' zero';
-        if (c.past && n > 0) cls += ' late';
+  // Satırları süzer (hepsi 0 olanlar gizlenir) ve sıralar (geciken önce, sonra BUGÜN toplamı)
+  function prepareGroup(g) {
+    var all = groupDetails(g);
+    var cols = buildColumns(all);
+    var numCols = cols.filter(function (c) { return c.num; });
+    var rows = [], hidden = 0, lateRows = 0;
+    for (var i = 0; i < all.length; i++) {
+      var r = all[i];
+      if (!r || typeof r !== 'object') continue;
+      var past = 0, today = 0, nonZero = false, hot = {};
+      for (var j = 0; j < numCols.length; j++) {
+        var c = numCols[j], n = toNumber(r[c.key]);
+        if (n !== null && n !== 0) nonZero = true;
+        if (c.period && n > 0) {
+          if (c.period.key === 'Past') { past += n; hot[c.group.key] = true; }
+          else if (c.period.key === 'Today') today += n;
+        }
       }
-      html += '<td class="' + cls + '">' + esc(cellText(v)) + '</td>';
-    });
-    return html + '</tr>';
+      if (CONFIG.hideZeroDetailRows && numCols.length && !nonZero) { hidden++; continue; }
+      if (past > 0) lateRows++;
+      rows.push({ r: r, i: i, past: past, today: today, hot: hot });
+    }
+    if (CONFIG.sortDetailRows) {
+      rows.sort(function (a, b) {
+        return ((b.past > 0) - (a.past > 0)) || (b.past - a.past) || (b.today - a.today) || (a.i - b.i);
+      });
+    }
+    return { cols: cols, rows: rows, hidden: hidden, lateRows: lateRows };
   }
 
-  // Ekrana kaç satır sığdığını gerçek satır yüksekliğini ölçerek hesaplar
-  function measureRowsPerPage(head, cols, sampleRow) {
-    el.details.innerHTML = head + '<tbody>' + rowHtml(sampleRow, cols) + '</tbody>';
+  function prepareAll() {
+    state.prep = [];
+    var order = [];
+    state.groups.forEach(function (g, i) {
+      state.prep[i] = prepareGroup(g);
+      if (state.prep[i].rows.length) order.push(i);
+    });
+    // Geciken işi olan gruplar detayda önce gelir
+    order.sort(function (a, b) {
+      return ((groupPast(state.groups[b]) || 0) - (groupPast(state.groups[a]) || 0)) || (a - b);
+    });
+    state.order = order;
+    if (state.groupPos >= order.length) state.groupPos = 0;
+  }
+
+  function currentPrep() { return state.prep[state.order[state.groupPos]]; }
+
+  function cellHtml(item, c) {
+    var v = item.r[c.key];
+    var cls = c.num ? 'num' : 'name';
+    var txt = esc(cellText(v));
+    if (c.sep) cls += ' sep';
+    if (c.group && item.hot[c.group.key]) cls += ' hot'; // bu kaydın geciken süreci (hangi ekibi ilgilendirdiği)
+    if (c.num) {
+      var n = toNumber(v);
+      if (c.period) cls += ' ' + c.period.cls;
+      if (n === 0) cls += ' zero';
+      if (c.period && c.period.key === 'Past' && n > 0) txt = '<span class="chip">' + txt + '</span>';
+    }
+    return '<td class="' + cls + '">' + txt + '</td>';
+  }
+
+  // Her kayıt kendi <tbody>'sinde: geciken kayıt kırmızı zeminli, dikeyde iki satır
+  function recordHtml(item, lay) {
+    var row = item.r;
+    var html = '<tbody class="rec' + (item.past > 0 ? ' late' : '') + '">';
+    if (lay.stacked) {
+      var parts = [];
+      lay.text.forEach(function (c) {
+        var t = cellText(row[c.key]);
+        if (t !== '') parts.push(esc(t));
+      });
+      html += '<tr class="r-name"><td class="name" colspan="' + lay.cols.length + '">' +
+        (parts.join('<span class="sepdot">·</span>') || '&nbsp;') + '</td></tr><tr class="r-vals">';
+    } else {
+      html += '<tr>';
+    }
+    lay.cols.forEach(function (c) { html += cellHtml(item, c); });
+    return html + '</tr></tbody>';
+  }
+
+  function fitTable(table) {
+    fitCells(table.querySelectorAll('tr.grp th'));
+    fitCells(table.querySelectorAll('tr.sub th'));
+    fitCells(table.querySelectorAll('td.num'));
+    fitCells(table.querySelectorAll('td.name'), 3); // metin en fazla %78'e küçülür, sonra "…" ile kısalır
+  }
+
+  function drawTable(lay, items) {
+    var body = '';
+    items.forEach(function (it) { body += recordHtml(it, lay); });
+    el.details.className = lay.stacked ? 'stacked' : '';
+    el.details.innerHTML = lay.head + body;
+    fitTable(el.details);
+  }
+
+  // Ekrana kaç kayıt sığdığını gerçek yüksekliği ölçerek hesaplar (geciken ve normal örnekle)
+  function measureRowsPerPage(prep) {
+    if (!prep || !prep.rows.length) return 10;
+    var lay = tableLayout(prep);
+    drawTable(lay, [prep.rows[0], prep.rows[prep.rows.length - 1]]);
     var available = el['details-body'].clientHeight - 2;
     var headH = el.details.tHead ? el.details.tHead.getBoundingClientRect().height : 0;
-    var row = el.details.tBodies[0].rows[0];
-    var rowH = row ? row.getBoundingClientRect().height : 0;
-    if (available <= 0 || !rowH) return 10;
-    return Math.max(1, Math.floor((available - headH) / rowH));
+    var recs = el.details.tBodies;
+    var recH = 0;
+    for (var i = 0; i < recs.length; i++) recH = Math.max(recH, recs[i].getBoundingClientRect().height);
+    if (available <= 0 || !recH) return 1;
+    return Math.max(1, Math.floor((available - headH) / recH));
   }
 
-  function pageCount(rows) {
-    return Math.max(1, Math.ceil(rows.length / (state.rowsPerPage || 1)));
+  function pageCount(prep) {
+    var rpp = state.rowsPerPage || 1;
+    var pages = Math.max(1, Math.ceil(prep.rows.length / rpp));
+    if (CONFIG.detailMaxPages > 0) {
+      // Sınır olsa da geciken satırların hepsi gösterilir
+      pages = Math.min(pages, Math.max(CONFIG.detailMaxPages, Math.ceil(prep.lateRows / rpp)));
+    }
+    return pages;
   }
 
   function renderDetails() {
-    if (!state.detailIdx.length) return;
-    var g = currentGroup();
-    var rows = groupDetails(g);
-    var cols = buildColumns(rows);
-    var head = buildHead(cols);
+    if (!state.order.length) return;
+    var gi = state.order[state.groupPos];
+    var g = state.groups[gi];
+    var prep = state.prep[gi];
 
-    // Başlık satırı ölçümden önce dolu olmalı, yoksa tablo alanı olduğundan yüksek ölçülür
-    el['details-title'].innerHTML = '<small>DETAY</small>' + esc(groupTitle(g));
-    if (!el['details-page'].textContent) el['details-page'].textContent = '…';
-    if (!state.rowsPerPage) state.rowsPerPage = measureRowsPerPage(head, cols, rows[0]);
-    var pages = pageCount(rows);
+    // Başlık ölçümden önce dolu olmalı, yoksa tablo alanı olduğundan yüksek ölçülür
+    el['details-title'].textContent = groupTitle(g);
+    el['details-hint'].className = 'dh-hint ' + (prep.lateRows ? 'late' : 'ok');
+    el['details-hint'].textContent = prep.lateRows ?
+      fmt(prep.lateRows) + ' GECİKEN KAYIT EN ÜSTTE' : 'GECİKEN KAYIT YOK';
+    if (!el['details-page'].innerHTML) el['details-page'].textContent = '…';
+
+    if (!state.rowsPerPage) state.rowsPerPage = measureRowsPerPage(prep);
+    var lay = tableLayout(prep);
+    var pages = pageCount(prep);
     if (state.page >= pages) state.page = pages - 1;
 
-    var start = state.page * state.rowsPerPage;
-    var body = '';
-    rows.slice(start, start + state.rowsPerPage).forEach(function (r) { body += rowHtml(r, cols); });
-    el.details.innerHTML = head + '<tbody>' + body + '</tbody>';
-    fitTable(el.details, false);
+    function draw() {
+      var start = state.page * state.rowsPerPage;
+      drawTable(lay, prep.rows.slice(start, start + state.rowsPerPage));
+    }
+    draw();
+    // Güvenlik: sayfa yine de taşarsa kayıt sayısını azalt (hiçbir satır kesilmesin)
+    var guard = 0;
+    while (state.rowsPerPage > 1 && el.details.offsetHeight > el['details-body'].clientHeight && guard++ < 30) {
+      state.rowsPerPage--;
+      pages = pageCount(prep);
+      if (state.page >= pages) state.page = pages - 1;
+      draw();
+    }
 
-    el['details-page'].textContent = (pages > 1 ? 'Sayfa ' + (state.page + 1) + ' / ' + pages + '  ·  ' : '') +
-      fmt(rows.length) + ' kayıt';
+    var cut = prep.rows.length - pages * state.rowsPerPage;
+    el['details-page'].innerHTML = (pages > 1 ? 'Sayfa ' + (state.page + 1) + ' / ' + pages : '') +
+      '<small>' + fmt(prep.rows.length) + ' kayıt' + (prep.hidden ? ' · ' + fmt(prep.hidden) + ' sıfır kayıt gizli' : '') +
+      (cut > 0 ? ' · +' + fmt(cut) + ' kayıt gösterilmiyor' : '') + '</small>';
 
-    markActiveSummaryRow();
-    startProgress(state.detailIdx.length > 1 || pages > 1);
+    markActiveRow();
   }
 
-  function startProgress(on) {
+  // ============================== DÖNGÜ ==============================
+  function startProgress(seconds) {
     var bar = el['progress-bar'];
-    el.progress.className = 'progress' + (on ? '' : ' off');
+    el.progress.className = 'progress' + (seconds ? '' : ' off');
     bar.style.transition = 'none';
+    bar.style.webkitTransition = 'none';
     bar.style.width = '0';
     void bar.offsetWidth; // animasyonu sıfırlamak için yeniden çizdir
-    if (!on) return;
-    bar.style.transition = 'width ' + CONFIG.pageSeconds + 's linear';
+    if (!seconds) return;
+    bar.style.transition = 'width ' + seconds + 's linear';
+    bar.style.webkitTransition = 'width ' + seconds + 's linear';
     bar.style.width = '100%';
   }
 
-  function nextPage() {
-    if (!state.detailIdx.length) return;
-    state.page++;
-    if (state.page >= pageCount(groupDetails(currentGroup()))) {
-      state.page = 0;
-      state.groupPos = (state.groupPos + 1) % state.detailIdx.length;
-    }
-    renderDetails();
+  function restartCycle() {
+    if (state.timer) clearTimeout(state.timer);
+    state.timer = null;
+    if (!state.order.length) { startProgress(0); return; }
+    var secs = state.scenes && state.scene === 'board' ? CONFIG.boardSeconds : CONFIG.pageSeconds;
+    var moving = state.scenes || state.order.length > 1 || pageCount(currentPrep()) > 1;
+    startProgress(moving ? secs : 0);
+    if (moving) state.timer = setTimeout(step, secs * 1000);
   }
 
-  function restartTimer() {
-    if (state.timer) clearInterval(state.timer);
-    state.timer = setInterval(nextPage, CONFIG.pageSeconds * 1000);
+  // Bir sonraki sayfaya geçer; grup bittiyse sıradaki gruba geçip true döner
+  function advancePage() {
+    state.page++;
+    if (state.page >= pageCount(currentPrep())) {
+      state.page = 0;
+      state.groupPos = (state.groupPos + 1) % state.order.length;
+      state.rowsPerPage = 0;
+      return true;
+    }
+    return false;
+  }
+
+  function step() {
+    if (!state.scenes) {
+      advancePage();
+      renderDetails();
+    } else if (state.scene === 'board') {
+      state.scene = 'detail';
+      state.turnPages = 0;
+      setAppClass();
+      renderDetails();
+    } else {
+      state.turnPages++;
+      var groupDone = advancePage();
+      if (groupDone || state.turnPages >= CONFIG.detailPagesPerTurn) {
+        state.scene = 'board';
+        setAppClass();
+        fitBoard();
+      } else {
+        renderDetails();
+      }
+    }
+    restartCycle();
   }
 
   // ============================== SAAT / GÜNCELLEME ==============================
   function renderClock() {
     var now = new Date();
     el.time.textContent = hhmm(now);
-    el.date.textContent = now.getDate() + ' ' + MONTHS[now.getMonth()] + ' ' + now.getFullYear() + ' ' + DAYS[now.getDay()];
+    el.date.textContent = now.getDate() + ' ' + MONTHS[now.getMonth()] + ' ' + DAYS[now.getDay()];
   }
 
+  // Veri kaynağı güncelleme zamanını vermiyorsa ekrana ulaşma zamanı "Veri alındı" diye gösterilir
   function renderUpdated() {
-    var t = state.updatedAt;
+    var t = state.updatedAt || state.receivedAt;
     if (!t) { el.updated.textContent = ''; return; }
     var now = new Date();
-    var mins = Math.floor((now.getTime() - t.getTime()) / 60000);
+    var mins = Math.max(0, Math.floor((now.getTime() - t.getTime()) / 60000));
     var sameDay = t.toDateString() === now.toDateString();
-    var text = 'Son güncelleme ' + (sameDay ? '' : pad2(t.getDate()) + '.' + pad2(t.getMonth() + 1) + ' ') + hhmm(t);
+    var text = (state.updatedAt ? 'Son güncelleme ' : 'Veri alındı ') +
+      (sameDay ? '' : pad2(t.getDate()) + '.' + pad2(t.getMonth() + 1) + ' ') + hhmm(t);
     var stale = state.fetchError || (CONFIG.staleMinutes > 0 && mins >= CONFIG.staleMinutes);
     if (state.fetchError) text = 'Bağlantı hatası  ·  ' + text;
     else if (stale) text = 'Veri ' + (mins >= 120 ? Math.floor(mins / 60) + ' saat' : mins + ' dk') + ' önce güncellendi';
     el.updated.textContent = text;
     el.updated.className = 'updated' + (stale ? ' stale' : '');
+    if (stale !== state.stale) { state.stale = stale; applyBannerState(); }
   }
 
   // ============================== DEMO VERİ ==============================
-  // Sadece Omma dışında (normal tarayıcıda) açıldığında ve dataUrl boşsa kullanılır.
+  // Yalnızca CONFIG.demo açıksa ya da adres sonuna ?demo=1 eklendiyse kullanılır (tarayıcıda önizleme için).
   // Toplamlar ekran görüntüsündeki değerlerdir; detay satırları örnek olarak üretilir.
   function buildDemoData() {
     var seed = 7;
@@ -666,28 +1272,18 @@
     var resizeTimer;
     window.addEventListener('resize', function () {
       clearTimeout(resizeTimer);
-      resizeTimer = setTimeout(function () {
-        state.rowsPerPage = 0;
-        renderSummary();
-        renderDetails();
-        restartTimer();
-      }, 300);
+      resizeTimer = setTimeout(function () { if (state.groups.length) renderAll(); }, 300);
     });
 
-    if (CONFIG.dataUrl) {
+    if (demoRequested()) {
+      setData(buildDemoData(), new Date(), true);
+    } else if (CONFIG.dataUrl) {
+      OM = findOmma(); // yalnızca loglama için
       showMessage('Veri yükleniyor…');
       pollUrl();
-    } else if (window.omma) {
-      showMessage('Veri yükleniyor…');
-      try { omma.setVersion('v1'); } catch (e) { log('warn', 'Logiboard: omma.setVersion hatası', e); }
-      omma.ready(function () {
-        try { connectDatasource(); } catch (e) {
-          log('error', 'Logiboard: veri kaynağına bağlanılamadı', String(e));
-          showMessage('Veri kaynağına bağlanılamadı.');
-        }
-      });
     } else {
-      setData(buildDemoData(), new Date(), true);
+      showMessage('Omma bağlantısı bekleniyor…');
+      waitForOmma(60);
     }
   }
 
