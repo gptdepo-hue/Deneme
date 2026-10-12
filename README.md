@@ -1,6 +1,6 @@
 # Turkuaz LogiBoard – Depo İçi Ekran
 
-ERP'den gelen `Turkuaz_Logiboard` verisini depo içi ekranlarda (Omma / Signalive) gösteren tek dosyalık HTML içerik: [`202610121737.html`](202610121737.html).
+ERP'den gelen `Turkuaz_Logiboard` verisini depo içi ekranlarda (Omma / Signalive) gösteren tek dosyalık HTML içerik: [`202610121828.html`](202610121828.html).
 Dosya adı revizyonun tarih ve saatidir (YYYYAAGGSSDD, Türkiye saati); her revizyonda yeni adla gelir.
 Sahadaki personelin 3–10 metreden bakıp **2 saniyede ne yapacağını anlaması** için andon panosu mantığıyla tasarlandı.
 
@@ -8,31 +8,41 @@ Sahadaki personelin 3–10 metreden bakıp **2 saniyede ne yapacağını anlamas
 
 ## Ekranda ne var?
 
+**Üst bar:** Saat, tarih ve "Son güncelleme" her zaman **Türkiye saatiyle (UTC+3)** gösterilir. Cihazın saat dilimi yanlış ayarlı olsa da ekrandaki saat doğrudur; cihazın saatinin kendisi (NTP) doğru olmalıdır. Saat yaklaşık 10 metreden okunacak büyüklüktedir.
+
 1. **Öncelik bandı (en üstte, her zaman görünür)**
-   - Kırmızı **ÖNCELİK**: gecikmesi olan gruplardan **cut-off'u en erken olan** *rota grubu · süreç* ve geciken sayısı, örneğin "İSTANBUL 2.SEVKİYAT · [SEVKİYAT] – 4 GECİKEN İŞ". Süreç beyaz etiketle ayrılır; böylece grup adındaki "SEVKİYAT" ile karışmaz. İkinci satırda "Sırada: …" listesi ve toplam geciken sayısı yer alır.
-   - Yeşil **GECİKEN İŞ YOK**: hiçbir yerde geciken iş yoksa görünür.
+   - Kırmızı **ÖNCELİK**: gecikmesi olan gruplardan **sevk saati en erken olan** *rota grubu · süreç* ve geciken sayısı, örneğin "İSTANBUL 2.SEVKİYAT · [SEVKİYAT] – 4 GECİKEN KALEM". Süreç beyaz etiketle ayrılır; böylece grup adındaki "SEVKİYAT" ile karışmaz. İkinci satırda "Sırada: …" listesi ve toplam geciken kalem sayısı yer alır.
+   - Yeşil **GECİKME YOK** / "Tüm kalemler zamanında.": hiçbir yerde geciken kalem yoksa görünür.
    - Sarı **VERİ ESKİ**: veri `staleMinutes` dakikadan eskiyse ya da bağlantı koptuysa bandın sol kutusu sarıya döner ve alt satırda "Veri güncel değil — gösterilen durum değişmiş olabilir." yazar.
 2. **Andon panosu**
-   - Rota grupları **sevkiyat cut-off saatine göre** sıralanır (aşağıdaki tablo). Grup adının altında "Cut-off 14:30" yazar.
-   - **Ertesi günün grupları sona alınır.** GECİKEN ve ZAMANINDA değeri olmayan, yalnızca PLANLI değeri olan grup ertesi günün işidir. Bu gruplar gri görünür ve "ERTESİ GÜN" etiketi taşır. Cuma günü önce Cumartesi grupları, diğer günler önce hafta içi grupları gelir.
+   - Rota grupları **sevk saatine göre** sıralanır (aşağıdaki tablo). Grup adının altında "Sevk 14:30" yazar.
+   - **Sevk saati durumu** (Türkiye saatiyle): sevke 60 dakika ya da daha az kaldıysa saat **amber kutuda** görünür. Saat geçtiği hâlde grupta GECİKEN/ZAMANINDA kalem duruyorsa **beyaz kutuda kırmızı "14:30 GEÇTİ"** yazar.
+   - **Ertesi günün grupları alttaki gri şeride alınır.** GECİKEN ve ZAMANINDA değeri olmayan, yalnızca PLANLI değeri olan grup ertesi günün işidir. Bugünün grupları varken bu gruplar satır olarak çizilmez; panonun altındaki **ERTESİ GÜN** şeridinde adları ve sevk saatleriyle listelenir. Böylece bugünün satırları büyük kalır. Cuma günü önce Cumartesi grupları, diğer günler önce hafta içi grupları gelir. Bugün hiç iş yoksa ertesi günün grupları satır olarak gösterilir.
    - Her grup için süreçler TOPLAMA → PAKETLEME → SEVKİYAT sırasıyla, GECİKEN / ZAMANINDA / PLANLI değerleriyle gösterilir; değerler ortalıdır.
-   - Geciken işi olan kutu **kırmızı** yanar ve beyaz kutu içinde geciken sayısını gösterir. Bugünün gruplarında geciken yoksa yeşil onay işareti görünür. Grup adının altında "Geciken yok" yazmaz.
+   - Geciken kalemi olan kutu **kırmızı** yanar ve beyaz kutu içinde geciken sayısını gösterir. Bugünün gruplarında geciken yoksa yeşil onay işareti görünür. Grup adının altında "Geciken yok" yazmaz.
+   - **0** değerleri sönük ve küçük yazılır; dolu sayılar öne çıkar.
    - Süreç başlıklarında o süreçteki toplam geciken sayısı rozet olarak görünür, örneğin "5 GECİKEN".
 3. **Detay tablosu**
-   - Yalnızca bugünün grupları detayda gösterilir; sıra panoyla aynıdır (cut-off). Ertesi günün gruplarının detayı gösterilmez.
+   - Yalnızca bugünün grupları detayda gösterilir; sıra panoyla aynıdır (sevk saati). Başlıkta "Sevk Saati 14:30" yazar. Ertesi günün gruplarının detayı gösterilmez.
    - En üstte, her sayfada **ROTA GRUBU TOPLAMI** satırı durur. Bu satır grubun ERP toplamlarını gösterir; panodaki rakamlarla aynıdır.
    - Altında **bayi kırılımı** yer alır. Yalnızca GECİKEN ya da ZAMANINDA değeri olan bayiler listelenir. Yalnızca PLANLI değeri olan bayiler ertesi günün işidir ve gösterilmez; sayfa bilgisinde "bugün işi olmayan N bayi gizli" yazar.
    - **Geciken bayiler en üstte**, kırmızı zemin üzerinde gösterilir. Bayinin hangi süreçte geciktiği koyu kırmızıyla işaretlenir.
    - Sayfalar `pageSeconds` aralıkla döner. Panoda detayı gösterilen grubun satırında "· detayda" yazar.
-   - Çok grup olduğunda (yaklaşık 5 ve üzeri) pano ve detay sırayla tam ekran gösterilir. Öncelik bandı bu sırada da görünür kalır.
+   - Panonun altına 4 detay satırından azı sığıyorsa pano ve detay sırayla tam ekran gösterilir (yatay 1080p ekranda genellikle böyledir). Pano sırası geldiğinde az satır varsa rakamlar ekranı dolduracak kadar büyür. Öncelik bandı her zaman görünür kalır.
+4. **Hareket (az ve anlamlı)**
+   - Bir güncellemede bir kutunun GECİKEN sayısı artarsa o kutunun çerçevesi **3 kez parlar** ve durur. Pano o sırada ekranda değilse parlama pano görününce oynar. İlk açılışta ve değerlerin çoğu birden değiştiğinde parlama olmaz.
+   - Öncelik kutusu açılıştan ya da gecikme arttıktan sonra **15 dakika** yavaşça yanıp söner, sonra sabit kırmızı kalır.
+   - İlerleme çubuğu sayfanın ne zaman değişeceğini gösterir.
+   - Ekran yanığına karşı sayfa 15 dakikada bir 1–2 piksel kayar; gözle fark edilmez.
+   - Yanıp sönen rakam, kayan yazı ya da sayarak artan sayı yoktur.
 
 Ekran 1080p, 4K, ultra geniş ve dikey ekranlarda ölçeklenir. Sayılar asla kesilmez; sığmazsa yazı küçülür.
 
 Alan eşleşmesi: `…Past` → **GECİKEN**, `…Today` → **ZAMANINDA**, `…Planned` → **PLANLI**. Başlıkları değiştirmek için dosyadaki `PERIODS` listesini düzenleyin.
 
-### Cut-off saatleri (`CONFIG.cutoffs`)
+### Sevk saatleri (`CONFIG.shipTimes`)
 
-| Rota grubu | Cut-off |
+| Rota grubu | Sevk saati |
 |---|---|
 | ANKARA SICAK | 10:30 |
 | ADAPAZARI SICAK | 11:00 |
@@ -108,7 +118,9 @@ Detay tablosunun sütunları **veriden otomatik çıkarılır**. ERP'de alan ekl
 | `rootKey` | `Turkuaz_Logiboard` | Veri nesne içinde geliyorsa listenin anahtarı |
 | `groupTitleKey` | `DispatchRouteGroupTitle` | Grup başlığı alanı |
 | `detailsKey` | `Details` | Alt detay listesi alanı |
-| `cutoffs` | (yukarıdaki tablo) | Rota gruplarının cut-off saatleri ve sıralaması |
+| `shipTimes` | (yukarıdaki tablo) | Rota gruplarının sevk saatleri ve sıralaması (eski ad `cutoffs` da okunur) |
+| `shipSoonMinutes` | `60` | Sevke bu kadar dakika ya da daha az kaldıysa saat amber kutuda |
+| `nextDayStrip` | `true` | Bugünün grupları varken ertesi günün grupları alttaki şeritte |
 | `detailActiveOnly` | `true` | Detayda yalnızca GECİKEN/ZAMANINDA değeri olan bayiler |
 | `rowUnit` | `bayi` | Detay satırlarının birimi ("123 bayi") |
 | `pageSeconds` | `10` | Detay sayfasının ekranda kalma süresi (sn) |
@@ -120,8 +132,13 @@ Detay tablosunun sütunları **veriden otomatik çıkarılır**. ERP'de alan ekl
 | `detailShowPlanned` | `true` | Detayda PLANLI sütunlarını göster |
 | `detailMaxPages` | `0` | >0 ise grup başına en fazla bu kadar detay sayfası (geciken bayiler her zaman gösterilir) |
 | `showProcessOverdue` | `true` | Süreç başlığında "N GECİKEN" rozeti |
-| `pastUnit` | `iş` | Geciken sayısının birimi ("1 geciken iş") |
-| `blinkPriority` | `true` | Geciken iş varsa öncelik kutusu yavaşça yanıp söner |
+| `pastUnit` | `kalem` | Geciken sayısının birimi ("4 geciken kalem", "GECİKEN KALEM") |
+| `okTitle` / `okLine` | `GECİKME YOK` / `Tüm kalemler zamanında.` | Geciken yokken yeşil bandın yazıları |
+| `blinkPriority` | `true` | Geciken varsa öncelik kutusu yavaşça yanıp söner |
+| `motion.blinkMinutes` | `15` | Yanıp sönme açılıştan ya da gecikme arttıktan sonra kaç dakika sürer (0 = sürekli) |
+| `motion.changeFlash` | `true` | GECİKEN sayısı artan kutunun çerçevesi 3 kez parlar |
+| `motion.pixelShift` | `true` | Ekran yanığına karşı 15 dakikada bir 1–2 piksel kaydırma |
+| `utcOffsetHours` | `3` | Ekrandaki saat dilimi (Türkiye = UTC+3); cihazın saat dilimi ayarı önemsizdir |
 | `staleMinutes` | `30` | Veri bu süreden eskiyse "VERİ ESKİ" uyarısı (0 = kapalı) |
 | `hiddenDetailColumns` | `[]` | Detayda gizlenecek alanlar |
 | `dataUrl` | `''` | Omma veri kaynağı yerine ERP'nin JSON adresinden doğrudan çekmek için (opsiyonel, CORS izni gerekir) |

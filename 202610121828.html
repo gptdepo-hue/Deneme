@@ -21,11 +21,11 @@
   }
   /* Ekran doğrudan cihaz ekranına sabitlenir: Omma içeriği kendi kabına koysa da yükseklik 0 olmaz */
   #app { position: fixed; left: 0; top: 0; right: 0; bottom: 0; z-index: 1; background: #0b1220; color: #f1f5f9;
-    font-family: "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; text-align: left; box-sizing: border-box; display: -webkit-flex; display: flex; -webkit-flex-direction: column; flex-direction: column; padding: .7rem 1.4rem .6rem; }
+    font-family: "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; text-align: left; box-sizing: border-box; display: -webkit-flex; display: flex; -webkit-flex-direction: column; flex-direction: column; padding: .7rem 1.4rem 1rem; }
   .num { font-variant-numeric: tabular-nums; }
 
   /* ---------- Üst bar ---------- */
-  .topbar { -webkit-flex: none; flex: none; display: -webkit-flex; display: flex; -webkit-align-items: center; align-items: center; -webkit-justify-content: space-between; justify-content: space-between; height: 3.3rem; white-space: nowrap; }
+  .topbar { -webkit-flex: none; flex: none; display: -webkit-flex; display: flex; -webkit-align-items: center; align-items: center; -webkit-justify-content: space-between; justify-content: space-between; height: 3.9rem; white-space: nowrap; }
   .brand { display: -webkit-flex; display: flex; -webkit-align-items: center; align-items: center; font-size: 1.5rem; font-weight: 700; color: #cbd5e1; }
   .brand-mark { width: .45rem; height: 1.6rem; margin-right: .7rem; border-radius: .12rem; background: #14b8a6; }
   .demo-badge {
@@ -34,10 +34,11 @@
   }
   .is-demo .demo-badge { display: inline-block; }
   .meta { display: -webkit-flex; display: flex; -webkit-align-items: center; align-items: center; }
-  .updated { margin-right: 1.6rem; font-size: 1.25rem; color: #a8b5cc; }
+  .updated { margin-right: 1.6rem; font-size: 1.4rem; color: #a8b5cc; }
   .updated.stale { padding: .2rem .8rem; border-radius: .35rem; background: #f59e0b; color: #1a1200; font-weight: 800; }
-  #date { margin-right: 1rem; font-size: 1.3rem; color: #a8b5cc; }
-  #time { font-size: 2.4rem; font-weight: 800; line-height: 1; font-variant-numeric: tabular-nums; }
+  #date { margin-right: 1rem; font-size: 1.5rem; color: #cbd5e1; }
+  /* Saat ~10 m'den okunur; her zaman Türkiye saati (cihazın saat dilimi ayarından bağımsız) */
+  #time { font-size: 3.4rem; font-weight: 800; line-height: 1; font-variant-numeric: tabular-nums; }
 
   /* ---------- Öncelik bandı ---------- */
   .banner { -webkit-flex: none; flex: none; display: none; -webkit-align-items: stretch; align-items: stretch; margin-top: .5rem; min-height: 6.2rem; border-radius: .6rem; overflow: hidden; }
@@ -72,7 +73,7 @@
   .b-l1.wrap { white-space: normal; max-height: 2.3em; }
   .b-l1 .dot { padding: 0 .25em; opacity: .7; }
   .b-proc { padding: 0 .2em; border-radius: .12em; background: #fff; color: #b91c1c; }
-  .b-l2 { -webkit-flex: none; flex: none; margin-top: .15rem; font-size: 1.5rem; font-weight: 600; line-height: 1.25; white-space: nowrap; overflow: hidden; color: #ffe1e1; }
+  .b-l2 { -webkit-flex: none; flex: none; margin-top: .15rem; font-size: 1.75rem; font-weight: 600; line-height: 1.25; white-space: nowrap; overflow: hidden; color: #ffe1e1; }
   .b-l2 b { color: #fff; font-weight: 800; }
   .ok .b-l2 { color: #dcfce7; }
   .b-count {
@@ -81,8 +82,8 @@
   }
   .ok .b-count { display: none; }
   .b-count-n { font-size: 3.4rem; font-weight: 900; line-height: 1; font-variant-numeric: tabular-nums; }
-  .b-count-l { margin-top: .15rem; font-size: 1.25rem; font-weight: 800; letter-spacing: .04em; }
-  /* Yanıp sönme yalnızca opaklıkla (eski/zayıf oynatıcılarda işlemciyi yormaz) */
+  .b-count-l { margin-top: .15rem; font-size: 1.3rem; font-weight: 800; letter-spacing: .04em; white-space: nowrap; }
+  /* Yanıp sönme yalnızca opaklıkla (eski/zayıf oynatıcılarda işlemciyi yormaz); gecikme arttıktan sonra motion.blinkMinutes dk sürer */
   @-webkit-keyframes pulse { 0%, 100% { opacity: .32; } 50% { opacity: 0; } }
   @keyframes pulse { 0%, 100% { opacity: .32; } 50% { opacity: 0; } }
   .blink .alert:not(.stale) .b-tag { background: none; }
@@ -100,14 +101,20 @@
   }
   .bhead .bname { -webkit-justify-content: flex-end; justify-content: flex-end; padding: 0 .6rem .4rem 1.4rem; background: none; font-size: 1.25rem; font-weight: 700; color: #a8b5cc; letter-spacing: .04em; white-space: nowrap; }
   .bn-text { -webkit-flex: none; flex: none; max-height: 3.45em; overflow: hidden; font-weight: 800; line-height: 1.15; word-wrap: break-word; }
-  /* Durum satırı: cut-off saati (+ ERTESİ GÜN) asla gizlenmez; yer kalmazsa önce "detayda", sonra "N geciken iş" düşer */
+  /* Durum satırı: sevk saati (+ ERTESİ GÜN) asla gizlenmez; yer kalmazsa önce "detayda", sonra "N geciken kalem", sonra "Sevk" kelimesi düşer */
   .bn-status { -webkit-flex: none; flex: none; margin-top: .2rem; font-size: 1.3rem; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #a8b5cc; }
-  .bn-cut { font-weight: 600; color: #a8b5cc; }
+  .bn-ship { font-weight: 800; color: #f1f5f9; }
+  .bn-shipw { font-weight: 600; color: #a8b5cc; }
+  /* Sevke 60 dk ya da daha az kaldı: amber kutu; saat geçti ve iş duruyor: beyaz kutu, kırmızı "GEÇTİ" */
+  .ship-soon, .ship-late { display: inline-block; padding: 0 .35em; border-radius: .22em; line-height: 1.3; }
+  .ship-soon { background: #f59e0b; color: #1a1200; }
+  .ship-late { background: #fff; color: #b91c1c; }
+  .ship-soon .bn-shipw, .ship-late .bn-shipw { color: inherit; }
   .bn-tag { display: inline-block; margin-left: .5em; padding: 0 .4em; border-radius: .25em; background: #334155; color: #e2e8f0; font-weight: 800; letter-spacing: .04em; line-height: 1.35; }
   .bn-late { color: #fca5a5; }
   .bn-act { display: none; color: #a8b5cc; font-weight: 600; }
   .brow.active .bn-act { display: inline; }
-  .bname.no-act .bn-act, .bname.no-late .bn-late, .bname.no-cutw .bn-cutw { display: none; }
+  .bname.no-act .bn-act, .bname.no-late .bn-late, .bname.no-shipw .bn-shipw { display: none; }
   .g-late .bname { box-shadow: inset .6rem 0 0 #ef4444; }
   .g-ok .bname { box-shadow: inset .6rem 0 0 #22c55e; }
   .g-none .bname, .g-next .bname { box-shadow: inset .6rem 0 0 #475569; }
@@ -116,8 +123,23 @@
   .g-next .bn-text { color: #cbd5e1; }
   .g-next .tile { background: #121c2f; }
   .brow.g-next .s-plan { color: #cbd5e1; }
+  /* Ertesi gün şeridi: bugünün grupları varken ertesi günün grupları tek satırda, panonun altında */
+  .bnext { -webkit-flex: none; flex: none; display: -webkit-flex; display: flex; -webkit-align-items: center; align-items: center; margin-top: .45rem; padding: .45rem 1rem .45rem 1.4rem;
+    border-radius: .5rem; background: #121c2f; box-shadow: inset .6rem 0 0 #475569; white-space: nowrap; overflow: hidden; }
+  .bnext .bn-tag { -webkit-flex: none; flex: none; margin: 0 1rem 0 0; font-size: 1.45rem; }
+  .bnx-list { -webkit-flex: 1; flex: 1; min-width: 0; overflow: hidden; font-size: 1.6rem; font-weight: 700; color: #cbd5e1; }
+  .bnx-list b { margin-left: .3em; color: #e2e8f0; font-weight: 800; }
+  .bnx-dot { padding: 0 .3em; color: #64748b; }
+  .bnext.pr { -webkit-align-items: flex-start; align-items: flex-start; }
+  .bnext.pr .bnx-list { white-space: normal; line-height: 1.35; }
+  .bnext.pr .bnx-it { white-space: nowrap; }
 
-  .tile { -webkit-flex: 1; flex: 1; min-width: 0; display: -webkit-flex; display: flex; -webkit-align-items: center; align-items: center; margin-left: .45rem; border-radius: .5rem; background: #16233a; }
+  .tile { position: relative; -webkit-flex: 1; flex: 1; min-width: 0; display: -webkit-flex; display: flex; -webkit-align-items: center; align-items: center; margin-left: .45rem; border-radius: .5rem; background: #16233a; }
+  /* Yeni gecikme: kutunun çerçevesi 3 kez parlar (yalnızca opaklık), sonra kendiliğinden kalkar */
+  .tfl { position: absolute; left: 0; top: 0; right: 0; bottom: 0; border: .45rem solid #fff; border-radius: .5rem; opacity: 0; pointer-events: none;
+    -webkit-animation: tflash 1.6s ease-in-out 3; animation: tflash 1.6s ease-in-out 3; }
+  @-webkit-keyframes tflash { 0%, 100% { opacity: 0; } 50% { opacity: 1; } }
+  @keyframes tflash { 0%, 100% { opacity: 0; } 50% { opacity: 1; } }
   .tile.late { background: #c81e1e; }
   .bhead .tile { display: block; background: none; }
   .th-proc {
@@ -150,7 +172,9 @@
   .tile.late .s-plan { color: #fecaca; }
   .brow .s-plan { border-left: .12rem solid rgba(148, 163, 184, .22); }
   .tile.late .s-plan { border-left-color: rgba(255, 255, 255, .35); }
+  /* Sıfırlar sönük ve küçük: dolu sayılar öne çıkar */
   .zero { color: #64748b; }
+  .brow .slot .zero { font-size: .7em; }
   .tile.late .zero { color: #fecaca; }
   .lamp { display: inline-block; min-width: 1.3em; padding: 0 .22em; border-radius: .16em; background: #fff; color: #b91c1c; line-height: 1.12; }
   .ok-mark { position: relative; display: inline-block; vertical-align: middle; width: .78em; height: .78em; border-radius: 50%; background: #16a34a; }
@@ -222,6 +246,8 @@
   .dh-label { -webkit-flex: none; flex: none; margin-right: .8rem; font-size: 1.25rem; font-weight: 700; color: #a8b5cc; letter-spacing: .06em; }
   .dh-title { min-width: 0; overflow: hidden; text-overflow: ellipsis; font-size: 2rem; font-weight: 800; }
   .dh-title small { margin-left: .6rem; font-size: .7em; font-weight: 600; color: #a8b5cc; }
+  .dh-title small.ship-soon, .dh-title small.ship-late { font-weight: 800; color: #1a1200; }
+  .dh-title small.ship-late { color: #b91c1c; }
   .dh-hint { -webkit-flex: none; flex: none; margin-left: 1rem; padding: .15rem .7rem; border-radius: .35rem; font-size: 1.25rem; font-weight: 800; letter-spacing: .02em; }
   .dh-hint.late { background: #dc2626; color: #fff; }
   .dh-hint.info { background: #334155; color: #e2e8f0; }
@@ -242,10 +268,11 @@
   .details th.name, .details tr.grp th.name { text-align: left; vertical-align: bottom; color: #a8b5cc; font-size: 1.25rem; font-weight: 700; border-bottom: 0; }
   .details th.past { color: #fca5a5; }
   .details .sep { border-left: .15rem solid #24324f; }
-  .details td { padding: .28rem .55rem; font-size: 1.7rem; font-weight: 700; text-align: center; border-top: .08rem solid #1c2943; font-variant-numeric: tabular-nums; }
-  .details td.name { text-align: left; font-size: 1.6rem; font-weight: 600; }
+  .details td { padding: .28rem .55rem; font-size: 2rem; font-weight: 700; text-align: center; border-top: .08rem solid #1c2943; font-variant-numeric: tabular-nums; }
+  .details td.name { text-align: left; font-size: 1.8rem; font-weight: 600; }
   .details td.plan { color: #a8b5cc; }
   .details td.zero { color: #64748b; font-weight: 600; }
+  .details tbody td.zero { font-size: 1.4rem; }
   .details tbody.rec:nth-of-type(even) td { background: #0f1829; }
   .details tbody.rec.late td, .details tbody.rec.late:nth-of-type(even) td { background: #43161b; }
   .details tbody.rec.late td.hot, .details tbody.rec.late:nth-of-type(even) td.hot { background: #6b1f27; }
@@ -262,12 +289,12 @@
   /* Dar ekran (dikey): her kayıt iki satır — üstte metin alanları, altta sayılar */
   .details .stacked th { padding-left: .35rem; padding-right: .35rem; }
   .details .stacked td { padding-left: .4rem; padding-right: .45rem; }
-  .details .stacked tr.r-name td { padding: .3rem .6rem 0 .8rem; border-top: .08rem solid #1c2943; text-align: left; font-size: 1.6rem; font-weight: 700; color: #e2e8f0; }
+  .details .stacked tr.r-name td { padding: .3rem .6rem 0 .8rem; border-top: .08rem solid #1c2943; text-align: left; font-size: 1.8rem; font-weight: 700; color: #e2e8f0; }
   .details .stacked tr.r-vals td { border-top: 0; padding-top: 0; }
   .details .stacked .sepdot { color: #64748b; padding: 0 .3em; }
   .chip { display: inline-block; min-width: 1.3em; padding: 0 .25em; border-radius: .18em; background: #ef4444; color: #fff; text-align: center; line-height: 1.15; }
 
-  .progress { -webkit-flex: none; flex: none; height: .35rem; margin-top: .4rem; border-radius: .2rem; overflow: hidden; background: #1a2640; }
+  .progress { -webkit-flex: none; flex: none; height: .6rem; margin-top: .45rem; border-radius: .3rem; overflow: hidden; background: #1a2640; }
   .progress.off { visibility: hidden; }
   #progress-bar { width: 100%; height: 100%; background: #5eead4; -webkit-transform-origin: 0 0; transform-origin: 0 0; -webkit-transform: scaleX(0); transform: scaleX(0); }
 
@@ -339,9 +366,9 @@
     sortDetailRows: true, // detayda önce geciken satırlar, sonra ZAMANINDA toplamı büyükten küçüğe
     detailActiveOnly: true, // detayda yalnızca GECİKEN/ZAMANINDA değeri olan bayiler (yalnızca PLANLI = ertesi günün işi)
     rowUnit: 'bayi',      // detay satırlarının birimi: "123 bayi"
-    // Rota gruplarının sevkiyat cut-off saatleri: pano ve detay bu saate göre sıralanır.
+    // Rota gruplarının sevk saatleri: pano ve detay bu saate göre sıralanır.
     // Ad, büyük/küçük harf ve noktalama farkı gözetmeden eşleşir. sat: true = Cumartesi grubu. aliases: farklı yazımlar.
-    cutoffs: [
+    shipTimes: [
       { name: 'ANKARA SICAK', time: '10:30' },
       { name: 'ADAPAZARI SICAK', time: '11:00' },
       { name: 'İSTANBUL 1.SEVKİYAT', time: '11:30' },
@@ -351,11 +378,21 @@
       { name: 'CUMARTESİ İSTANBUL', time: '12:30', sat: true },
       { name: 'CUMARTESİ ANADOLU', time: '13:30', sat: true }
     ],
+    shipSoonMinutes: 60,  // sevke bu kadar dakika ya da daha az kaldıysa saat amber kutuda gösterilir
+    nextDayStrip: true,   // bugünün grupları varken ertesi günün grupları panonun altında tek şeritte gösterilir
     detailShowPlanned: true,  // detay tablosunda PLANLI sütunlarını göster
     detailMaxPages: 0,    // >0 ise bir grubun detayından tur başına en fazla bu kadar sayfa gösterilir (geciken satırlar hep gösterilir)
     showProcessOverdue: true, // pano başlığında süreç başına toplam geciken rozeti ("3 GECİKEN")
-    pastUnit: 'iş',       // geciken sayısının birimi: "1 geciken iş"
-    blinkPriority: true,  // geciken iş varsa öncelik bandının sol kutusu yavaşça yanıp söner
+    pastUnit: 'kalem',    // geciken sayısının birimi: "4 geciken kalem"
+    okTitle: 'GECİKME YOK',             // hiçbir yerde geciken yokken yeşil bandın büyük yazısı
+    okLine: 'Tüm kalemler zamanında.',  // yeşil bandın alt satırı
+    blinkPriority: true,  // geciken varsa öncelik bandının sol kutusu yavaşça yanıp söner
+    motion: {
+      changeFlash: true,  // bir güncellemede geciken sayısı artan kutunun çerçevesi 3 kez parlar
+      blinkMinutes: 15,   // öncelik kutusu açılıştan ya da gecikme arttıktan sonra bu kadar dk yanıp söner (0 = sürekli)
+      pixelShift: true    // ekran yanığına karşı sayfa 15 dk'da bir 1-2 piksel kaydırılır (gözle fark edilmez)
+    },
+    utcOffsetHours: 3,    // saat ve tarihler Türkiye saatiyle (UTC+3) gösterilir; cihazın saat dilimi ayarı önemsizdir
     staleMinutes: 30,     // veri bu kadar dakikadan eskiyse uyarı verilir (0 = kapalı)
     hiddenDetailColumns: [], // detay tablosunda gösterilmeyecek alanlar, ör. ['Id']
     demo: false           // true ya da adres sonuna ?demo=1 eklenirse örnek veri gösterilir (sahada kapalı kalmalı)
@@ -391,7 +428,7 @@
   var state = {
     groups: [],
     prep: [],        // grup başına hazırlanmış detay (sütunlar, süzülmüş/sıralı satırlar)
-    order: [],       // detayı dönecek grupların indeksleri (cut-off sırasıyla; ertesi gün grupları hariç)
+    order: [],       // detayı dönecek grupların indeksleri (sevk saati sırasıyla; ertesi gün grupları hariç)
     groupPos: 0,     // order içinde şu an gösterilen grup
     page: 0,
     rowsPerPage: 0,  // 0 = yeniden ölçülecek
@@ -407,7 +444,13 @@
     stale: false,
     bannerKind: '',    // '', 'alert', 'ok'
     subscribed: false, // veri kaynağı 'update' dinleyicisi bir kez bağlanır
-    timer: null
+    timer: null,
+    pastMap: null,     // önceki verideki "grup|süreç" -> GECİKEN (yeni gecikmeyi bulmak için)
+    flash: {},         // parlayacak kutular: "grup|süreç" -> işaretlenme zamanı
+    blinkUntil: 0,     // öncelik kutusu bu zamana kadar yanıp söner
+    shipSig: '',       // panodaki sevk saati durumları (dakikada bir kontrol edilir)
+    shiftAt: 0,        // son piksel kaydırma zamanı
+    shiftIdx: 0
   };
   var OM = null; // Omma içerik yardımcısı (window.omma)
 
@@ -431,7 +474,14 @@
   function trUpper(s) { return String(s).replace(/i/g, 'İ').replace(/ı/g, 'I').toUpperCase(); }
 
   function pad2(n) { return n < 10 ? '0' + n : String(n); }
-  function hhmm(d) { return pad2(d.getHours()) + ':' + pad2(d.getMinutes()); }
+
+  // Türkiye saati: cihaz hangi saat diliminde olursa olsun ekrandaki saat, tarih ve gün UTC+3'e göre hesaplanır
+  var TZ_MS = CONFIG.utcOffsetHours * 3600000;
+  function trShift(d) { return new Date(d.getTime() + TZ_MS); } // getUTC* ile okunur
+  function hhmm(d) { var t = trShift(d); return pad2(t.getUTCHours()) + ':' + pad2(t.getUTCMinutes()); }
+  function trDow(d) { return trShift(d).getUTCDay(); }
+  function trDayKey(d) { var t = trShift(d); return t.getUTCFullYear() + '-' + t.getUTCMonth() + '-' + t.getUTCDate(); }
+  function trMinutes(d) { var t = trShift(d); return t.getUTCHours() * 60 + t.getUTCMinutes(); }
 
   function toNumber(v) {
     if (typeof v === 'number') return isFinite(v) ? v : null;
@@ -477,15 +527,38 @@
   function showMessage(text) { el.message.textContent = text; el.message.className = 'message show'; }
   function hideMessage() { el.message.className = 'message'; }
 
-  // ISO metin, Date, epoch (sn/ms) ve "08.10.2026 11:00" biçimlerini okur; okunamazsa null
+  // ISO metin, Date, epoch (sn/ms) ve "08.10.2026 11:00" biçimlerini okur; okunamazsa null.
+  // Saat dilimi yazmayan zaman Türkiye saati sayılır. ISO ayrıştırma elle yapılır: eski oynatıcılar
+  // ".742003" gibi 6 haneli kesirli saniyeyi ya da "2026-10-08 15:50" biçimini okuyamayabilir.
+  var ISO_RE = /^(\d{4})-(\d{1,2})-(\d{1,2})(?:[T ](\d{1,2}):(\d{2})(?::(\d{2})(?:[.,](\d+))?)?)?\s*(Z|[+-]\d{2}(?::?\d{2})?)?$/i;
+  var TR_DATE_RE = /^(\d{1,2})\.(\d{1,2})\.(\d{4})(?:[ T](\d{1,2}):(\d{2})(?::(\d{2}))?)?$/;
   function parseDate(v) {
     if (v === null || v === undefined || v === '') return null;
-    if (typeof v === 'string' && /^\d{10,13}$/.test(v)) v = Number(v);
-    if (typeof v === 'number' && v < 1e12) v *= 1000; // epoch saniye
-    var m = typeof v === 'string' && /^(\d{1,2})\.(\d{1,2})\.(\d{4})(?:[ T](\d{1,2}):(\d{2})(?::(\d{2}))?)?$/.exec(v);
-    var d = m ? new Date(+m[3], m[2] - 1, +m[1], +(m[4] || 0), +(m[5] || 0), +(m[6] || 0)) :
-      v instanceof Date ? v : new Date(v);
-    return isNaN(d.getTime()) || d.getFullYear() < 2000 ? null : d;
+    var ms = null, m;
+    if (v instanceof Date) ms = v.getTime();
+    else {
+      if (typeof v === 'string') v = v.replace(/^\s+|\s+$/g, '');
+      if (typeof v === 'string' && /^\d{10,13}$/.test(v)) v = Number(v);
+      if (typeof v === 'number') ms = v < 1e12 ? v * 1000 : v; // epoch saniye ya da ms
+      else if (typeof v !== 'string') ms = new Date(v).getTime();
+      else if ((m = ISO_RE.exec(v))) {
+        ms = Date.UTC(+m[1], m[2] - 1, +m[3], +(m[4] || 0), +(m[5] || 0), +(m[6] || 0),
+          m[7] ? Math.floor(Number('0.' + m[7]) * 1000) : 0);
+        var z = m[8] ? m[8].toUpperCase() : '';
+        if (!z) ms -= TZ_MS;
+        else if (z !== 'Z') {
+          var off = z.replace(/[^0-9]/g, '');
+          ms -= (z.charAt(0) === '-' ? -1 : 1) * ((+off.slice(0, 2)) * 60 + (+(off.slice(2, 4) || 0))) * 60000;
+        }
+      } else if ((m = TR_DATE_RE.exec(v))) {
+        ms = Date.UTC(+m[3], m[2] - 1, +m[1], +(m[4] || 0), +(m[5] || 0), +(m[6] || 0)) - TZ_MS;
+      } else {
+        ms = new Date(v).getTime(); // ör. HTTP Last-Modified: "Mon, 12 Oct 2026 12:00:00 GMT"
+      }
+    }
+    if (ms === null || isNaN(ms)) return null;
+    var d = new Date(ms);
+    return d.getUTCFullYear() < 2000 ? null : d;
   }
 
   // Veri dizi olarak, { Turkuaz_Logiboard: [...] } olarak ya da JSON metni olarak gelebilir.
@@ -582,7 +655,7 @@
     return sum;
   }
 
-  // ============================== CUT-OFF SIRALAMASI ==============================
+  // ============================== SEVK SAATİ SIRALAMASI ==============================
   // Ad anahtarı: Türkçe harfler sadeleştirilir, harf/rakam dışı atılır ("İstanbul 1. Sevkiyat" = "İSTANBUL 1.SEVKİYAT")
   var TR_FOLD = { 'İ': 'I', 'Ş': 'S', 'Ğ': 'G', 'Ü': 'U', 'Ö': 'O', 'Ç': 'C' };
   function foldTr(s) { return trUpper(s).replace(/[İŞĞÜÖÇ]/g, function (ch) { return TR_FOLD[ch]; }); }
@@ -590,23 +663,25 @@
   function nameWords(s) { return foldTr(s).split(/[^A-Z0-9]+/).filter(function (w) { return w !== ''; }); }
 
   var warnedNames = {};
+  // Eski ayar adı "cutoffs" da okunur
+  var SHIP_TIMES = CONFIG.shipTimes || CONFIG.cutoffs || [];
   // Önce birebir eşleşme; yoksa girdinin tüm kelimeleri grup adında geçen en çok kelimeli girdi
-  function cutoffFor(title) {
+  function shipTimeFor(title) {
     var key = nameKey(title), words = nameWords(title), best = null, bestWords = 0, i, n, c, names;
     if (!key) return null;
-    for (i = 0; i < CONFIG.cutoffs.length; i++) {
-      c = CONFIG.cutoffs[i]; names = [c.name].concat(c.aliases || []);
+    for (i = 0; i < SHIP_TIMES.length; i++) {
+      c = SHIP_TIMES[i]; names = [c.name].concat(c.aliases || []);
       for (n = 0; n < names.length; n++) if (nameKey(names[n]) === key) return c;
     }
-    for (i = 0; i < CONFIG.cutoffs.length; i++) {
-      c = CONFIG.cutoffs[i]; names = [c.name].concat(c.aliases || []);
+    for (i = 0; i < SHIP_TIMES.length; i++) {
+      c = SHIP_TIMES[i]; names = [c.name].concat(c.aliases || []);
       for (n = 0; n < names.length; n++) {
         var ew = nameWords(names[n]), all = ew.length > 0;
         for (var w = 0; w < ew.length && all; w++) if (words.indexOf(ew[w]) < 0) all = false;
         if (all && ew.length > bestWords) { best = c; bestWords = ew.length; }
       }
     }
-    if (!best && !warnedNames[key]) { warnedNames[key] = true; log('warn', 'Logiboard: cut-off listesinde olmayan rota grubu: ' + title); }
+    if (!best && !warnedNames[key]) { warnedNames[key] = true; log('warn', 'Logiboard: sevk saati listesinde olmayan rota grubu: ' + title); }
     return best;
   }
 
@@ -656,20 +731,36 @@
     return a;
   }
 
-  // Sıra: önce bugünün grupları cut-off saatine göre, sonra ertesi günün grupları (yalnızca PLANLI ya da hepsi 0)
-  // gün ve saate göre; listede olmayan grup kendi bloğunun sonuna. Gruplara _cut, _next, _tomorrow, _rank yazılır.
+  // Sıra: önce bugünün grupları sevk saatine göre, sonra ertesi günün grupları (yalnızca PLANLI ya da hepsi 0)
+  // gün ve saate göre; listede olmayan grup kendi bloğunun sonuna. Gruplara _ship, _shipDay, _act, _next, _tomorrow, _rank yazılır.
+  // Gün Türkiye saatine göredir.
   function orderGroups(groups) {
-    var dow = new Date().getDay();
+    var dow = trDow(new Date());
     state.day = dow;
     var items = groups.map(function (g, i) {
-      var c = cutoffFor(groupTitle(g)), a = groupActivity(g);
-      g._cut = c ? c.time : '';
+      var c = shipTimeFor(groupTitle(g)), a = groupActivity(g);
+      g._ship = c ? c.time : '';
+      g._shipDay = !!c && (c.sat ? dow === 6 : dow >= 1 && dow <= 5); // bugün bu grubun sevk günü mü
+      g._act = a.act;
       g._next = a.known && a.act === 0;
       g._tomorrow = g._next && a.plan > 0;
       return { g: g, i: i, next: g._next ? 1 : 0, day: g._next ? (c ? daysUntil(c, dow) : 9) : 0, mins: c ? toMinutes(c.time) : 9999 };
     });
     items.sort(function (a, b) { return (a.next - b.next) || (a.day - b.day) || (a.mins - b.mins) || (a.i - b.i); });
     return items.map(function (it, r) { it.g._rank = r; return it.g; });
+  }
+
+  // Bugünün grubunda sevk saati durumu (Türkiye saati): 'late' = saat geçti ve iş duruyor, 'soon' = sevke ≤ shipSoonMinutes dk
+  function shipState(g, now) {
+    if (!g || g._next || !g._ship || !g._shipDay || !(g._act > 0)) return '';
+    var left = toMinutes(g._ship) - trMinutes(now);
+    return left < 0 ? 'late' : left <= CONFIG.shipSoonMinutes ? 'soon' : '';
+  }
+
+  function shipHtml(g, now) {
+    var st = shipState(g, now);
+    return '<span class="bn-ship' + (st ? ' ship-' + st : '') + '"><span class="bn-shipw">Sevk </span>' + esc(g._ship) +
+      (st === 'late' ? ' GEÇTİ' : '') + '</span>';
   }
 
   // ============================== SIĞDIRMA ==============================
@@ -704,12 +795,12 @@
     return h;
   }
 
-  // Durum satırı kendi içinde kısalır: önce "detayda", sonra "N geciken iş" (sayı kutuda da var), sonra "Cut-off"
-  // kelimesi düşer; saat ve ERTESİ GÜN asla gizlenmez. Grup adı ise kendi alanına (yatayda en çok 3 satır) sığana kadar küçülür.
+  // Durum satırı kendi içinde kısalır: önce "detayda", sonra "N geciken kalem" (sayı kutuda da var), sonra "Sevk"
+  // kelimesi düşer; saat, GEÇTİ ve ERTESİ GÜN asla gizlenmez. Grup adı ise kendi alanına (yatayda en çok 3 satır) sığana kadar küçülür.
   function fitName(box) {
     var t = box.firstChild, st = box.lastChild;
     var portrait = /\bpr\b/.test(box.parentNode.className);
-    box.className = box.className.replace(/\s*no-(act|late|cutw)/g, '');
+    box.className = box.className.replace(/\s*no-(act|late|shipw)/g, '');
     st.style.fontSize = '';
     t.style.fontSize = '';
     var base = parseFloat(window.getComputedStyle(t).fontSize), fs = base, s;
@@ -721,7 +812,7 @@
     function shrink(from, to) {
       for (s = from; s <= to && over(); s++) { fs = base * Math.pow(0.92, s); t.style.fontSize = fs + 'px'; }
     }
-    var drops = ['no-act', 'no-late', 'no-cutw'];
+    var drops = ['no-act', 'no-late', 'no-shipw'];
     if (portrait) {
       // Dikeyde ad ve durum aynı satırda: önce ad biraz küçülür, sonra durum kısalır
       shrink(1, 4);
@@ -731,7 +822,10 @@
     }
     for (var k = 0; k < drops.length && stOver(); k++) box.className += ' ' + drops[k];
     if (stOver()) fitCells([st], 4);
+    // Ad önce kelimeler bölünmeden sığdırılır ("2.SEVKİYA / T" olmasın); tek kelime yine sığmazsa son çare bölünür
+    t.style.wordWrap = 'normal';
     shrink(1, 14);
+    if (t.scrollWidth > t.clientWidth + 1) t.style.wordWrap = '';
   }
 
   // Öncelik satırı: tek satırda %78'e kadar küçülür; yine sığmazsa 2 satıra kırılır
@@ -751,12 +845,18 @@
     }
   }
 
-  // Metni sırayla daha kısa seçeneklerle dener; hiçbiri sığmazsa sonuncusunu küçültür
-  function setFitted(node, variants) {
+  // Metni sırayla daha kısa seçeneklerle dener (her biri isteğe bağlı olarak shrinkSteps adım küçülerek);
+  // hiçbiri sığmazsa sonuncusunu küçültür
+  function setFitted(node, variants, shrinkSteps) {
     node.style.fontSize = '';
+    var base = parseFloat(window.getComputedStyle(node).fontSize);
     for (var i = 0; i < variants.length; i++) {
       node.innerHTML = variants[i];
-      if (node.scrollWidth <= node.clientWidth + 1) return;
+      for (var s = 0; s <= (shrinkSteps || 0); s++) {
+        if (s) node.style.fontSize = (base * Math.pow(0.92, s)) + 'px';
+        if (node.scrollWidth <= node.clientWidth + 1) return;
+      }
+      node.style.fontSize = '';
     }
     fitCells([node]);
   }
@@ -779,6 +879,7 @@
     var prevGi = state.order[state.groupPos];
     var prevTitle = prevGi === undefined ? null : groupTitle(state.groups[prevGi]);
 
+    noteChanges(groups);
     state.groups = groups;
     state.isDemo = !!isDemo;
     prepareAll();
@@ -801,6 +902,34 @@
     state.receivedAt = new Date();
     state.fetchError = false;
     renderUpdated();
+  }
+
+  // Yeni gecikmeyi işaretler: GECİKEN değeri artan kutu parlar, toplam artarsa öncelik kutusu yeniden yanıp söner.
+  // İlk yüklemede parlama olmaz; değerlerin çoğu birden değiştiyse (gün dönümü, veri yeniden yüklendi) da olmaz.
+  function noteChanges(groups) {
+    var cur = {}, prev = state.pastMap, now = Date.now(), k, keys = 0, inc = [], totCur = 0, totPrev = 0;
+    groups.forEach(function (g) {
+      PROCESSES.forEach(function (p) {
+        var v = metric(g, p.key, 'Past');
+        if (v !== null) cur[groupTitle(g) + '|' + p.key] = v > 0 ? v : 0;
+      });
+    });
+    state.pastMap = cur;
+    for (k in state.flash) if (has(state.flash, k) && now - state.flash[k] > 600000) delete state.flash[k];
+    if (!prev) { state.blinkUntil = now + CONFIG.motion.blinkMinutes * 60000; return; }
+    for (k in cur) {
+      if (!has(cur, k)) continue;
+      keys++; totCur += cur[k];
+      if (cur[k] > (has(prev, k) ? prev[k] : 0)) inc.push(k);
+    }
+    for (k in prev) if (has(prev, k)) totPrev += prev[k];
+    if (totCur > totPrev) state.blinkUntil = now + CONFIG.motion.blinkMinutes * 60000;
+    if (!CONFIG.motion.changeFlash || !inc.length || inc.length > Math.max(3, keys * 0.4)) return;
+    for (var i = 0; i < inc.length; i++) state.flash[inc[i]] = now;
+  }
+
+  function blinking() {
+    return CONFIG.blinkPriority && (CONFIG.motion.blinkMinutes <= 0 || Date.now() < state.blinkUntil);
   }
 
   function connectDatasource() {
@@ -954,7 +1083,7 @@
   function setAppClass() {
     var c = [];
     if (state.isDemo) c.push('is-demo');
-    if (CONFIG.blinkPriority) c.push('blink');
+    if (blinking()) c.push('blink');
     if (!state.order.length) c.push('no-details', 'fill');
     else if (state.scenes) {
       c.push('scenes', 'scene-' + state.scene);
@@ -965,14 +1094,14 @@
 
   function boardSize(n, fill) {
     if (state.portrait) return n <= 3 ? 'sz-xl' : n <= 5 ? 'sz-l' : 'sz-m';
-    if (fill && !state.order.length && n <= 2) return 'sz-xxl';
+    if (fill && n <= (state.order.length ? 3 : 2)) return 'sz-xxl'; // az satır: pano ekranı büyük rakamlarla doldurur
     if (fill) return n <= 5 ? 'sz-xl' : n <= 7 ? 'sz-l' : 'sz-m';
     return n <= 2 ? 'sz-xl' : n === 3 ? 'sz-l' : 'sz-m';
   }
 
   // Pano + detay alt alta sığıyorsa öyle, sığmıyorsa sırayla (sahne) gösterilir
   function decideLayout() {
-    var n = state.groups.length;
+    var n = boardSplit().rows.length;
     var wasScenes = state.scenes;
     state.scenes = false;
     state.rowsPerPage = 0;
@@ -1009,7 +1138,7 @@
         }
       });
     });
-    // Cut-off'u en erken olan grup önce (gruplar zaten cut-off sırasında); aynı grupta geciken çok olan, sonra akış sırası
+    // Sevk saati en erken olan grup önce (gruplar zaten sevk saati sırasında); aynı grupta geciken çok olan, sonra akış sırası
     cells.sort(function (a, b) {
       return (a.gi - b.gi) || (b.past - a.past) || (a.pi - b.pi);
     });
@@ -1021,9 +1150,9 @@
     if (!cells.length) {
       state.bannerKind = 'ok';
       applyBannerState();
-      el['b-l1'].innerHTML = 'GECİKEN ' + esc(trUpper(CONFIG.pastUnit)) + ' YOK';
+      el['b-l1'].innerHTML = esc(CONFIG.okTitle);
       fitBannerTitle(el['b-l1']);
-      setFitted(el['b-l2'], [state.stale ? staleLine : '']);
+      setFitted(el['b-l2'], [state.stale ? staleLine : esc(CONFIG.okLine)]);
       return;
     }
 
@@ -1086,13 +1215,13 @@
     return n === 0 ? '<span class="zero">0</span>' : fmt(v);
   }
 
-  function boardRow(g, i, active) {
+  function boardRow(g, i, active, now) {
     var late = groupPast(g);
     var st = g._next ? 'g-next' : late === null ? 'g-none' : late > 0 ? 'g-late' : 'g-ok';
     var cls = 'brow ' + st + (state.portrait ? ' pr' : '') + (active ? ' active' : '');
-    // Durum satırı: "Cut-off 14:30" [ERTESİ GÜN] · N geciken iş · detayda ("Geciken yok" yazılmaz)
+    // Durum satırı: "Sevk 14:30" [ERTESİ GÜN] · N geciken kalem · detayda ("Geciken yok" yazılmaz)
     var status = '', before = false;
-    if (g._cut) { status += '<span class="bn-cut"><span class="bn-cutw">Cut-off </span>' + esc(g._cut) + '</span>'; before = true; }
+    if (g._ship) { status += shipHtml(g, now); before = true; }
     if (g._tomorrow) { status += '<span class="bn-tag">ERTESİ GÜN</span>'; before = true; }
     if (late > 0) { status += '<span class="bn-late">' + (before ? ' · ' : '') + fmt(late) + ' geciken ' + esc(CONFIG.pastUnit) + '</span>'; before = true; }
     status += '<span class="bn-act">' + (before ? ' · ' : '') + 'detayda</span>';
@@ -1102,7 +1231,9 @@
       var past = metric(g, p.key, 'Past');
       var lamp = past > 0 ? '<span class="lamp">' + fmt(past) + '</span>' :
         (past === null || g._next) ? '<span class="zero">–</span>' : '<span class="ok-mark"></span>';
+      var fk = groupTitle(g) + '|' + p.key;
       h += '<div class="tile' + (past > 0 ? ' late' : '') + '">' +
+        (has(state.flash, fk) && past > 0 ? '<div class="tfl" data-k="' + esc(fk) + '"></div>' : '') +
         '<div class="slot s-past">' + lamp + '</div>' +
         '<div class="slot s-today">' + numHtml(metric(g, p.key, 'Today')) + '</div>' +
         '<div class="slot s-plan">' + numHtml(metric(g, p.key, 'Planned')) + '</div></div>';
@@ -1110,14 +1241,46 @@
     return h + '</div></div>';
   }
 
+  // Panoda satır olarak çizilecek gruplar. Bugünün grupları varsa ertesi günün grupları satır olarak çizilmez,
+  // panonun altındaki tek şeritte adları ve sevk saatleriyle listelenir (bugünün satırları büyük kalır).
+  function boardSplit() {
+    var rows = [], next = [];
+    state.groups.forEach(function (g, i) { (g._next ? next : rows).push(i); });
+    if (!rows.length || !CONFIG.nextDayStrip) return { rows: rows.concat(next), next: [] };
+    return { rows: rows, next: next };
+  }
+
+  // Şerit metni: sığmazsa önce saatler, sonra adlar düşer
+  function nextStripVariants(list) {
+    var full = [], names = [], dot = ' <span class="bnx-dot">·</span> '; // boşluklar dikeyde satır kırılabilsin diye
+    list.forEach(function (i) {
+      var g = state.groups[i], t = esc(groupTitle(g));
+      full.push('<span class="bnx-it">' + t + (g._ship ? '<b>' + esc(g._ship) + '</b>' : '') + '</span>');
+      names.push('<span class="bnx-it">' + t + '</span>');
+    });
+    return [full.join(dot), names.join(dot), fmt(list.length) + ' rota grubu'];
+  }
+
+  function shipSignature(now) {
+    var sig = [];
+    state.groups.forEach(function (g) { sig.push(shipState(g, now)); });
+    return sig.join(',');
+  }
+
   function renderBoard() {
     var activeGi = !state.scenes && state.order.length ? state.order[state.groupPos] : -1;
     var html = '<div class="bcol">' + boardHead();
-    var widePast = false;
-    state.groups.forEach(function (g, i) {
-      html += boardRow(g, i, i === activeGi);
+    var widePast = false, split = boardSplit(), now = new Date();
+    split.rows.forEach(function (i) {
+      var g = state.groups[i];
+      html += boardRow(g, i, i === activeGi, now);
       PROCESSES.forEach(function (p) { var v = metric(g, p.key, 'Past'); if (v > 0 && fmt(v).length >= 4) widePast = true; });
     });
+    if (split.next.length) {
+      html += '<div class="bnext' + (state.portrait ? ' pr' : '') + '"><span class="bn-tag">ERTESİ GÜN</span><div class="bnx-list"></div></div>';
+    }
+    state.nextVariants = split.next.length ? nextStripVariants(split.next) : null;
+    state.shipSig = shipSignature(now);
     el.board.className = 'board ' + state.size + (widePast ? ' wide-past' : '');
     el.board.innerHTML = html + '</div>';
     fitBoard();
@@ -1146,10 +1309,21 @@
     fitCells(el.board.querySelectorAll('.brow .s-plan'));
     var names = el.board.querySelectorAll('.brow .bname'), i;
     for (i = 0; i < names.length; i++) fitName(names[i]);
-    // Bir satırda "Cut-off" kelimesi düştüyse hepsinde düşer (pano tek tip görünsün)
-    if (el.board.querySelector('.bname.no-cutw')) {
-      for (i = 0; i < names.length; i++) if (!/no-cutw/.test(names[i].className)) names[i].className += ' no-cutw';
+    // Bir satırda "Sevk" kelimesi düştüyse hepsinde düşer (pano tek tip görünsün)
+    if (el.board.querySelector('.bname.no-shipw')) {
+      for (i = 0; i < names.length; i++) if (!/no-shipw/.test(names[i].className)) names[i].className += ' no-shipw';
     }
+    var strip = el.board.querySelector('.bnx-list');
+    if (strip && state.nextVariants) setFitted(strip, state.nextVariants, 3);
+  }
+
+  // Parlama bitince çerçeve kaldırılır; pano yeniden çizilse de tekrar parlamaz
+  function onFlashEnd(e) {
+    var t = e.target;
+    if (!t || !/\btfl\b/.test(t.className)) return;
+    var k = t.getAttribute('data-k');
+    if (k && has(state.flash, k)) delete state.flash[k];
+    if (t.parentNode) t.parentNode.removeChild(t);
   }
 
   function markActiveRow() {
@@ -1329,7 +1503,7 @@
   function prepareAll() {
     state.prep = [];
     var order = [];
-    // Gruplar zaten cut-off sırasında; ertesi günün grupları detayda gösterilmez
+    // Gruplar zaten sevk saati sırasında; ertesi günün grupları detayda gösterilmez
     state.groups.forEach(function (g, i) {
       state.prep[i] = prepareGroup(g);
       if (!g._next && state.prep[i].rows.length) order.push(i);
@@ -1419,10 +1593,19 @@
     return pages;
   }
 
+  // Detay başlığı: "ANADOLU  Sevk Saati 17:00" (sevk saati panodaki gibi amber / GEÇTİ olabilir)
+  function fillDetailsTitle() {
+    var g = state.groups[state.order[state.groupPos]];
+    if (!g) return;
+    var st = shipState(g, new Date());
+    el['details-title'].innerHTML = esc(groupTitle(g)) + (g._ship ? '<small' + (st ? ' class="ship-' + st + '"' : '') + '>Sevk Saati ' +
+      esc(g._ship) + (st === 'late' ? ' GEÇTİ' : '') + '</small>' : '');
+  }
+
   // Başlık ölçümden önce dolu olmalı, yoksa tablo alanı olduğundan yüksek ölçülür
   function fillDetailsHead() {
-    var gi = state.order[state.groupPos], prep = state.prep[gi], g = state.groups[gi];
-    el['details-title'].innerHTML = esc(groupTitle(g)) + (g._cut ? '<small>Cut-off ' + esc(g._cut) + '</small>' : '');
+    var gi = state.order[state.groupPos], prep = state.prep[gi];
+    fillDetailsTitle();
     // Geciken yoksa ipucu gösterilmez ("geciken yok" yazılmaz)
     el['details-hint'].className = prep.lateRows ? 'dh-hint late' : '';
     el['details-hint'].textContent = prep.lateRows ? fmt(prep.lateRows) + ' GECİKEN ' + trUpper(CONFIG.rowUnit) + ' EN ÜSTTE' : '';
@@ -1513,7 +1696,20 @@
     return false;
   }
 
+  // Ekran yanığına karşı: 15 dk'da bir, sahne/sayfa değişirken tüm sayfa 1-2 piksel kaydırılır
+  var SHIFTS = [[0, 0], [2, 1], [-1, 2], [1, -2], [-2, -1], [2, -2], [-2, 2]];
+  function maybeShift() {
+    var now = Date.now();
+    if (!CONFIG.motion.pixelShift || now - state.shiftAt < 900000) return;
+    state.shiftAt = now;
+    state.shiftIdx = (state.shiftIdx + 1) % SHIFTS.length;
+    var s = SHIFTS[state.shiftIdx], v = s[0] || s[1] ? 'translate(' + s[0] + 'px,' + s[1] + 'px)' : '';
+    el.app.style.webkitTransform = v;
+    el.app.style.transform = v;
+  }
+
   function step() {
+    maybeShift();
     if (!state.scenes) {
       advancePage();
       renderDetails();
@@ -1537,10 +1733,11 @@
   }
 
   // ============================== SAAT / GÜNCELLEME ==============================
+  // Türkiye saati (UTC+3): cihazın saat dilimi yanlış ayarlı olsa da doğru saat görünür
   function renderClock() {
-    var now = new Date();
-    el.time.textContent = hhmm(now);
-    el.date.textContent = now.getDate() + ' ' + MONTHS[now.getMonth()] + ' ' + DAYS[now.getDay()];
+    var t = trShift(new Date());
+    el.time.textContent = pad2(t.getUTCHours()) + ':' + pad2(t.getUTCMinutes());
+    el.date.textContent = t.getUTCDate() + ' ' + MONTHS[t.getUTCMonth()] + ' ' + DAYS[t.getUTCDay()];
   }
 
   // Veri kaynağı güncelleme zamanını vermiyorsa ekrana ulaşma zamanı "Veri alındı" diye gösterilir
@@ -1552,9 +1749,9 @@
     var t = u || state.receivedAt;
     var age = Math.max(nowMs - state.receivedAt.getTime(), u ? nowMs - u.getTime() : 0);
     var mins = Math.max(0, Math.floor(age / 60000));
-    var sameDay = t.toDateString() === now.toDateString();
+    var sameDay = trDayKey(t) === trDayKey(now), td = trShift(t);
     var text = (u ? 'Son güncelleme ' : 'Veri alındı ') +
-      (sameDay ? '' : pad2(t.getDate()) + '.' + pad2(t.getMonth() + 1) + ' ') + hhmm(t);
+      (sameDay ? '' : pad2(td.getUTCDate()) + '.' + pad2(td.getUTCMonth() + 1) + ' ') + hhmm(t);
     var stale = state.fetchError || (CONFIG.staleMinutes > 0 && mins >= CONFIG.staleMinutes);
     if (state.fetchError) text = 'Bağlantı hatası  ·  ' + text;
     else if (stale) text = 'Veri ' + (mins >= 120 ? Math.floor(mins / 60) + ' saat' : mins + ' dk') + ' önce ' + (u ? 'güncellendi' : 'alındı');
@@ -1608,16 +1805,28 @@
   // ============================== BAŞLAT ==============================
   function start() {
     el.title.textContent = CONFIG.title;
+    state.shiftAt = Date.now();
     renderClock();
+    el.board.addEventListener('animationend', onFlashEnd);
+    el.board.addEventListener('webkitAnimationEnd', onFlashEnd);
     setInterval(function () {
       renderClock();
       renderUpdated();
-      // Gün değişince ertesi gün sıralaması yeniden hesaplanır
-      if (state.groups.length && state.day !== undefined && new Date().getDay() !== state.day) {
+      if (!state.groups.length) return;
+      var now = new Date();
+      if (state.day !== undefined && trDow(now) !== state.day) {
+        // Gün değişince (Türkiye saatiyle 00:00) ertesi gün sıralaması yeniden hesaplanır
         state.groups = orderGroups(state.groups);
         prepareAll();
         renderAll(false);
+      } else if (shipSignature(now) !== state.shipSig) {
+        // Sevk saati yaklaştı ya da geçti: pano ve detay başlığı yeni durumla çizilir
+        renderBoard();
+        if (state.order.length) fillDetailsTitle();
       }
+      var blink = /\bblink\b/.test(el.app.className);
+      if (blink !== blinking()) setAppClass();
+      if (!state.timer) maybeShift(); // sayfa dönmüyorsa kaydırma burada yapılır
     }, 5000);
 
     // Boyut gerçekten değişmediyse (bazı oynatıcılar boşuna resize gönderir) döngü sıfırlanmaz
