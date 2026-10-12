@@ -115,6 +115,9 @@
   .bn-act { display: none; color: #a8b5cc; font-weight: 600; }
   .brow.active .bn-act { display: inline; }
   .bname.no-act .bn-act, .bname.no-late .bn-late, .bname.no-shipw .bn-shipw { display: none; }
+  .bn-ship { white-space: nowrap; }
+  /* Yer yoksa ERTESİ GÜN etiketi alt satıra iner ("Sevk" kelimesi düşmeden önce) */
+  .bname.st-wrap .bn-tag { display: table; margin: .2em 0 0 0; }
   .g-late .bname { box-shadow: inset .6rem 0 0 #ef4444; }
   .g-ok .bname { box-shadow: inset .6rem 0 0 #22c55e; }
   .g-none .bname, .g-next .bname { box-shadow: inset .6rem 0 0 #475569; }
@@ -780,12 +783,12 @@
     return h;
   }
 
-  // Durum satırı kendi içinde kısalır: önce "detayda", sonra "N geciken kalem" (sayı kutuda da var), sonra "Sevk"
-  // kelimesi düşer; saat, GEÇTİ ve ERTESİ GÜN asla gizlenmez. Grup adı ise kendi alanına (yatayda en çok 3 satır) sığana kadar küçülür.
+  // Durum satırı kendi içinde kısalır: önce "detayda", sonra "N geciken kalem" (sayı kutuda da var) düşer, sonra
+  // ERTESİ GÜN alt satıra iner, en son "Sevk" kelimesi düşer; saat, GEÇTİ ve ERTESİ GÜN asla gizlenmez. Grup adı ise kendi alanına (yatayda en çok 3 satır) sığana kadar küçülür.
   function fitName(box) {
     var t = box.firstChild, st = box.lastChild;
     var portrait = /\bpr\b/.test(box.parentNode.className);
-    box.className = box.className.replace(/\s*no-(act|late|shipw)/g, '');
+    box.className = box.className.replace(/\s*(no-(act|late|shipw)|st-wrap)/g, '');
     st.style.fontSize = '';
     t.style.fontSize = '';
     var base = parseFloat(window.getComputedStyle(t).fontSize), fs = base, s;
@@ -799,12 +802,13 @@
     }
     var drops = ['no-act', 'no-late', 'no-shipw'];
     if (portrait) {
-      // Dikeyde ad ve durum aynı satırda: önce ad biraz küçülür, sonra durum kısalır
+      // Dikeyde ad ve durum aynı satırda (etiket alt satıra inmez): önce ad biraz küçülür, sonra durum kısalır
       shrink(1, 4);
       for (var d = 0; d < drops.length && over(); d++) { box.className += ' ' + drops[d]; t.style.fontSize = ''; fs = base; shrink(1, 4); }
       shrink(5, 14);
       return;
     }
+    drops = ['no-act', 'no-late', 'st-wrap', 'no-shipw'];
     for (var k = 0; k < drops.length && stOver(); k++) box.className += ' ' + drops[k];
     if (stOver()) fitCells([st], 4);
     // Ad önce kelimeler bölünmeden sığdırılır ("2.SEVKİYA / T" olmasın); tek kelime yine sığmazsa son çare bölünür
