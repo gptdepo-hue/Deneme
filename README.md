@@ -1,6 +1,6 @@
 # Turkuaz LogiBoard – Depo İçi Ekran
 
-ERP'den gelen `Turkuaz_Logiboard` verisini depo içi ekranlarda (Omma / Signalive) gösteren tek dosyalık HTML içerik: [`202610121828.html`](202610121828.html).
+ERP'den gelen `Turkuaz_Logiboard` verisini depo içi ekranlarda (Omma / Signalive) gösteren tek dosyalık HTML içerik: [`202610121837.html`](202610121837.html).
 Dosya adı revizyonun tarih ve saatidir (YYYYAAGGSSDD, Türkiye saati); her revizyonda yeni adla gelir.
 Sahadaki personelin 3–10 metreden bakıp **2 saniyede ne yapacağını anlaması** için andon panosu mantığıyla tasarlandı.
 
@@ -17,9 +17,9 @@ Sahadaki personelin 3–10 metreden bakıp **2 saniyede ne yapacağını anlamas
 2. **Andon panosu**
    - Rota grupları **sevk saatine göre** sıralanır (aşağıdaki tablo). Grup adının altında "Sevk 14:30" yazar.
    - **Sevk saati durumu** (Türkiye saatiyle): sevke 60 dakika ya da daha az kaldıysa saat **amber kutuda** görünür. Saat geçtiği hâlde grupta GECİKEN/ZAMANINDA kalem duruyorsa **beyaz kutuda kırmızı "14:30 GEÇTİ"** yazar.
-   - **Ertesi günün grupları alttaki gri şeride alınır.** GECİKEN ve ZAMANINDA değeri olmayan, yalnızca PLANLI değeri olan grup ertesi günün işidir. Bugünün grupları varken bu gruplar satır olarak çizilmez; panonun altındaki **ERTESİ GÜN** şeridinde adları ve sevk saatleriyle listelenir. Böylece bugünün satırları büyük kalır. Cuma günü önce Cumartesi grupları, diğer günler önce hafta içi grupları gelir. Bugün hiç iş yoksa ertesi günün grupları satır olarak gösterilir.
+   - **Ertesi günün grupları sona alınır.** GECİKEN ve ZAMANINDA değeri olmayan, yalnızca PLANLI değeri olan grup ertesi günün işidir. Bu gruplar gri görünür ve "ERTESİ GÜN" etiketi taşır. Cuma günü önce Cumartesi grupları, diğer günler önce hafta içi grupları gelir.
    - Her grup için süreçler TOPLAMA → PAKETLEME → SEVKİYAT sırasıyla, GECİKEN / ZAMANINDA / PLANLI değerleriyle gösterilir; değerler ortalıdır.
-   - Geciken kalemi olan kutu **kırmızı** yanar ve beyaz kutu içinde geciken sayısını gösterir. Bugünün gruplarında geciken yoksa yeşil onay işareti görünür. Grup adının altında "Geciken yok" yazmaz.
+   - Geciken kalem varsa **yalnızca GECİKEN hücresi kırmızı** yanar ve geciken sayısını beyaz rakamla gösterir; aynı süreçteki ZAMANINDA ve PLANLI değerleri normal renkte kalır. Bugünün gruplarında geciken yoksa yeşil onay işareti görünür. Grup adının altında "Geciken yok" yazmaz.
    - **0** değerleri sönük ve küçük yazılır; dolu sayılar öne çıkar.
    - Süreç başlıklarında o süreçteki toplam geciken sayısı rozet olarak görünür, örneğin "5 GECİKEN".
 3. **Detay tablosu**
@@ -120,7 +120,6 @@ Detay tablosunun sütunları **veriden otomatik çıkarılır**. ERP'de alan ekl
 | `detailsKey` | `Details` | Alt detay listesi alanı |
 | `shipTimes` | (yukarıdaki tablo) | Rota gruplarının sevk saatleri ve sıralaması (eski ad `cutoffs` da okunur) |
 | `shipSoonMinutes` | `60` | Sevke bu kadar dakika ya da daha az kaldıysa saat amber kutuda |
-| `nextDayStrip` | `true` | Bugünün grupları varken ertesi günün grupları alttaki şeritte |
 | `detailActiveOnly` | `true` | Detayda yalnızca GECİKEN/ZAMANINDA değeri olan bayiler |
 | `rowUnit` | `bayi` | Detay satırlarının birimi ("123 bayi") |
 | `pageSeconds` | `10` | Detay sayfasının ekranda kalma süresi (sn) |

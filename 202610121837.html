@@ -123,16 +123,6 @@
   .g-next .bn-text { color: #cbd5e1; }
   .g-next .tile { background: #121c2f; }
   .brow.g-next .s-plan { color: #cbd5e1; }
-  /* Ertesi gün şeridi: bugünün grupları varken ertesi günün grupları tek satırda, panonun altında */
-  .bnext { -webkit-flex: none; flex: none; display: -webkit-flex; display: flex; -webkit-align-items: center; align-items: center; margin-top: .45rem; padding: .45rem 1rem .45rem 1.4rem;
-    border-radius: .5rem; background: #121c2f; box-shadow: inset .6rem 0 0 #475569; white-space: nowrap; overflow: hidden; }
-  .bnext .bn-tag { -webkit-flex: none; flex: none; margin: 0 1rem 0 0; font-size: 1.45rem; }
-  .bnx-list { -webkit-flex: 1; flex: 1; min-width: 0; overflow: hidden; font-size: 1.6rem; font-weight: 700; color: #cbd5e1; }
-  .bnx-list b { margin-left: .3em; color: #e2e8f0; font-weight: 800; }
-  .bnx-dot { padding: 0 .3em; color: #64748b; }
-  .bnext.pr { -webkit-align-items: flex-start; align-items: flex-start; }
-  .bnext.pr .bnx-list { white-space: normal; line-height: 1.35; }
-  .bnext.pr .bnx-it { white-space: nowrap; }
 
   .tile { position: relative; -webkit-flex: 1; flex: 1; min-width: 0; display: -webkit-flex; display: flex; -webkit-align-items: center; align-items: center; margin-left: .45rem; border-radius: .5rem; background: #16233a; }
   /* Yeni gecikme: kutunun çerçevesi 3 kez parlar (yalnızca opaklık), sonra kendiliğinden kalkar */
@@ -140,7 +130,6 @@
     -webkit-animation: tflash 1.6s ease-in-out 3; animation: tflash 1.6s ease-in-out 3; }
   @-webkit-keyframes tflash { 0%, 100% { opacity: 0; } 50% { opacity: 1; } }
   @keyframes tflash { 0%, 100% { opacity: 0; } 50% { opacity: 1; } }
-  .tile.late { background: #c81e1e; }
   .bhead .tile { display: block; background: none; }
   .th-proc {
     position: relative; display: -webkit-flex; display: flex; -webkit-align-items: center; align-items: center; -webkit-justify-content: center; justify-content: center;
@@ -169,14 +158,16 @@
   .brow .s-past { font-weight: 900; }
   .brow .s-today { font-weight: 800; color: #f8fafc; }
   .brow .s-plan { font-weight: 700; color: #a8b5cc; }
-  .tile.late .s-plan { color: #fecaca; }
   .brow .s-plan { border-left: .12rem solid rgba(148, 163, 184, .22); }
-  .tile.late .s-plan { border-left-color: rgba(255, 255, 255, .35); }
+  /* Yalnızca GECİKEN hücresi kırmızı yanar (beyaz rakam); ZAMANINDA ve PLANLI normal renkte kalır */
+  .tile.late .s-past {
+    -webkit-align-self: stretch; align-self: stretch; display: -webkit-flex; display: flex; -webkit-align-items: center; align-items: center; -webkit-justify-content: center; justify-content: center;
+    border-radius: .5rem 0 0 .5rem; background: #c81e1e; color: #fff;
+  }
   /* Sıfırlar sönük ve küçük: dolu sayılar öne çıkar */
   .zero { color: #64748b; }
   .brow .slot .zero { font-size: .7em; }
-  .tile.late .zero { color: #fecaca; }
-  .lamp { display: inline-block; min-width: 1.3em; padding: 0 .22em; border-radius: .16em; background: #fff; color: #b91c1c; line-height: 1.12; }
+  .lamp { display: inline-block; line-height: 1.12; }
   .ok-mark { position: relative; display: inline-block; vertical-align: middle; width: .78em; height: .78em; border-radius: 50%; background: #16a34a; }
   .ok-mark:after {
     content: ''; position: absolute; left: .275em; top: .13em; width: .19em; height: .38em;
@@ -248,16 +239,12 @@
   .dh-title small { margin-left: .6rem; font-size: .7em; font-weight: 600; color: #a8b5cc; }
   .dh-title small.ship-soon, .dh-title small.ship-late { font-weight: 800; color: #1a1200; }
   .dh-title small.ship-late { color: #b91c1c; }
-  .dh-hint { -webkit-flex: none; flex: none; margin-left: 1rem; padding: .15rem .7rem; border-radius: .35rem; font-size: 1.25rem; font-weight: 800; letter-spacing: .02em; }
-  .dh-hint.late { background: #dc2626; color: #fff; }
-  .dh-hint.info { background: #334155; color: #e2e8f0; }
   .dh-page { -webkit-flex: 0 1 auto; flex: 0 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; margin-left: auto; padding-left: 1.2rem; font-size: 1.5rem; font-weight: 800; color: #e2e8f0; font-variant-numeric: tabular-nums; }
   .dh-page small { margin-left: .6rem; font-size: 1.25rem; font-weight: 600; color: #a8b5cc; }
   .details-body { -webkit-flex: 1; flex: 1; min-height: 0; overflow: hidden; }
   @media (max-aspect-ratio: 1/1) {
     .details-head { -webkit-flex-wrap: wrap; flex-wrap: wrap; }
     .dh-left { -webkit-flex: 1 1 100%; flex: 1 1 100%; max-width: none; }
-    .dh-hint { margin: .3rem 0 0 0; }
     .dh-page { margin-top: .3rem; }
   }
 
@@ -332,7 +319,6 @@
   <section class="details">
     <div class="details-head">
       <div class="dh-left"><span class="dh-label">DETAY</span><span id="details-title" class="dh-title"></span></div>
-      <span id="details-hint"></span>
       <div id="details-page" class="dh-page"></div>
     </div>
     <div id="details-body" class="details-body"><table id="details"></table></div>
@@ -379,7 +365,6 @@
       { name: 'CUMARTESİ ANADOLU', time: '13:30', sat: true }
     ],
     shipSoonMinutes: 60,  // sevke bu kadar dakika ya da daha az kaldıysa saat amber kutuda gösterilir
-    nextDayStrip: true,   // bugünün grupları varken ertesi günün grupları panonun altında tek şeritte gösterilir
     detailShowPlanned: true,  // detay tablosunda PLANLI sütunlarını göster
     detailMaxPages: 0,    // >0 ise bir grubun detayından tur başına en fazla bu kadar sayfa gösterilir (geciken satırlar hep gösterilir)
     showProcessOverdue: true, // pano başlığında süreç başına toplam geciken rozeti ("3 GECİKEN")
@@ -456,7 +441,7 @@
 
   var el = {};
   ['app', 'title', 'updated', 'time', 'date', 'banner', 'b-tag', 'b-l1', 'b-l2', 'b-count-n', 'b-count-l', 'board',
-    'details-title', 'details-hint', 'details-page', 'details-body', 'details',
+    'details-title', 'details-page', 'details-body', 'details',
     'progress', 'progress-bar', 'message'].forEach(function (id) {
     el[id] = document.getElementById(id);
   });
@@ -845,18 +830,12 @@
     }
   }
 
-  // Metni sırayla daha kısa seçeneklerle dener (her biri isteğe bağlı olarak shrinkSteps adım küçülerek);
-  // hiçbiri sığmazsa sonuncusunu küçültür
-  function setFitted(node, variants, shrinkSteps) {
+  // Metni sırayla daha kısa seçeneklerle dener; hiçbiri sığmazsa sonuncusunu küçültür
+  function setFitted(node, variants) {
     node.style.fontSize = '';
-    var base = parseFloat(window.getComputedStyle(node).fontSize);
     for (var i = 0; i < variants.length; i++) {
       node.innerHTML = variants[i];
-      for (var s = 0; s <= (shrinkSteps || 0); s++) {
-        if (s) node.style.fontSize = (base * Math.pow(0.92, s)) + 'px';
-        if (node.scrollWidth <= node.clientWidth + 1) return;
-      }
-      node.style.fontSize = '';
+      if (node.scrollWidth <= node.clientWidth + 1) return;
     }
     fitCells([node]);
   }
@@ -1101,7 +1080,7 @@
 
   // Pano + detay alt alta sığıyorsa öyle, sığmıyorsa sırayla (sahne) gösterilir
   function decideLayout() {
-    var n = boardSplit().rows.length;
+    var n = state.groups.length;
     var wasScenes = state.scenes;
     state.scenes = false;
     state.rowsPerPage = 0;
@@ -1241,26 +1220,6 @@
     return h + '</div></div>';
   }
 
-  // Panoda satır olarak çizilecek gruplar. Bugünün grupları varsa ertesi günün grupları satır olarak çizilmez,
-  // panonun altındaki tek şeritte adları ve sevk saatleriyle listelenir (bugünün satırları büyük kalır).
-  function boardSplit() {
-    var rows = [], next = [];
-    state.groups.forEach(function (g, i) { (g._next ? next : rows).push(i); });
-    if (!rows.length || !CONFIG.nextDayStrip) return { rows: rows.concat(next), next: [] };
-    return { rows: rows, next: next };
-  }
-
-  // Şerit metni: sığmazsa önce saatler, sonra adlar düşer
-  function nextStripVariants(list) {
-    var full = [], names = [], dot = ' <span class="bnx-dot">·</span> '; // boşluklar dikeyde satır kırılabilsin diye
-    list.forEach(function (i) {
-      var g = state.groups[i], t = esc(groupTitle(g));
-      full.push('<span class="bnx-it">' + t + (g._ship ? '<b>' + esc(g._ship) + '</b>' : '') + '</span>');
-      names.push('<span class="bnx-it">' + t + '</span>');
-    });
-    return [full.join(dot), names.join(dot), fmt(list.length) + ' rota grubu'];
-  }
-
   function shipSignature(now) {
     var sig = [];
     state.groups.forEach(function (g) { sig.push(shipState(g, now)); });
@@ -1270,16 +1229,11 @@
   function renderBoard() {
     var activeGi = !state.scenes && state.order.length ? state.order[state.groupPos] : -1;
     var html = '<div class="bcol">' + boardHead();
-    var widePast = false, split = boardSplit(), now = new Date();
-    split.rows.forEach(function (i) {
-      var g = state.groups[i];
+    var widePast = false, now = new Date();
+    state.groups.forEach(function (g, i) {
       html += boardRow(g, i, i === activeGi, now);
       PROCESSES.forEach(function (p) { var v = metric(g, p.key, 'Past'); if (v > 0 && fmt(v).length >= 4) widePast = true; });
     });
-    if (split.next.length) {
-      html += '<div class="bnext' + (state.portrait ? ' pr' : '') + '"><span class="bn-tag">ERTESİ GÜN</span><div class="bnx-list"></div></div>';
-    }
-    state.nextVariants = split.next.length ? nextStripVariants(split.next) : null;
     state.shipSig = shipSignature(now);
     el.board.className = 'board ' + state.size + (widePast ? ' wide-past' : '');
     el.board.innerHTML = html + '</div>';
@@ -1313,8 +1267,6 @@
     if (el.board.querySelector('.bname.no-shipw')) {
       for (i = 0; i < names.length; i++) if (!/no-shipw/.test(names[i].className)) names[i].className += ' no-shipw';
     }
-    var strip = el.board.querySelector('.bnx-list');
-    if (strip && state.nextVariants) setFitted(strip, state.nextVariants, 3);
   }
 
   // Parlama bitince çerçeve kaldırılır; pano yeniden çizilse de tekrar parlamaz
@@ -1604,11 +1556,7 @@
 
   // Başlık ölçümden önce dolu olmalı, yoksa tablo alanı olduğundan yüksek ölçülür
   function fillDetailsHead() {
-    var gi = state.order[state.groupPos], prep = state.prep[gi];
     fillDetailsTitle();
-    // Geciken yoksa ipucu gösterilmez ("geciken yok" yazılmaz)
-    el['details-hint'].className = prep.lateRows ? 'dh-hint late' : '';
-    el['details-hint'].textContent = prep.lateRows ? fmt(prep.lateRows) + ' GECİKEN ' + trUpper(CONFIG.rowUnit) + ' EN ÜSTTE' : '';
     if (!el['details-page'].innerHTML) el['details-page'].textContent = '…';
   }
 
@@ -1643,17 +1591,6 @@
       (prep.hidden ? (prep.activeOnly ? ' · bugün işi olmayan ' + fmt(prep.hidden) + ' ' + esc(CONFIG.rowUnit) + ' gizli' :
         ' · tümü 0 olan ' + fmt(prep.hidden) + ' ' + esc(CONFIG.rowUnit) + ' gizli') : '') +
       (cut > 0 ? ' · +' + fmt(cut) + ' ' + esc(CONFIG.rowUnit) + ' gösterilmiyor' : '') + '</small>';
-
-    // Kırmızı ipucu yalnızca geciken kayıtların göründüğü sayfalarda; diğer sayfalarda nerede olduklarını söyler
-    if (prep.lateRows) {
-      var latePages = Math.ceil(prep.lateRows / state.rowsPerPage);
-      var lateHere = CONFIG.sortDetailRows && state.page < latePages;
-      var unitUp = trUpper(CONFIG.rowUnit);
-      el['details-hint'].className = 'dh-hint ' + (lateHere || !CONFIG.sortDetailRows ? 'late' : 'info');
-      el['details-hint'].textContent = !CONFIG.sortDetailRows ? fmt(prep.lateRows) + ' GECİKEN ' + unitUp :
-        lateHere ? fmt(prep.lateRows) + ' GECİKEN ' + unitUp + ' EN ÜSTTE' :
-        fmt(prep.lateRows) + ' GECİKEN ' + unitUp + ' ' + (latePages > 1 ? 'İLK SAYFALARDA' : 'İLK SAYFADA');
-    }
 
     markActiveRow();
   }
