@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Turkuaz Logiboard</title>
+<title>Turkuaz LogiBoard</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -96,39 +96,47 @@
   .btiles { -webkit-flex: 1; flex: 1; min-width: 0; display: -webkit-flex; display: flex; }
   .bname {
     -webkit-flex: none; flex: none; width: 21%; display: -webkit-flex; display: flex; -webkit-flex-direction: column; flex-direction: column; -webkit-justify-content: center; justify-content: center;
-    padding: .3rem .8rem .3rem 1.4rem; border-radius: .5rem; background: #16233a; overflow: hidden;
+    padding: .3rem .5rem .3rem 1.4rem; border-radius: .5rem; background: #16233a; overflow: hidden;
   }
   .bhead .bname { -webkit-justify-content: flex-end; justify-content: flex-end; padding: 0 .6rem .4rem 1.4rem; background: none; font-size: 1.25rem; font-weight: 700; color: #a8b5cc; letter-spacing: .04em; white-space: nowrap; }
   .bn-text { -webkit-flex: none; flex: none; max-height: 3.45em; overflow: hidden; font-weight: 800; line-height: 1.15; word-wrap: break-word; }
-  .bname.no-status .bn-status { display: none; }
-  .bn-status { -webkit-flex: none; flex: none; margin-top: .2rem; font-size: 1.3rem; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  /* Durum satırı: cut-off saati (+ ERTESİ GÜN) asla gizlenmez; yer kalmazsa önce "detayda", sonra "N geciken iş" düşer */
+  .bn-status { -webkit-flex: none; flex: none; margin-top: .2rem; font-size: 1.3rem; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #a8b5cc; }
+  .bn-cut { font-weight: 600; color: #a8b5cc; }
+  .bn-tag { display: inline-block; margin-left: .5em; padding: 0 .4em; border-radius: .25em; background: #334155; color: #e2e8f0; font-weight: 800; letter-spacing: .04em; line-height: 1.35; }
+  .bn-late { color: #fca5a5; }
+  .bn-act { display: none; color: #a8b5cc; font-weight: 600; }
+  .brow.active .bn-act { display: inline; }
+  .bname.no-act .bn-act, .bname.no-late .bn-late, .bname.no-cutw .bn-cutw { display: none; }
   .g-late .bname { box-shadow: inset .6rem 0 0 #ef4444; }
   .g-ok .bname { box-shadow: inset .6rem 0 0 #22c55e; }
-  .g-late .bn-status { color: #fca5a5; }
-  .g-ok .bn-status { color: #86efac; }
-  .g-none .bname { box-shadow: inset .6rem 0 0 #475569; }
+  .g-none .bname, .g-next .bname { box-shadow: inset .6rem 0 0 #475569; }
   .brow.active .bname { background: #22344f; }
-  .brow.active .bn-status:after { content: ' · detayda'; color: #a8b5cc; }
+  /* Ertesi günün grubu: renkle sadeleştirilir (saydamlık yok, PLANLI okunur kalır) */
+  .g-next .bn-text { color: #cbd5e1; }
+  .g-next .tile { background: #121c2f; }
+  .brow.g-next .s-plan { color: #cbd5e1; }
 
   .tile { -webkit-flex: 1; flex: 1; min-width: 0; display: -webkit-flex; display: flex; -webkit-align-items: center; align-items: center; margin-left: .45rem; border-radius: .5rem; background: #16233a; }
   .tile.late { background: #c81e1e; }
   .bhead .tile { display: block; background: none; }
   .th-proc {
-    display: -webkit-flex; display: flex; -webkit-align-items: center; align-items: center; padding: 0 .5rem .3rem; border-bottom: .15rem solid #2b3b58;
+    position: relative; display: -webkit-flex; display: flex; -webkit-align-items: center; align-items: center; -webkit-justify-content: center; justify-content: center;
+    padding: 0 1.6rem .3rem; border-bottom: .15rem solid #2b3b58;
     font-size: 1.6rem; font-weight: 800; white-space: nowrap; overflow: hidden;
   }
   .step {
     -webkit-flex: none; flex: none; display: inline-block; width: 1.9rem; height: 1.9rem; margin-right: .6rem; border-radius: 50%;
     background: #334155; color: #e2e8f0; text-align: center; font-size: 1.25rem; line-height: 1.9rem; font-weight: 800;
   }
-  .arrow { -webkit-flex: none; flex: none; margin-left: auto; padding-left: .6rem; color: #64748b; font-weight: 400; }
+  .arrow { position: absolute; right: .2rem; top: 0; color: #64748b; font-weight: 400; }
   .th-proc .pl { -webkit-flex: none; flex: none; }
   .ppill { -webkit-flex: none; flex: none; margin-left: .6rem; padding: 0 .45rem; border-radius: .3rem; background: #dc2626; color: #fff; font-size: 1.25rem; font-weight: 800; line-height: 1.6; letter-spacing: .02em; }
   .th-sub { display: -webkit-flex; display: flex; padding-top: .3rem; }
   .th-sub .slot { padding: 0 .35rem; font-size: 1.25rem; font-weight: 700; color: #a8b5cc; letter-spacing: .02em; }
   .th-sub .s-past { color: #fca5a5; }
 
-  .slot { overflow: hidden; white-space: nowrap; padding: 0 .5rem; text-align: right; line-height: 1.15; }
+  .slot { overflow: hidden; white-space: nowrap; padding: 0 .5rem; text-align: center; line-height: 1.15; }
   .s-past { width: 27%; text-align: center; }
   .s-today { width: 42%; }
   .s-plan { width: 31%; }
@@ -190,6 +198,7 @@
   .brow.pr .bname, .brow.active.pr .bname { box-shadow: none; border-left: .5rem solid #475569; border-radius: 0; }
   .brow.pr.g-late .bname { border-left-color: #ef4444; }
   .brow.pr.g-ok .bname { border-left-color: #22c55e; }
+  .brow.pr.g-next .bname { border-left-color: #475569; }
   .brow.pr.active .bname { background: #22344f; }
   .pr .tile:first-child, .bhead.pr .tile:first-child { margin-left: 0; }
   .bhead.pr .bname { display: none; }
@@ -209,30 +218,31 @@
   .details { -webkit-flex: 1; flex: 1; min-height: 0; display: -webkit-flex; display: flex; -webkit-flex-direction: column; flex-direction: column; margin-top: .7rem; padding: .45rem .8rem .3rem; border-radius: .6rem; background: #111a2e; }
   .no-details .details, .scenes.scene-board .details, .scenes.scene-detail .board { display: none; }
   .details-head { -webkit-flex: none; flex: none; display: -webkit-flex; display: flex; -webkit-align-items: center; align-items: center; -webkit-justify-content: space-between; justify-content: space-between; padding: 0 .3rem .4rem; white-space: nowrap; }
-  .dh-left { -webkit-flex: 0 1 auto; flex: 0 1 auto; min-width: 0; display: -webkit-flex; display: flex; -webkit-align-items: center; align-items: center; overflow: hidden; }
+  .dh-left { -webkit-flex: none; flex: none; max-width: 62%; min-width: 0; display: -webkit-flex; display: flex; -webkit-align-items: center; align-items: center; overflow: hidden; }
   .dh-label { -webkit-flex: none; flex: none; margin-right: .8rem; font-size: 1.25rem; font-weight: 700; color: #a8b5cc; letter-spacing: .06em; }
   .dh-title { min-width: 0; overflow: hidden; text-overflow: ellipsis; font-size: 2rem; font-weight: 800; }
+  .dh-title small { margin-left: .6rem; font-size: .7em; font-weight: 600; color: #a8b5cc; }
   .dh-hint { -webkit-flex: none; flex: none; margin-left: 1rem; padding: .15rem .7rem; border-radius: .35rem; font-size: 1.25rem; font-weight: 800; letter-spacing: .02em; }
   .dh-hint.late { background: #dc2626; color: #fff; }
-  .dh-hint.ok { background: #14532d; color: #bbf7d0; }
-  .dh-page { -webkit-flex: none; flex: none; margin-left: auto; padding-left: 1.2rem; font-size: 1.5rem; font-weight: 800; color: #e2e8f0; font-variant-numeric: tabular-nums; }
+  .dh-hint.info { background: #334155; color: #e2e8f0; }
+  .dh-page { -webkit-flex: 0 1 auto; flex: 0 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; margin-left: auto; padding-left: 1.2rem; font-size: 1.5rem; font-weight: 800; color: #e2e8f0; font-variant-numeric: tabular-nums; }
   .dh-page small { margin-left: .6rem; font-size: 1.25rem; font-weight: 600; color: #a8b5cc; }
   .details-body { -webkit-flex: 1; flex: 1; min-height: 0; overflow: hidden; }
   @media (max-aspect-ratio: 1/1) {
     .details-head { -webkit-flex-wrap: wrap; flex-wrap: wrap; }
-    .dh-left { -webkit-flex: 1 1 100%; flex: 1 1 100%; }
+    .dh-left { -webkit-flex: 1 1 100%; flex: 1 1 100%; max-width: none; }
     .dh-hint { margin: .3rem 0 0 0; }
     .dh-page { margin-top: .3rem; }
   }
 
   table { width: 100%; border-collapse: separate; border-spacing: 0; table-layout: fixed; }
   th, td { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .details th { padding: .2rem .55rem; font-size: 1.25rem; font-weight: 700; color: #a8b5cc; letter-spacing: .03em; text-align: right; }
+  .details th { padding: .2rem .55rem; font-size: 1.25rem; font-weight: 700; color: #a8b5cc; letter-spacing: .03em; text-align: center; }
   .details tr.grp th { padding-bottom: .25rem; font-size: 1.4rem; font-weight: 800; color: #f1f5f9; text-align: center; border-bottom: .15rem solid #2b3b58; }
   .details th.name, .details tr.grp th.name { text-align: left; vertical-align: bottom; color: #a8b5cc; font-size: 1.25rem; font-weight: 700; border-bottom: 0; }
   .details th.past { color: #fca5a5; }
   .details .sep { border-left: .15rem solid #24324f; }
-  .details td { padding: .28rem .55rem; font-size: 1.7rem; font-weight: 700; text-align: right; border-top: .08rem solid #1c2943; font-variant-numeric: tabular-nums; }
+  .details td { padding: .28rem .55rem; font-size: 1.7rem; font-weight: 700; text-align: center; border-top: .08rem solid #1c2943; font-variant-numeric: tabular-nums; }
   .details td.name { text-align: left; font-size: 1.6rem; font-weight: 600; }
   .details td.plan { color: #a8b5cc; }
   .details td.zero { color: #64748b; font-weight: 600; }
@@ -242,6 +252,13 @@
   .details tbody.late td:first-child { box-shadow: inset .5rem 0 0 #ef4444; }
   .details tbody.late td.name { font-weight: 800; }
   .details tbody.rec.late td.zero { color: rgba(255, 255, 255, .45); }
+  /* Rota grubu toplam satırı (her sayfada, sütun başlıklarının altında) */
+  .details tr.sum td { background: #1b2a45; border-top: .12rem solid #2b3b58; border-bottom: .15rem solid #2b3b58; font-weight: 800; color: #f1f5f9; }
+  .details tr.sum td.sum-name { text-align: left; font-size: 1.35rem; color: #cbd5e1; letter-spacing: .04em; }
+  .details tr.sum td.zero { color: #64748b; }
+  .details tr.sum td.plan { color: #cbd5e1; }
+  .details tr.sum-label td { border-bottom: 0; padding-bottom: 0; }
+  .details .stacked tr.sum + tr.sum td, .details .stacked tr.sum-label + tr.sum td { border-top: 0; }
   /* Dar ekran (dikey): her kayıt iki satır — üstte metin alanları, altta sayılar */
   .details .stacked th { padding-left: .35rem; padding-right: .35rem; }
   .details .stacked td { padding-left: .4rem; padding-right: .45rem; }
@@ -306,7 +323,7 @@
 
   // ============================== AYARLAR ==============================
   var CONFIG = {
-    title: 'Turkuaz Logiboard',
+    title: 'Turkuaz LogiBoard',
     datasourceId: 3887,                       // Omma veri kaynağı numarası (force adresindeki /datasource/3887/); önce buna bakılır
     datasourceName: 'Turkuaz_Logiboard',      // Omma'daki veri kaynağının adı
     rootKey: 'Turkuaz_Logiboard',             // veri { "Turkuaz_Logiboard": [...] } şeklinde gelirse
@@ -319,7 +336,21 @@
     detailPagesPerTurn: 2,// sırayla gösterimde panoya dönmeden önce gösterilecek en fazla detay sayfası
     minDetailRows: 4,     // panonun altına bundan az detay satırı sığarsa pano ve detay sırayla gösterilir
     hideZeroDetailRows: true, // tüm sayıları 0 olan detay satırlarını gizle
-    sortDetailRows: true, // detayda önce geciken satırlar, sonra BUGÜN toplamı büyükten küçüğe
+    sortDetailRows: true, // detayda önce geciken satırlar, sonra ZAMANINDA toplamı büyükten küçüğe
+    detailActiveOnly: true, // detayda yalnızca GECİKEN/ZAMANINDA değeri olan bayiler (yalnızca PLANLI = ertesi günün işi)
+    rowUnit: 'bayi',      // detay satırlarının birimi: "123 bayi"
+    // Rota gruplarının sevkiyat cut-off saatleri: pano ve detay bu saate göre sıralanır.
+    // Ad, büyük/küçük harf ve noktalama farkı gözetmeden eşleşir. sat: true = Cumartesi grubu. aliases: farklı yazımlar.
+    cutoffs: [
+      { name: 'ANKARA SICAK', time: '10:30' },
+      { name: 'ADAPAZARI SICAK', time: '11:00' },
+      { name: 'İSTANBUL 1.SEVKİYAT', time: '11:30' },
+      { name: 'BURSA SICAK', time: '12:00' },
+      { name: 'İSTANBUL 2.SEVKİYAT', time: '14:30' },
+      { name: 'ANADOLU', time: '17:00' },
+      { name: 'CUMARTESİ İSTANBUL', time: '12:30', sat: true },
+      { name: 'CUMARTESİ ANADOLU', time: '13:30', sat: true }
+    ],
     detailShowPlanned: true,  // detay tablosunda PLANLI sütunlarını göster
     detailMaxPages: 0,    // >0 ise bir grubun detayından tur başına en fazla bu kadar sayfa gösterilir (geciken satırlar hep gösterilir)
     showProcessOverdue: true, // pano başlığında süreç başına toplam geciken rozeti ("3 GECİKEN")
@@ -335,7 +366,7 @@
   var LABELS = {
     DispatchRouteGroupTitle: 'Rota Grubu',
     DispatchRouteTitle: 'Rota',
-    CustomerTitle: 'Müşteri'
+    CustomerTitle: 'Bayi Adı'
   };
 
   // Fiziksel akış sırası: toplama -> paketleme -> sevkiyat
@@ -360,7 +391,7 @@
   var state = {
     groups: [],
     prep: [],        // grup başına hazırlanmış detay (sütunlar, süzülmüş/sıralı satırlar)
-    order: [],       // detayı dönecek grupların indeksleri (geciken önce)
+    order: [],       // detayı dönecek grupların indeksleri (cut-off sırasıyla; ertesi gün grupları hariç)
     groupPos: 0,     // order içinde şu an gösterilen grup
     page: 0,
     rowsPerPage: 0,  // 0 = yeniden ölçülecek
@@ -551,6 +582,96 @@
     return sum;
   }
 
+  // ============================== CUT-OFF SIRALAMASI ==============================
+  // Ad anahtarı: Türkçe harfler sadeleştirilir, harf/rakam dışı atılır ("İstanbul 1. Sevkiyat" = "İSTANBUL 1.SEVKİYAT")
+  var TR_FOLD = { 'İ': 'I', 'Ş': 'S', 'Ğ': 'G', 'Ü': 'U', 'Ö': 'O', 'Ç': 'C' };
+  function foldTr(s) { return trUpper(s).replace(/[İŞĞÜÖÇ]/g, function (ch) { return TR_FOLD[ch]; }); }
+  function nameKey(s) { return foldTr(s).replace(/[^A-Z0-9]/g, ''); }
+  function nameWords(s) { return foldTr(s).split(/[^A-Z0-9]+/).filter(function (w) { return w !== ''; }); }
+
+  var warnedNames = {};
+  // Önce birebir eşleşme; yoksa girdinin tüm kelimeleri grup adında geçen en çok kelimeli girdi
+  function cutoffFor(title) {
+    var key = nameKey(title), words = nameWords(title), best = null, bestWords = 0, i, n, c, names;
+    if (!key) return null;
+    for (i = 0; i < CONFIG.cutoffs.length; i++) {
+      c = CONFIG.cutoffs[i]; names = [c.name].concat(c.aliases || []);
+      for (n = 0; n < names.length; n++) if (nameKey(names[n]) === key) return c;
+    }
+    for (i = 0; i < CONFIG.cutoffs.length; i++) {
+      c = CONFIG.cutoffs[i]; names = [c.name].concat(c.aliases || []);
+      for (n = 0; n < names.length; n++) {
+        var ew = nameWords(names[n]), all = ew.length > 0;
+        for (var w = 0; w < ew.length && all; w++) if (words.indexOf(ew[w]) < 0) all = false;
+        if (all && ew.length > bestWords) { best = c; bestWords = ew.length; }
+      }
+    }
+    if (!best && !warnedNames[key]) { warnedNames[key] = true; log('warn', 'Logiboard: cut-off listesinde olmayan rota grubu: ' + title); }
+    return best;
+  }
+
+  function toMinutes(t) {
+    var m = /^(\d{1,2})[:.](\d{2})$/.exec(String(t || ''));
+    return m ? (+m[1]) * 60 + (+m[2]) : 9999;
+  }
+
+  // Ertesi gün bloğunda: girdinin bir sonraki geçerli günü kaç gün sonra (hafta içi 1-5, Cumartesi 6)
+  function daysUntil(c, dow) {
+    for (var d = 1; d <= 7; d++) {
+      var day = (dow + d) % 7;
+      if (c.sat ? day === 6 : (day >= 1 && day <= 5)) return d;
+    }
+    return 9;
+  }
+
+  function rowMetric(r, p, per) {
+    var v = toNumber(r[p + per]);
+    return v === null ? toNumber(r['Total' + p + per]) : v;
+  }
+
+  // GECİKEN+ZAMANINDA ve PLANLI toplamları (grup toplamları + detay satırları). known=false: hiç değer yok
+  function groupActivity(g) {
+    var a = { known: false, act: 0, plan: 0 };
+    PROCESSES.forEach(function (p) {
+      ['Past', 'Today'].forEach(function (per) {
+        var v = metric(g, p.key, per);
+        if (v !== null) { a.known = true; if (v > 0) a.act += v; }
+      });
+      var pl = metric(g, p.key, 'Planned');
+      if (pl > 0) a.plan += pl;
+    });
+    var rows = groupDetails(g);
+    for (var i = 0; i < rows.length; i++) {
+      var r = rows[i];
+      if (!r || typeof r !== 'object') continue;
+      PROCESSES.forEach(function (p) {
+        ['Past', 'Today'].forEach(function (per) {
+          var v = rowMetric(r, p.key, per);
+          if (v !== null) { a.known = true; if (v > 0) a.act += v; }
+        });
+        var pl = rowMetric(r, p.key, 'Planned');
+        if (pl > 0) a.plan += pl;
+      });
+    }
+    return a;
+  }
+
+  // Sıra: önce bugünün grupları cut-off saatine göre, sonra ertesi günün grupları (yalnızca PLANLI ya da hepsi 0)
+  // gün ve saate göre; listede olmayan grup kendi bloğunun sonuna. Gruplara _cut, _next, _tomorrow, _rank yazılır.
+  function orderGroups(groups) {
+    var dow = new Date().getDay();
+    state.day = dow;
+    var items = groups.map(function (g, i) {
+      var c = cutoffFor(groupTitle(g)), a = groupActivity(g);
+      g._cut = c ? c.time : '';
+      g._next = a.known && a.act === 0;
+      g._tomorrow = g._next && a.plan > 0;
+      return { g: g, i: i, next: g._next ? 1 : 0, day: g._next ? (c ? daysUntil(c, dow) : 9) : 0, mins: c ? toMinutes(c.time) : 9999 };
+    });
+    items.sort(function (a, b) { return (a.next - b.next) || (a.day - b.day) || (a.mins - b.mins) || (a.i - b.i); });
+    return items.map(function (it, r) { it.g._rank = r; return it.g; });
+  }
+
   // ============================== SIĞDIRMA ==============================
   // Sığmayan hücre grubunun yazısını birlikte küçültür (sayılar asla "2.5…" diye kesilmez)
   function fitCells(cells, maxSteps) {
@@ -583,31 +704,34 @@
     return h;
   }
 
-  // Grup adı en fazla 2 satıra (dikeyde 1 satıra) sığana kadar küçülür. %85'e inince hâlâ
-  // sığmıyorsa alttaki durum yazısı gizlenir (durum sol şeridin renginden de okunur) ve ad büyük kalır.
+  // Durum satırı kendi içinde kısalır: önce "detayda", sonra "N geciken iş" (sayı kutuda da var), sonra "Cut-off"
+  // kelimesi düşer; saat ve ERTESİ GÜN asla gizlenmez. Grup adı ise kendi alanına (yatayda en çok 3 satır) sığana kadar küçülür.
   function fitName(box) {
-    var t = box.firstChild;
+    var t = box.firstChild, st = box.lastChild;
     var portrait = /\bpr\b/.test(box.parentNode.className);
-    box.className = box.className.replace(/\s*no-status/g, '');
+    box.className = box.className.replace(/\s*no-(act|late|cutw)/g, '');
+    st.style.fontSize = '';
     t.style.fontSize = '';
-    var base = parseFloat(window.getComputedStyle(t).fontSize);
-    var fs = base;
+    var base = parseFloat(window.getComputedStyle(t).fontSize), fs = base, s;
+    function stOver() { return st.scrollWidth > st.clientWidth + 1; }
     function over() {
       return t.scrollHeight > t.clientHeight + fs * 0.12 || t.scrollWidth > t.clientWidth + 1 ||
         (!portrait && contentHeight(box) > box.clientHeight + 1);
     }
-    function shrink(maxSteps) {
-      for (var s = 1; s <= maxSteps && over(); s++) {
-        fs = base * Math.pow(0.92, s);
-        t.style.fontSize = fs + 'px';
-      }
+    function shrink(from, to) {
+      for (s = from; s <= to && over(); s++) { fs = base * Math.pow(0.92, s); t.style.fontSize = fs + 'px'; }
     }
-    shrink(portrait ? 14 : 2);
-    if (!over() || portrait) return;
-    box.className += ' no-status';
-    t.style.fontSize = '';
-    fs = base;
-    shrink(14);
+    var drops = ['no-act', 'no-late', 'no-cutw'];
+    if (portrait) {
+      // Dikeyde ad ve durum aynı satırda: önce ad biraz küçülür, sonra durum kısalır
+      shrink(1, 4);
+      for (var d = 0; d < drops.length && over(); d++) { box.className += ' ' + drops[d]; t.style.fontSize = ''; fs = base; shrink(1, 4); }
+      shrink(5, 14);
+      return;
+    }
+    for (var k = 0; k < drops.length && stOver(); k++) box.className += ' ' + drops[k];
+    if (stOver()) fitCells([st], 4);
+    shrink(1, 14);
   }
 
   // Öncelik satırı: tek satırda %78'e kadar küçülür; yine sığmazsa 2 satıra kırılır
@@ -645,6 +769,7 @@
       return;
     }
     var groups = extractGroups(raw);
+    if (groups) groups = orderGroups(groups);
     if (!groups) {
       log('error', 'Logiboard: veride rota grubu listesi bulunamadı', describe(raw));
       if (!state.groups.length) showMessage('Veri biçimi tanınmadı (rota grubu listesi bulunamadı).\n' +
@@ -858,7 +983,7 @@
     if (state.order.length) {
       fillDetailsHead();
       var rpp = measureRowsPerPage(currentPrep());
-      if (rpp < CONFIG.minDetailRows) {
+      if (state.rppNoSum < CONFIG.minDetailRows) {
         state.scenes = true;
         if (!wasScenes) { state.scene = 'board'; state.turnPages = 0; }
         state.size = boardSize(n, true);
@@ -884,9 +1009,9 @@
         }
       });
     });
-    // En çok geciken önce; eşitse BUGÜN hacmi büyük olan; sonra ERP sırası
+    // Cut-off'u en erken olan grup önce (gruplar zaten cut-off sırasında); aynı grupta geciken çok olan, sonra akış sırası
     cells.sort(function (a, b) {
-      return (b.past - a.past) || (b.today - a.today) || (a.gi - b.gi) || (a.pi - b.pi);
+      return (a.gi - b.gi) || (b.past - a.past) || (a.pi - b.pi);
     });
 
     if (!state.groups.length || !anyPast) { state.bannerKind = ''; applyBannerState(); return; }
@@ -898,7 +1023,7 @@
       applyBannerState();
       el['b-l1'].innerHTML = 'GECİKEN ' + esc(trUpper(CONFIG.pastUnit)) + ' YOK';
       fitBannerTitle(el['b-l1']);
-      setFitted(el['b-l2'], [state.stale ? staleLine : 'Hiçbir rota grubunda geciken ' + unit + ' yok — akışa devam edin.']);
+      setFitted(el['b-l2'], [state.stale ? staleLine : '']);
       return;
     }
 
@@ -912,7 +1037,7 @@
     fitBannerTitle(el['b-l1']);
     if (state.stale) { setFitted(el['b-l2'], [staleLine]); return; }
     if (cells.length === 1) {
-      setFitted(el['b-l2'], ['Önce bu işi bitirin. Başka geciken ' + unit + ' yok.']);
+      setFitted(el['b-l2'], ['Başka geciken ' + unit + ' yok.']);
       return;
     }
     // "Sırada" listesi: sığdığı kadar alan; sığmazsa daha kısa seçenek
@@ -926,8 +1051,7 @@
       var rest = cells.length - 1 - shown;
       next.push('Sırada: ' + items.join(',&nbsp; ') + (rest > 0 ? ',&nbsp; +' + rest + ' alan daha' : ''));
     }
-    for (var v = 0; v < next.length; v++) variants.push('Önce bu işi bitirin. ' + next[v] + total);
-    variants.push('Önce bu işi bitirin. ' + next[next.length - 1]);
+    for (var v = 0; v < next.length; v++) variants.push(next[v] + total);
     variants.push(next[next.length - 1]); // en kısa: yalnızca sıradaki ilk alan
     setFitted(el['b-l2'], variants);
   }
@@ -964,15 +1088,20 @@
 
   function boardRow(g, i, active) {
     var late = groupPast(g);
-    var cls = 'brow' + (late === null ? ' g-none' : late > 0 ? ' g-late' : ' g-ok') +
-      (state.portrait ? ' pr' : '') + (active ? ' active' : '');
-    var status = late === null ? '' : late > 0 ? fmt(late) + ' geciken ' + esc(CONFIG.pastUnit) : 'Geciken yok';
+    var st = g._next ? 'g-next' : late === null ? 'g-none' : late > 0 ? 'g-late' : 'g-ok';
+    var cls = 'brow ' + st + (state.portrait ? ' pr' : '') + (active ? ' active' : '');
+    // Durum satırı: "Cut-off 14:30" [ERTESİ GÜN] · N geciken iş · detayda ("Geciken yok" yazılmaz)
+    var status = '', before = false;
+    if (g._cut) { status += '<span class="bn-cut"><span class="bn-cutw">Cut-off </span>' + esc(g._cut) + '</span>'; before = true; }
+    if (g._tomorrow) { status += '<span class="bn-tag">ERTESİ GÜN</span>'; before = true; }
+    if (late > 0) { status += '<span class="bn-late">' + (before ? ' · ' : '') + fmt(late) + ' geciken ' + esc(CONFIG.pastUnit) + '</span>'; before = true; }
+    status += '<span class="bn-act">' + (before ? ' · ' : '') + 'detayda</span>';
     var h = '<div class="' + cls + '" id="brow-' + i + '"><div class="bname"><div class="bn-text">' + esc(groupTitle(g)) +
       '</div><div class="bn-status">' + status + '</div></div><div class="btiles">';
     PROCESSES.forEach(function (p) {
       var past = metric(g, p.key, 'Past');
       var lamp = past > 0 ? '<span class="lamp">' + fmt(past) + '</span>' :
-        past === null ? '<span class="zero">–</span>' : '<span class="ok-mark"></span>';
+        (past === null || g._next) ? '<span class="zero">–</span>' : '<span class="ok-mark"></span>';
       h += '<div class="tile' + (past > 0 ? ' late' : '') + '">' +
         '<div class="slot s-past">' + lamp + '</div>' +
         '<div class="slot s-today">' + numHtml(metric(g, p.key, 'Today')) + '</div>' +
@@ -1015,8 +1144,12 @@
     for (var j = 0; j < lamps.length; j++) fitCells([lamps[j]]);
     fitCells(el.board.querySelectorAll('.brow .s-today'));
     fitCells(el.board.querySelectorAll('.brow .s-plan'));
-    var names = el.board.querySelectorAll('.brow .bname');
-    for (var i = 0; i < names.length; i++) fitName(names[i]);
+    var names = el.board.querySelectorAll('.brow .bname'), i;
+    for (i = 0; i < names.length; i++) fitName(names[i]);
+    // Bir satırda "Cut-off" kelimesi düştüyse hepsinde düşer (pano tek tip görünsün)
+    if (el.board.querySelector('.bname.no-cutw')) {
+      for (i = 0; i < names.length; i++) if (!/no-cutw/.test(names[i].className)) names[i].className += ' no-cutw';
+    }
   }
 
   function markActiveRow() {
@@ -1024,8 +1157,10 @@
     for (var i = 0; i < state.groups.length; i++) {
       var row = document.getElementById('brow-' + i);
       if (!row) continue;
-      var c = row.className.replace(/\s*active/g, '');
-      row.className = i === activeGi ? c + ' active' : c;
+      var was = /\bactive\b/.test(row.className), now = i === activeGi;
+      if (was === now) continue;
+      row.className = now ? row.className + ' active' : row.className.replace(/\s*\bactive\b/g, '');
+      if (el.board.offsetWidth) fitName(row.firstChild); // "detayda" eklendi/kalktı: durum satırını yeniden sığdır
     }
   }
 
@@ -1109,10 +1244,30 @@
       });
     }
     html += '</colgroup>';
-    return { stacked: stacked, cols: cols, text: text, head: html + buildHead(cols) };
+    return { stacked: stacked, cols: cols, text: text, head: html + buildHead(cols, prep, stacked ? 0 : text.length) };
   }
 
-  function buildHead(cols) {
+  function sumCell(g, c) {
+    var cls = 'sum-num' + (c.sep ? ' sep' : '');
+    if (!c.group || !c.period) return '<td class="' + cls + '"></td>';
+    var v = metric(g, c.group.key, c.period.key), txt = fmt(v);
+    cls += ' ' + c.period.cls + (v === 0 ? ' zero' : '');
+    if (c.period.key === 'Past' && v > 0) txt = '<span class="chip">' + txt + '</span>';
+    return '<td class="' + cls + '">' + txt + '</td>';
+  }
+
+  // Rota grubu toplam satırı: ERP grup toplamları (panodaki rakamlarla aynı); metin sütunlarına yayılan etiket
+  function sumRow(cols, prep, textCount) {
+    if (!prep || !prep.sum) return '';
+    var label = 'ROTA GRUBU TOPLAMI', html = '';
+    if (!textCount) html += '<tr class="sum sum-label"><td class="sum-name" colspan="' + cols.length + '">' + label + '</td></tr>';
+    html += '<tr class="sum">';
+    if (textCount) html += '<td class="sum-name" colspan="' + textCount + '">' + label + '</td>';
+    cols.forEach(function (c) { if (c.num) html += sumCell(prep.g, c); });
+    return html + '</tr>';
+  }
+
+  function buildHead(cols, prep, textCount) {
     var grouped = cols.some(function (c) { return c.group; });
     var html = '<thead><tr class="grp">';
     for (var i = 0; i < cols.length; i++) {
@@ -1135,7 +1290,7 @@
       });
       html += '</tr>';
     }
-    return html + '</thead>';
+    return html + sumRow(cols, prep, textCount) + '</thead>';
   }
 
   // Satırları süzer (hepsi 0 olanlar gizlenir) ve sıralar (geciken önce, sonra BUGÜN toplamı)
@@ -1143,6 +1298,8 @@
     var all = groupDetails(g);
     var cols = buildColumns(all);
     var numCols = cols.filter(function (c) { return c.num; });
+    // Yalnızca PLANLI değeri olan bayi ertesi günün işidir: GECİKEN/ZAMANINDA sütunu varsa onlar süzülür
+    var activeOnly = CONFIG.detailActiveOnly && numCols.some(function (c) { return c.period && c.period.key !== 'Planned'; });
     var rows = [], hidden = 0, lateRows = 0;
     for (var i = 0; i < all.length; i++) {
       var r = all[i];
@@ -1156,7 +1313,7 @@
           else if (c.period.key === 'Today') today += n;
         }
       }
-      if (CONFIG.hideZeroDetailRows && numCols.length && !nonZero) { hidden++; continue; }
+      if (activeOnly ? past + today === 0 : (CONFIG.hideZeroDetailRows && numCols.length && !nonZero)) { hidden++; continue; }
       if (past > 0) lateRows++;
       rows.push({ r: r, i: i, past: past, today: today, hot: hot });
     }
@@ -1165,19 +1322,17 @@
         return ((b.past > 0) - (a.past > 0)) || (b.past - a.past) || (b.today - a.today) || (a.i - b.i);
       });
     }
-    return { cols: cols, rows: rows, hidden: hidden, lateRows: lateRows };
+    return { g: g, cols: cols, rows: rows, hidden: hidden, activeOnly: activeOnly, lateRows: lateRows,
+      sum: cols.some(function (c) { return c.group; }) };
   }
 
   function prepareAll() {
     state.prep = [];
     var order = [];
+    // Gruplar zaten cut-off sırasında; ertesi günün grupları detayda gösterilmez
     state.groups.forEach(function (g, i) {
       state.prep[i] = prepareGroup(g);
-      if (state.prep[i].rows.length) order.push(i);
-    });
-    // Geciken işi olan gruplar detayda önce gelir
-    order.sort(function (a, b) {
-      return ((groupPast(state.groups[b]) || 0) - (groupPast(state.groups[a]) || 0)) || (a - b);
+      if (!g._next && state.prep[i].rows.length) order.push(i);
     });
     state.order = order;
     if (state.groupPos >= order.length) state.groupPos = 0;
@@ -1222,8 +1377,10 @@
   function fitTable(table) {
     fitCells(table.querySelectorAll('tr.grp th'));
     fitCells(table.querySelectorAll('tr.sub th'));
-    fitCells(table.querySelectorAll('td.num'));
-    fitCells(table.querySelectorAll('td.name'), 3); // metin en fazla %78'e küçülür, sonra "…" ile kısalır
+    fitCells(table.querySelectorAll('tr.sum td.sum-num'));
+    fitCells(table.querySelectorAll('td.sum-name'), 3);
+    fitCells(table.querySelectorAll('tbody td.num'));
+    fitCells(table.querySelectorAll('tbody td.name'), 3); // metin en fazla %78'e küçülür, sonra "…" ile kısalır
   }
 
   function drawTable(lay, items) {
@@ -1242,9 +1399,13 @@
     var available = el['details-body'].clientHeight - 2;
     var headH = el.details.tHead ? el.details.tHead.getBoundingClientRect().height : 0;
     var recs = el.details.tBodies;
-    var recH = 0;
-    for (var i = 0; i < recs.length; i++) recH = Math.max(recH, recs[i].getBoundingClientRect().height);
-    if (available <= 0 || !recH) return 1;
+    var recH = 0, sumH = 0, i;
+    for (i = 0; i < recs.length; i++) recH = Math.max(recH, recs[i].getBoundingClientRect().height);
+    var sums = el.details.tHead ? el.details.tHead.querySelectorAll('tr.sum') : [];
+    for (i = 0; i < sums.length; i++) sumH += sums[i].getBoundingClientRect().height;
+    if (available <= 0 || !recH) { state.rppNoSum = 1; return 1; }
+    // Pano/sahne kararı toplam satırı hiç yokmuş gibi verilir (düzen bu satır yüzünden değişmesin)
+    state.rppNoSum = Math.max(1, Math.floor((available - headH + sumH) / recH));
     return Math.max(1, Math.floor((available - headH) / recH));
   }
 
@@ -1260,10 +1421,11 @@
 
   // Başlık ölçümden önce dolu olmalı, yoksa tablo alanı olduğundan yüksek ölçülür
   function fillDetailsHead() {
-    var gi = state.order[state.groupPos], prep = state.prep[gi];
-    el['details-title'].textContent = groupTitle(state.groups[gi]);
-    el['details-hint'].className = 'dh-hint ' + (prep.lateRows ? 'late' : 'ok');
-    el['details-hint'].textContent = prep.lateRows ? fmt(prep.lateRows) + ' GECİKEN KAYIT EN ÜSTTE' : 'GECİKEN KAYIT YOK';
+    var gi = state.order[state.groupPos], prep = state.prep[gi], g = state.groups[gi];
+    el['details-title'].innerHTML = esc(groupTitle(g)) + (g._cut ? '<small>Cut-off ' + esc(g._cut) + '</small>' : '');
+    // Geciken yoksa ipucu gösterilmez ("geciken yok" yazılmaz)
+    el['details-hint'].className = prep.lateRows ? 'dh-hint late' : '';
+    el['details-hint'].textContent = prep.lateRows ? fmt(prep.lateRows) + ' GECİKEN ' + trUpper(CONFIG.rowUnit) + ' EN ÜSTTE' : '';
     if (!el['details-page'].innerHTML) el['details-page'].textContent = '…';
   }
 
@@ -1294,17 +1456,20 @@
 
     var cut = prep.rows.length - pages * state.rowsPerPage;
     el['details-page'].innerHTML = (pages > 1 ? 'Sayfa ' + (state.page + 1) + ' / ' + pages : '') +
-      '<small>' + fmt(prep.rows.length) + ' kayıt' + (prep.hidden ? ' · tümü 0 olan ' + fmt(prep.hidden) + ' kayıt gizli' : '') +
-      (cut > 0 ? ' · +' + fmt(cut) + ' kayıt gösterilmiyor' : '') + '</small>';
+      '<small>' + fmt(prep.rows.length) + ' ' + esc(CONFIG.rowUnit) +
+      (prep.hidden ? (prep.activeOnly ? ' · bugün işi olmayan ' + fmt(prep.hidden) + ' ' + esc(CONFIG.rowUnit) + ' gizli' :
+        ' · tümü 0 olan ' + fmt(prep.hidden) + ' ' + esc(CONFIG.rowUnit) + ' gizli') : '') +
+      (cut > 0 ? ' · +' + fmt(cut) + ' ' + esc(CONFIG.rowUnit) + ' gösterilmiyor' : '') + '</small>';
 
     // Kırmızı ipucu yalnızca geciken kayıtların göründüğü sayfalarda; diğer sayfalarda nerede olduklarını söyler
     if (prep.lateRows) {
       var latePages = Math.ceil(prep.lateRows / state.rowsPerPage);
       var lateHere = CONFIG.sortDetailRows && state.page < latePages;
-      el['details-hint'].className = 'dh-hint ' + (lateHere || !CONFIG.sortDetailRows ? 'late' : 'ok');
-      el['details-hint'].textContent = !CONFIG.sortDetailRows ? fmt(prep.lateRows) + ' GECİKEN KAYIT' :
-        lateHere ? fmt(prep.lateRows) + ' GECİKEN KAYIT EN ÜSTTE' :
-        fmt(prep.lateRows) + ' GECİKEN KAYIT ' + (latePages > 1 ? 'İLK SAYFALARDA' : 'İLK SAYFADA');
+      var unitUp = trUpper(CONFIG.rowUnit);
+      el['details-hint'].className = 'dh-hint ' + (lateHere || !CONFIG.sortDetailRows ? 'late' : 'info');
+      el['details-hint'].textContent = !CONFIG.sortDetailRows ? fmt(prep.lateRows) + ' GECİKEN ' + unitUp :
+        lateHere ? fmt(prep.lateRows) + ' GECİKEN ' + unitUp + ' EN ÜSTTE' :
+        fmt(prep.lateRows) + ' GECİKEN ' + unitUp + ' ' + (latePages > 1 ? 'İLK SAYFALARDA' : 'İLK SAYFADA');
     }
 
     markActiveRow();
@@ -1412,6 +1577,7 @@
       return parts;
     }
     var base = [
+      { title: 'ANKARA SICAK', count: 3, totals: [0, 0, 4, 0, 0, 0, 0, 0, 0] }, // yalnızca PLANLI → ERTESİ GÜN
       { title: 'ANADOLU', count: 126, totals: [0, 755, 2518, 0, 1032, 649, 1, 784, 840] },
       { title: 'İSTANBUL 2.SEVKİYAT', count: 22, totals: [0, 37, 679, 0, 324, 230, 0, 150, 347] }
     ];
@@ -1429,7 +1595,7 @@
       });
       var details = [];
       for (var i = 0; i < b.count; i++) {
-        var d = { CustomerTitle: 'Örnek Müşteri ' + (i < 9 ? '00' : i < 99 ? '0' : '') + (i + 1) };
+        var d = { CustomerTitle: 'Örnek Bayi ' + (i < 9 ? '00' : i < 99 ? '0' : '') + (i + 1) };
         split.forEach(function (s) { d[s.key] = s.parts[i]; });
         details.push(d);
       }
@@ -1443,7 +1609,16 @@
   function start() {
     el.title.textContent = CONFIG.title;
     renderClock();
-    setInterval(function () { renderClock(); renderUpdated(); }, 5000);
+    setInterval(function () {
+      renderClock();
+      renderUpdated();
+      // Gün değişince ertesi gün sıralaması yeniden hesaplanır
+      if (state.groups.length && state.day !== undefined && new Date().getDay() !== state.day) {
+        state.groups = orderGroups(state.groups);
+        prepareAll();
+        renderAll(false);
+      }
+    }, 5000);
 
     // Boyut gerçekten değişmediyse (bazı oynatıcılar boşuna resize gönderir) döngü sıfırlanmaz
     var resizeTimer, lastW = window.innerWidth, lastH = window.innerHeight;
